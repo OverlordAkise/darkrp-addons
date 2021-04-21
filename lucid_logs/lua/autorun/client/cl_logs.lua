@@ -18,9 +18,11 @@ net.Receive("lucid_log",function()
   
   if IsValid(lucidlog.log_win) and IsValid(lucidlog.list) and lucidlog.log ~= nil then
     lucidlog.list:Clear()
-      for k,v in pairs(lucidlog.log) do
-        lucidlog.list:AddLine( os.date("%Y.%m.%d %H:%M:%S",v.date), v.msg )
+    for k,v in pairs(lucidlog.log) do
+      if(v.date)then
+        lucidlog.list:AddLine( v.date, v.msg )
       end
+    end
   else
     lucidlog_createLogWindow()
   end
@@ -41,7 +43,7 @@ end)
 function lucidlog_createLogWindow()
   if not lucidlog.log then return end
   lucidlog.log_win = vgui.Create("DFrame")
-  lucidlog.log_win:SetTitle("Lucid's DarkRP Log")
+  lucidlog.log_win:SetTitle("LucidLog v0.1 | by OverlordAkise")
   lucidlog.log_win:SetSize( 800, 500 )
   lucidlog.log_win:Center()
   lucidlog.log_win:MakePopup()
@@ -60,12 +62,12 @@ function lucidlog_createLogWindow()
   lucidlog.date_from = lucidlog.log_win:Add("DTextEntry")
   lucidlog.date_from:SetPos( 1, 25 )
   lucidlog.date_from:SetSize( 126, 25 )
-  lucidlog.date_from:SetValue( "2000.01.01 00:00:00" )
+  lucidlog.date_from:SetValue( "2000-01-01 00:00:00" )
   
   lucidlog.date_to = lucidlog.log_win:Add("DTextEntry")
   lucidlog.date_to:SetPos( 127, 25 )
   lucidlog.date_to:SetSize( 125, 25 )
-  lucidlog.date_to:SetValue( "2222.01.01 00:00:00" )
+  lucidlog.date_to:SetValue( "2222-01-01 00:00:00" )
   
   lucidlog.date_should = lucidlog.log_win:Add("DCheckBoxLabel")
   lucidlog.date_should:SetPos( 256, 30 )
@@ -131,7 +133,9 @@ function lucidlog_createLogWindow()
   lucidlog.list:AddColumn( "Message" )
 
   for k,v in pairs( lucidlog.log ) do
-    lucidlog.list:AddLine( os.date("%Y.%m.%d %H:%M:%S",v.date), v.msg )
+    if(v.date)then
+      lucidlog.list:AddLine( v.date, v.msg )
+    end
   end
   lucidlog.list.OnRowSelected = function( lst, index, pnl )
     --print( "Selected " .. pnl:GetColumnText( 1 ) .. " ( " .. pnl:GetColumnText( 2 ) .. " ) at index " .. index )
@@ -139,32 +143,34 @@ function lucidlog_createLogWindow()
 end
 
 function lucidlog_clientRequest()
-  local adate = {}
-  local zdate = {}
+  local adate = ""
+  local zdate = ""
   if lucidlog.date_should:GetChecked() then
-    local aa = lucidlog.date_from:GetValue()
-    local zz = lucidlog.date_to:GetValue()
-    if aa:match("%d%d%d%d.%d%d.%d%d %d%d:%d%d:%d%d") == nil then
-      DarkRP.notify(ply, 1, 5, "[lucidloglog] Please enter a valid From-Date !")
+    adate = lucidlog.date_from:GetValue()
+    zdate = lucidlog.date_to:GetValue()
+    if adate:match("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d") == nil then
+      --DarkRP.Notify(ply, 1, 5, "[lucidlog] Please enter a valid From-Date !")
+      Derma_Message("Please enter a valid From-Date (YYYY-MM-DD HH:MM:SS) !", "[lucidlog]", "OK")
       return
     end
-    if zz:match("%d%d%d%d.%d%d.%d%d %d%d:%d%d:%d%d") == nil then
-      DarkRP.notify(ply, 1, 5, "[lucidloglog] Please enter a valid To-Date !")
+    if zdate:match("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d") == nil then
+      --DarkRP.Notify(ply, 1, 5, "[lucidlog] Please enter a valid To-Date !")
+      Derma_Message("Please enter a valid To-Date (YYYY-MM-DD HH:MM:SS) !", "[lucidlog]", "OK")
       return
     end
     local t = {}
-    t.year,t.month,t.day,t.hour,t.min,t.sec = aa:match("(%d%d%d%d).(%d%d).(%d%d) (%d%d):(%d%d):(%d%d)")
-    adate = os.time({year=t.year, month=t.month, day=t.day, hour=t.hour, min=t.min, sec=t.sec})
+    --t.year,t.month,t.day,t.hour,t.min,t.sec = aa:match("(%d%d%d%d).(%d%d).(%d%d) (%d%d):(%d%d):(%d%d)")
+    --adate = os.time({year=t.year, month=t.month, day=t.day, hour=t.hour, min=t.min, sec=t.sec})
     local tt = {}
-    tt.year,tt.month,tt.day,tt.hour,tt.min,tt.sec = zz:match("(%d%d%d%d).(%d%d).(%d%d) (%d%d):(%d%d):(%d%d)")
-    zdate = os.time({year=tt.year, month=tt.month, day=tt.day, hour=tt.hour, min=tt.min, sec=tt.sec})
+    --tt.year,tt.month,tt.day,tt.hour,tt.min,tt.sec = zz:match("(%d%d%d%d).(%d%d).(%d%d) (%d%d):(%d%d):(%d%d)")
+    --zdate = os.time({year=tt.year, month=tt.month, day=tt.day, hour=tt.hour, min=tt.min, sec=tt.sec})
     
     --print("First")
     --PrintTable(t)
     --print("Second")
     --PrintTable(tt)
     --print("First: "..adate)
-    --print("Second: "..zdate)
+    --print("Second: "..zdate) 
   end
   net.Start("lucid_log")
     if lucidlog.filter_should:GetChecked() then 

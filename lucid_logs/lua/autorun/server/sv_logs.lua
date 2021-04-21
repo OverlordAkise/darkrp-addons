@@ -1,18 +1,18 @@
 util.AddNetworkString("lucid_log")
 
 hook.Add("PostGamemodeLoaded","lucid_log",function()
-  sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date BIGINT, msg TEXT )")
+  sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, msg TEXT )")
 end)
 
 
 lucid_log = {}
 
 local function log_push(text)
-  local dt = os.time()--os.date("%Y%m%d%H%M%S", os.time())
-  print("LucidLog"..sql.SQLStr(text))
-  sql.Query("INSERT INTO lucid_log( date , msg ) VALUES( "..dt.." , "..SQLStr(text)..") ")
+  print("[LucidLog] "..sql.SQLStr(text))
+  sql.Query("INSERT INTO lucid_log( date , msg ) VALUES( datetime('now') , "..SQLStr(text)..") ")
+  local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
   local value = {}
-  value.date = dt
+  value.date = datetime
   value.msg = text
   table.insert(lucid_log,value)
   if #lucid_log > 20 then
@@ -33,13 +33,13 @@ local function log_get(_filter,_page,_date_a,_date_z)
   page = page * 20
   local ret = {}
   if _date_z != "" then
-    local date_a = tonumber(_date_a)
-    if not date_a then return nil end
-    local date_z = tonumber(_date_z)
-    if not date_z then return nil end
-    ret = sql.Query("SELECT * FROM lucid_log WHERE date BETWEEN "..date_a.." AND "..date_z.." AND msg LIKE '"..filter.."' ORDER BY date DESC limit 20 offset "..page)
+    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE '"..sql.SQLStr(filter).."' AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY date DESC limit 20 offset "..page..";")
+    
+    if(ret==false)then
+      print("[lucidlog] SQL ERROR DURING DATE FILTER!")
+    end
   else
-    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE '"..filter.."' ORDER BY date DESC limit 20 offset "..page)
+    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE '"..sql.SQLStr(filter).."' ORDER BY date DESC limit 20 offset "..page)
   end
   return ret
 end
