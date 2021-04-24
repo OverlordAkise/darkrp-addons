@@ -282,7 +282,7 @@ hook.Add("playerBoughtFood","lucid_log_playerBoughtFood",function(ply, foodTable
     log_push(ply:Nick().." bought food "..spawnedfoodEnt:GetClass().." for "..cost.."$")
 end)
 hook.Add("playerKeysSold","lucid_log_playerKeysSold",function(ply, ent, GiveMoneyBack)
-    if not IsValid(ply) or not IsValid(ent) or not IsValid(GiveMoneyBack) then return end
+    if not IsValid(ply) or not IsValid(ent) then return end
     --GiveMoneyBack = number
     if ent:IsVehicle() then
         log_push(ply:Nick().." sold a vehicle for "..GiveMoneyBack.."$")
