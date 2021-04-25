@@ -166,8 +166,6 @@ hook.Add("OnPlayerChat", "emotd_chat", function(ply, text)
     if text == emotd_command then
       eMOTD()
       gui.EnableScreenClicker(true)
-    else
-      return false
     end
   end
 end)

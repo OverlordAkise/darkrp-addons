@@ -19,7 +19,7 @@ eChat.curHistory = 1
 
 surface.CreateFont( "eChat_18", {
 	font = "Tahoma",
-	size = 20,
+	size = 18,
 	weight = 3000,
 	antialias = false,
 	shadow = true,
