@@ -1,5 +1,5 @@
 --shared
-hook.Add("DarkRPFinishedLoading", "lucid_whitelist", function()
+hook.Add("postLoadCustomDarkRPItems", "lucid_whitelist", function()
   print("Adding detour to jobs customCheck")
   for job_index,job in pairs(RPExtraTeams) do
     print("Adding detour to "..job.name)
