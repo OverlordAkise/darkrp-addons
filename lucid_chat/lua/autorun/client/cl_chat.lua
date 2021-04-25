@@ -27,17 +27,11 @@ surface.CreateFont( "eChat_18", {
 })
 
 function chefGetChatColor(group)
-	if group == "user" then return Color(255,255,255,255) end
-	if chef.chatColors[group] ~= nil then
-		return chef.chatColors[group]
-	end
+	return Color(255,255,255,255)
 end
 
 function chefGetChatTag(group)
-	if group == "user" then return "" end
-	if chef.chatTags[group] ~= nil then
-		return chef.chatTags[group]+" "
-	end
+	return ""
 end
 
 --// Builds the chatbox but doesn't display it
@@ -135,18 +129,17 @@ function eChat.buildBox()
       self:SetCaretPos(#h+1)
 		elseif code == KEY_ENTER then
 			-- Replicate the client pressing enter
-			
 			if string.Trim( self:GetText() ) != "" then
 				if eChat.ChatType == types[4] then
-					LocalPlayer():ConCommand("say_team \"" .. (self:GetText() or "") .. "\"")
+					RunConsoleCommand("say_team", self:GetText() or "")
 				elseif eChat.ChatType == types[5] then
-					LocalPlayer():ConCommand(self:GetText() or "")
+					RunConsoleCommand(self:GetText() or "")
 				elseif eChat.ChatType == types[2] then
-					LocalPlayer():ConCommand("say \"/ooc " .. (self:GetText() or "") .. "\"")
+					RunConsoleCommand("say", "/ooc", self:GetText() or "")
 				elseif eChat.ChatType == types[3] then
-					LocalPlayer():ConCommand("say \"/advert " .. (self:GetText() or "") .. "\"")
+					RunConsoleCommand("say", "/advert", self:GetText() or "")
 				else
-					LocalPlayer():ConCommand("say \"" .. self:GetText() .. "\"")
+					RunConsoleCommand("say", self:GetText() or "")
 				end
 				table.insert(eChat.history,self:GetText())
 			end
@@ -311,8 +304,8 @@ local oldAddText = chat.AddText
 
 --// Overwrite chat.AddText to detour it into my chatbox
 function chat.AddText(...)
-  print("CHAT ADDTEXT")
-  PrintTable({...})
+  --print("CHAT ADDTEXT")
+  --PrintTable({...})
 	if not eChat.chatLog then
 		eChat.buildBox()
 	end
