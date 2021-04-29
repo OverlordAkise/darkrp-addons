@@ -106,4 +106,6 @@ net.Receive("lucid_whitelist_get", function()
   end
 end)
 
+concommand.Add("lwhitelist", openLucidWhitelistWindow)
+
 print("[lwhitelist] Lucid Whitelist client loaded!")
