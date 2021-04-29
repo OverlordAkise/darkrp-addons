@@ -1,17 +1,14 @@
-/*---------------------------------------------------------------------------
-	
+--[[
 	Creator: TheCodingBeast - TheCodingBeast.com
 	This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
 	To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
-	
----------------------------------------------------------------------------*/
-print("AAAAAAAAAAAAAAAAA")
+--]]
 -- Variables
 TCB_Settings = {}
 
 -- Settings
-TCB_Settings.ActivationKey1 = "ShowSpare2"		// F1 (ShowHelp), 	F2 (ShowTeam), 	F3 (ShowSpare1), 	F4 (ShowSpare2)
-TCB_Settings.ActivationKey2	= KEY_F4			// F1 (KEY_F1), 	F2 (KEY_F2), 	F3 (KEY_F3), 		F4 (KEY_F4)
+TCB_Settings.ActivationKey1 = "ShowSpare2"		-- F1 (ShowHelp), 	F2 (ShowTeam), 	F3 (ShowSpare1), 	F4 (ShowSpare2)
+TCB_Settings.ActivationKey2	= KEY_F4			-- F1 (KEY_F1), 	F2 (KEY_F2), 	F3 (KEY_F3), 		F4 (KEY_F4)
 
 TCB_Settings.CheckVersion	= true
 
