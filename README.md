@@ -7,6 +7,8 @@ For a screenshot of the addons visit [https://luctus.at](https://luctus.at)
 These addons are tested by me on my own server. They are not thoroughly tested with 40+ players and 100 addons.  
 If you find a bug please submit an Issue on github!
 
+_**!Lucid Namechange will only work on servers where /rpname is enabled!**_
+
 # Addons
  - Lucid AC is a simple anticheat made for getting rid of script kiddies, it's focus is a low resource usage
  - Lucid Chat is a simple chatbox which has modern features like arrow-up for previous messages and TAB for switching say-modes
