@@ -50,6 +50,58 @@ DarkRP.createCategory{
 
 
 
+---Ammo---
+
+DarkRP.createAmmoType("m9k_ammo_357", {
+    name = "357 Ammo",
+    model = "models/items/357ammo.mdl",
+    price = 50,
+    amountGiven = 10
+})
+
+DarkRP.createAmmoType("m9k_ammo_buckshot", {
+    name = "Shotgun Ammo",
+    model = "models/items/boxbuckshot.mdl",
+    price = 50,
+    amountGiven = 10
+})
+
+DarkRP.createAmmoType("m9k_ammo_ar2", {
+    name = "Gewehr Ammo",
+    model = "models/items/boxmrounds.mdl",
+    price = 50,
+    amountGiven = 60
+})
+
+DarkRP.createAmmoType("m9k_ammo_smg", {
+    name = "SMG Ammo",
+    model = "models/items/boxsrounds.mdl",
+    price = 50,
+    amountGiven = 60
+})
+
+DarkRP.createAmmoType("m9k_ammo_pistol", {
+    name = "Pistol Ammo",
+    model = "models/items/boxsrounds.mdl",
+    price = 50,
+    amountGiven = 30
+})
+
+DarkRP.createAmmoType("m9k_ammo_sniper_rounds", {
+    name = "Sniper Ammo",
+    model = "models/items/sniper_round_box.mdl",
+    price = 100,
+    amountGiven = 10
+})
+
+DarkRP.createAmmoType("m9k_ammo_winchester", {
+    name = "Winchester Ammo",
+    model = "models/items/sniper_round_box.mdl",
+    price = 100,
+    amountGiven = 10
+})
+
+
 ---Pistols---
 DarkRP.createShipment("Python", {
   model = "models/weapons/w_colt_python.mdl",
