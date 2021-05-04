@@ -131,15 +131,15 @@ function eChat.buildBox()
 			-- Replicate the client pressing enter
 			if string.Trim( self:GetText() ) != "" then
 				if eChat.ChatType == types[4] then
-					RunConsoleCommand("say_team", self:GetText() or "")
+					LocalPlayer():ConCommand("say_team "..self:GetText() or "")
 				elseif eChat.ChatType == types[5] then
-					RunConsoleCommand(self:GetText() or "")
+					LocalPlayer():ConCommand(self:GetText() or "")
 				elseif eChat.ChatType == types[2] then
-					RunConsoleCommand("say", "/ooc", self:GetText() or "")
+					LocalPlayer():ConCommand("say /ooc "..self:GetText() or "")
 				elseif eChat.ChatType == types[3] then
-					RunConsoleCommand("say", "/advert", self:GetText() or "")
+					LocalPlayer():ConCommand("say /advert ".. self:GetText() or "")
 				else
-					RunConsoleCommand("say", self:GetText() or "")
+					LocalPlayer():ConCommand("say "..self:GetText() or "")
 				end
 				table.insert(eChat.history,self:GetText())
 			end

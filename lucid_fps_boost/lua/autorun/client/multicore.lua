@@ -102,8 +102,7 @@ hook.Add("InitPostEntity","lucid_open_fps",function()
 end)
 
 hook.Add( "OnPlayerChat", "lucid_open_fps", function( ply, strText, bTeam, bDead ) 
-  if ( ply != LocalPlayer() ) then return end
-	if ( strText == "!fps" ) then
+  if ( ply == LocalPlayer() and strText == "!fps") then
 		OpenMulticoreWindow()
 	end
 end)

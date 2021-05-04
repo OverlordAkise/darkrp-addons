@@ -130,12 +130,11 @@ concommand.Add("lwarn", function(ply, cmd, args)
 end)
 
 hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
-  if (ply != LocalPlayer()) then return end
-	if (string.lower(text) == lwconfig.chatCommand) then
+	if (ply == LocalPlayer() and string.lower(text) == lwconfig.chatCommand) then
 		if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
       chat.AddText("[lwarn] You aren't allowed to access LucidWarn.")
-      return 
+    else
+      openWarnMenu()
     end
-    openWarnMenu()
 	end
 end)
