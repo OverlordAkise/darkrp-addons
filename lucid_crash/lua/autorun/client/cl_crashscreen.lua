@@ -7,9 +7,11 @@ lcrash_reconnectDelay = 60 --seconds
 
 ---------------------
 
+lcrashScreen = nil
 lcrash_lastReceived = CurTime()
 net.Receive("lucidcrash_ping", function(len)
 	lcrash_lastReceived = CurTime()
+  if not lcrashScreen then return end
   if lcrashScreen:IsVisible() then
     print("[lucidcrash] Closing CrashScreen!")
 
