@@ -33,13 +33,13 @@ local function log_get(_filter,_page,_date_a,_date_z)
   page = page * 20
   local ret = {}
   if _date_z != "" then
-    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE '"..sql.SQLStr(filter).."' AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY date DESC limit 20 offset "..page..";")
+    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr(filter).." AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY date DESC limit 20 offset "..page..";")
     
     if(ret==false)then
       print("[lucidlog] SQL ERROR DURING DATE FILTER!")
     end
   else
-    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE '"..sql.SQLStr(filter).."' ORDER BY date DESC limit 20 offset "..page)
+    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr(filter).." ORDER BY date DESC limit 20 offset "..page)
   end
   return ret
 end
