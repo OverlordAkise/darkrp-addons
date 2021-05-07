@@ -385,9 +385,13 @@ end)
 hook.Add("PlayerDeath", "lucid_log_PlayerDeath", function(victim, inflictor, attacker)
     if not IsValid(victim) or not IsValid(inflictor) or not IsValid(attacker) then return end
     if ( victim == attacker ) then
-        log_push(victim:Nick().." committed suicide")
+      log_push(victim:Nick().." committed suicide")
     else
-        log_push(victim:Nick().." was killed by " .. attacker:Name())
+      if(attacker.Nick)then
+        log_push(victim:Nick().." was killed by " .. attacker:Nick())
+      else
+        log_push(victim:Nick().." was killed by " .. attacker:GetClass())
+      end
     end
 end)
 hook.Add("PlayerSilentDeath", "lucid_log_PlayerDeath", function(ply)
