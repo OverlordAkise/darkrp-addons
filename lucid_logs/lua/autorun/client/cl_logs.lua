@@ -79,9 +79,6 @@ function lucidlog_createLogWindow()
   lucidlog.filter:SetPos( 360, 25 )
   lucidlog.filter:SetSize( 200, 25 )
   lucidlog.filter:SetValue( "%spawned prop%" )
-  lucidlog.filter.OnEnter = function( self )
-    chat.AddText( self:GetValue() )
-  end
   
   lucidlog.filter_should = lucidlog.log_win:Add("DCheckBoxLabel")
   lucidlog.filter_should:SetPos( 564, 30 )
