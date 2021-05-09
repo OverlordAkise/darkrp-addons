@@ -130,7 +130,7 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
     surface.SetDrawColor(darkenedCol)
     surface.DrawRect(barX, barY + 82, maxBarSize, barHeight/2)
     surface.SetDrawColor(secCol)
-    surface.DrawRect(barX + iconOffset, barY + 82, ((player.GetAll()[1]:getDarkRPVar("Energy")*maxBarSize)/100) - iconOffset, barHeight/2)
+    surface.DrawRect(barX + iconOffset, barY + 82, ((LocalPlayer():getDarkRPVar("Energy")*maxBarSize)/100) - iconOffset, barHeight/2)
     draw.SimpleText(LocalPlayer():getDarkRPVar("Energy"), "LucidHUDFont", 215, barY+79, color_white, TEXT_ALIGN_CENTER)
     CreateImageIcon(cup_icon, 104, startY + 120, color_white)
   end
