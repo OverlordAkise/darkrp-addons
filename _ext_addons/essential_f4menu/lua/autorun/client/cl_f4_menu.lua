@@ -286,9 +286,11 @@ local function drawTabsPanel()
 	end
 
 	if not DarkRP.disabledDefaults['modules']['hungermod'] then
-		essentialDarkRPF4Menu.tabPos = essentialDarkRPF4Menu.tabPos + 1
+    if LocalPlayer():getJobTable().cook then
+      essentialDarkRPF4Menu.tabPos = essentialDarkRPF4Menu.tabPos + 1
 
-		table.insert(tabs, essentialDarkRPF4Menu.tabPos, 'Food')
+      table.insert(tabs, essentialDarkRPF4Menu.tabPos, 'Food')
+    end
 	end
 
 	-- Remove other opened tabs when clicking on a tab
