@@ -5,7 +5,7 @@ util.AddNetworkString("lucid_radio_frequency")
 
 lucid_radio_teams = {}
 
-hook.Add("DarkRPFinishedLoading", "lucid_radio_detouring",function()
+hook.Add("postLoadCustomDarkRPItems", "lucid_radio_detouring",function()
   
   -- IsInRoom function to see if the player is in the same room.
   local roomTrResult = {}
