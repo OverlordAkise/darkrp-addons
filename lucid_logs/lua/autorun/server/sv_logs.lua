@@ -84,8 +84,8 @@ hook.Add("playerUnArrested","lucid_log_playerUnArrested",function(criminal, acto
     log_push(actor:Nick().." unarrested "..criminal:Nick())
 end)
 hook.Add("onDoorRamUsed","lucid_log_onDoorRamUsed",function(successBool, ply, traceTable)
-    if not IsValid(successBool) or not IsValid(ply) then return end
-    if successBool and IsValid(traceTable.Entity:GetDoorOwner()) then
+    if not IsValid(ply) then return end
+    if successBool and IsValid(traceTable.Entity) and traceTable.Entity.GetDoorOwner and IsValid(traceTable.Entity:GetDoorOwner()) then
         log_push(ply:Nick().." used a DoorRam on "..traceTable.Entity:GetDoorOwner():Nick().."'s door")
     else
         log_push(ply:Nick().." used a DoorRam on an unknown door")
@@ -335,6 +335,10 @@ hook.Add("PlayerSpawnEffect","lucid_log_PlayerSpawnEffect",function(ply, model)
     if not IsValid(ply) then return end
     log_push(ply:Nick().." spawned effect "..model)
 end)
+hook.Add("WeaponEquip", "lucid_log_PlayerGiveSWEP", function(wep, owner)
+    if not IsValid(wep) or not IsValid(owner) then return end
+		log_push(owner:Nick().." picked up weapon "..wep:GetClass())
+end)
 --[[Covered by all the other PlayerSpawn things
 hook.Add("PlayerSpawnObject","lucid_log_PlayerSpawnObject",function(ply, model, skinNum)
     if not IsValid(ply) then return end
@@ -385,13 +389,9 @@ end)
 hook.Add("PlayerDeath", "lucid_log_PlayerDeath", function(victim, inflictor, attacker)
     if not IsValid(victim) or not IsValid(inflictor) or not IsValid(attacker) then return end
     if ( victim == attacker ) then
-      log_push(victim:Nick().." committed suicide")
+        log_push(victim:Nick().." committed suicide")
     else
-      if(attacker.Nick)then
-        log_push(victim:Nick().." was killed by " .. attacker:Nick())
-      else
-        log_push(victim:Nick().." was killed by " .. attacker:GetClass())
-      end
+        log_push(victim:Nick().." was killed by " .. attacker:Name())
     end
 end)
 hook.Add("PlayerSilentDeath", "lucid_log_PlayerDeath", function(ply)
