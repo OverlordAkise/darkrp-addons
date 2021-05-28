@@ -1,4 +1,5 @@
---InitPostEntity
+--Lucid Whitelist
+--Made by OverlordAkise
 
 util.AddNetworkString("lucid_whitelist_get")
 util.AddNetworkString("lucid_whitelist_set")

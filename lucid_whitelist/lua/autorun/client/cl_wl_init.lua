@@ -1,3 +1,6 @@
+--Lucid Whitelist
+--Made by OverlordAkise
+
 hook.Add("InitPostEntity", "lucid_whitelist", function()
   _G["lwhitelist_wspawn"] = nil
   for k,v in pairs(ents.GetAll()) do
@@ -28,8 +31,8 @@ function openLucidWhitelistWindow()
   PlayerList:AddColumn("Name")
   PlayerList:AddColumn("SteamID")
   PlayerList:SetSize(200, 0)
-  for k,v in pairs(player.GetAll()) do
-    PlayerList:AddLine("everyone","everyone")
+  PlayerList:AddLine("everyone","everyone")
+    for k,v in pairs(player.GetAll()) do
     PlayerList:AddLine(v:Name(),v:SteamID())
   end
   PlayerList.OnRowSelected = function(lst, index, pnl)

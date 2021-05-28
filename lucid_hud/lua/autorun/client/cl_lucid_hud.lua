@@ -45,12 +45,12 @@ local avatar
 local scrw = ScrW()
 local scrh = ScrH()
 local startX = 5
-local startY = scrh-172
+local startY = scrh-185
 local baseWidth = 320
-local baseHeight = 140
+local baseHeight = 150
 
 local barX = 100
-local barY = startY + 40
+local barY = startY + 50
 local barWidth = 190
 local barHeight = 24
 local maxBarSize = 220
@@ -77,14 +77,12 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
   surface.DrawRect(startX, startY, baseWidth, baseHeight)
   --Job
   surface.SetFont("LucidHUDFont")
-  local job = team.GetName( ply:Team() )
-  local jobOffset = surface.GetTextSize(job)
-  draw.SimpleText( ply:Nick(), "LucidHUDFont", 12, startY + 17, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-  draw.SimpleText( job, "LucidHUDFont", baseWidth-2-jobOffset, startY + 17, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+  draw.SimpleText( ply:Nick(), "LucidHUDFont", 12, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+  draw.SimpleText( ply:getDarkRPVar("job"), "LucidHUDFont", 12, startY + 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
   --Avatar
   if !IsValid(avatar) then
     avatar = vgui.Create("AvatarImage")
-    avatar:SetPos( startX + 10, startY + 39 )
+    avatar:SetPos( startX + 10, startY + 49 )
     avatar:SetSize( 75, 75)
     avatar:SetPlayer(ply, 64)
     avatar:ParentToHUD()
@@ -109,22 +107,22 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
   surface.DrawRect(barX, barY + 55, maxBarSize, barHeight)
   --HP
   surface.SetDrawColor(hpCol)
-  surface.DrawRect(barX + iconOffset, barY, ((ply:Health()*maxBarSize)/ply:GetMaxHealth()) - iconOffset, barHeight)
+  surface.DrawRect(barX + iconOffset, barY, math.Clamp((ply:Health()*maxBarSize)/ply:GetMaxHealth(),0,maxBarSize) - iconOffset, barHeight)
   draw.SimpleText(ply:Health() > 0 and ply:Health() or 0, "LucidHUDFont", 215, barY + 4, color_white, TEXT_ALIGN_CENTER)
   --Armor
   surface.SetDrawColor(armorCol)
-  surface.DrawRect(barX + iconOffset, barY + 28, ((ply:Armor()*maxBarSize)/ply:GetMaxArmor()) - iconOffset, barHeight)
+  surface.DrawRect(barX + iconOffset, barY + 28, math.Clamp((ply:Armor()*maxBarSize)/ply:GetMaxArmor(),0,maxBarSize) - iconOffset, barHeight)
   draw.SimpleText(ply:Armor() > 0 and ply:Armor() or 0, "LucidHUDFont", 215, barY + 32, color_white, TEXT_ALIGN_CENTER)
   --Green Money
   surface.SetDrawColor(moneyCol)
   surface.DrawRect(barX + iconOffset, barY + 55, maxBarSize - iconOffset, barHeight)
   draw.SimpleText(DarkRP.formatMoney(ply:getDarkRPVar( "money" )), "LucidHUDFont", 215, barY+59, color_white, TEXT_ALIGN_CENTER)
   --Icons
-  CreateImageIcon(health_icon, 104, startY + 44, healthCol)
-  CreateImageIcon(shield_icon, 103,startY + 71, shieldCol)
-  CreateImageIcon(cash_icon, 104, startY + 99, color_white)
-  CreateImageIcon(star_icon, 30, startY + 119, darkenedCol, ply:isWanted() )
-  CreateImageIcon(tick_icon, 55, startY + 120, darkenedCol, ply:getDarkRPVar("HasGunlicense") )
+  CreateImageIcon(health_icon, 104, startY + 54, healthCol)
+  CreateImageIcon(shield_icon, 103,startY + 81, shieldCol)
+  CreateImageIcon(cash_icon, 104, startY + 109, color_white)
+  CreateImageIcon(star_icon, 30, startY + 129, darkenedCol, ply:isWanted() )
+  CreateImageIcon(tick_icon, 55, startY + 130, darkenedCol, ply:getDarkRPVar("HasGunlicense") )
   --Hunger
   if LocalPlayer and LocalPlayer() and LocalPlayer():getDarkRPVar("Energy") then
     surface.SetDrawColor(darkenedCol)
@@ -132,7 +130,7 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
     surface.SetDrawColor(secCol)
     surface.DrawRect(barX + iconOffset, barY + 82, ((LocalPlayer():getDarkRPVar("Energy")*maxBarSize)/100) - iconOffset, barHeight/2)
     draw.SimpleText(LocalPlayer():getDarkRPVar("Energy"), "LucidHUDFont", 215, barY+79, color_white, TEXT_ALIGN_CENTER)
-    CreateImageIcon(cup_icon, 104, startY + 120, color_white)
+    CreateImageIcon(cup_icon, 104, startY + 130, color_white)
   end
   wep = ply:GetActiveWeapon()
 	if wep:IsValid() then

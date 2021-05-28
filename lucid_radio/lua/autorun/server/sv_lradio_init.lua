@@ -92,13 +92,13 @@ hook.Add("postLoadCustomDarkRPItems", "lucid_radio_detouring",function()
             if(ply.lradioOn and ply2.lradioOn) then
 
               if(ply.lradioFrequency == ply2.lradioFrequency) then
-                print("Both players in same group")
+                --print("Both players in same group")
                 if (ply2:GetActiveWeapon():GetClass() == "lucid_radio") then
-                  print("Setting to yes")
+                  --print("Setting to yes")
                   DrpCanHear[ply][ply2] = true and (deadv or ply2:Alive())
                 end
                 if (ply:GetActiveWeapon():GetClass() == "lucid_radio") then
-                  print("Setting to yes")
+                  --print("Setting to yes")
                   DrpCanHear[ply2][ply] = true and (deadv or ply:Alive())
                 end
                 break
@@ -167,10 +167,10 @@ hook.Add("postLoadCustomDarkRPItems", "lucid_radio_detouring",function()
   function GM:PlayerCanHearPlayersVoice(listener, talker)
       if not deadv and not talker:Alive() then return false end
 
-      if (listener.lradioOn and talker.lradioOn and listener:GetPos():DistToSqr(talker:GetPos()) > voiceDistance) then
+      if (listener.lradioOn and talker.lradioOn) then
         return not vrad or DrpCanHear[listener][talker] == true, false
       end
-      return not vrad or DrpCanHear[listener][talker] == true, threed
+      return not vrad or (DrpCanHear[listener] and DrpCanHear[listener][talker] == true), threed
   end
   print("----------")
   print("KRASSES RADIO SYSTEM GELADEN!")
@@ -208,6 +208,7 @@ end
 net.Receive("lucid_radio_frequency", function(len,ply)
   local freq = net.ReadString()
   if(tonumber(freq))then
+    freq = math.Clamp(freq,0,99)
     ply.lradioFrequency = tonumber(freq)
     DarkRP.notify(ply,0,5,"Frequency updated to "..freq)
   else

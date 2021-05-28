@@ -1,0 +1,19 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/defcon/taser/taser"
+	"$bumpmap"     "models/defcon/taser/taser_normal"
+	"$halflambert" "1"
+	"$phong" "1"
+	"$phongboost" "2"
+	"$phongexponent" "7"
+	"$phongfresnelranges" "[.5 2 5]"
+
+
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[.05 .05 .05]"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "10"
+	"$rimlightboost" "1"	
+}
