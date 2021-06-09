@@ -33,11 +33,13 @@ This folder currently includes:
  - Lucid Logs is a very simple logging system, open with !llogs and check for yourself
  - Lucid M9K Shipments contain every category and weapon (single & shipment) premade to be included in DarkRP
  - Lucid Methlab is a new "dark" job which lets you cook meth and sell it to an NPC
+ - Luctus Miner, a very simple and minimalistic mining system that definetely needs a graphic designer
  - Lucid MOTD is a version of mjmotd but with lighter code, simpler look and less resource usage
  - Lucid Namechange is a window that pops up when you first join the server that forces you to choose an RP name (only works with /name enabled)
  - Lucid Police Confiscation Box is a prop that enables police to sell illegal goods from raids against criminals
  - Lucid Propblacklist is a 1000+ props blacklist which automatically inserts into the database. Props are handpicked.
  - Lucid Radio is a simple walkie-talkie / two-way radio that enables police to talk to each other no matter the distance
+ - Luctus Research, an SCPRP research mod that enables your Researchers to write papers about the tests that they conduct with SCPs
  - Lucid Rules is a small popup window when you join the server which shows the rules or any webpage you want
  - Lucid Scoreboard is a fixed version of Elegant HUD, simple and just works
  - Lucid Warn is a minimalistic Warn System based on FreeWarn2 but with completely overhauled and exploit-safe backend
