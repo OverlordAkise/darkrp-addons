@@ -30,6 +30,7 @@ This folder currently includes:
  - Lucid Crash ia a small crashscreen if the server goes down
  - Lucid FPS is a simple FPS Boost window that pops up when you spawn, it only pops up once and then remembers your choice
  - Lucid HUD is a rendition of Elegant HUD but with a simpler design, better code and less resource usage
+ - Luctus Jobranks is a simple jobrank system that also includes D-Class numbers for SCPRP (if you need help please contact me!)
  - Lucid Logs is a very simple logging system, open with !llogs and check for yourself
  - Lucid M9K Shipments contain every category and weapon (single & shipment) premade to be included in DarkRP
  - Lucid Methlab is a new "dark" job which lets you cook meth and sell it to an NPC
