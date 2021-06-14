@@ -42,6 +42,7 @@ This folder currently includes:
  - Luctus Research, an SCPRP research mod that enables your Researchers to write papers about the tests that they conduct with SCPs
  - Lucid Rules is a small popup window when you join the server which shows the rules or any webpage you want
  - Lucid Scoreboard is a fixed version of Elegant HUD, simple and just works
+ - Luctus Technician (UNTESTED!) is a simple "go to X and hold E to repair" job which gives money for players that don't have any
  - Lucid Warn is a minimalistic Warn System based on FreeWarn2 but with completely overhauled and exploit-safe backend
  - Lucid Whitelist is similar to gmodadminsuite-whitelist an addon that enables you to only let specific users access to specific jobs
  - Luctus Char System is a character selection screen when joining which enables you to have multiple RP characters on the same server
