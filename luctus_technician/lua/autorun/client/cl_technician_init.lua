@@ -29,10 +29,10 @@ end)
 net.Receive("luctus_technician_togglehud", function()
   local shouldBeActive = net.ReadBool()
   if shouldBeActive then
-    print("Adding Technician HUD!")
+    --print("Adding Technician HUD!")
     hook.Add("HUDPaint", "luctus_technician_hud",luctusTechnicianHUD)
   else
-    print("Removing Technician HUD!")
+    --print("Removing Technician HUD!")
     hook.Remove("HUDPaint", "luctus_technician_hud")
   end
 end)
