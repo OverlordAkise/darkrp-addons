@@ -11,7 +11,7 @@ ENT.Author = ""
 ENT.Category = "Simple Miner"
 ENT.Purpose = "Simple Miner"
 ENT.Instructions = "N/A"
-ENT.Model = "models/props/cs_militia/militiarock05.mdl"
+ENT.Model = "models/props_wasteland/rockgranite02a.mdl"
 
 ENT.Freeze = true
 
@@ -38,8 +38,8 @@ if CLIENT then
     local p = self:GetPos()
     local dist = p:DistToSqr(LocalPlayer():GetPos())
 
-    if (dist > 75*75) then return end
-    p.z = p.z + 65
+    if (dist > 125*125) then return end
+    p.z = p.z + 45
     local ang = self:GetAngles()
     ang:RotateAroundAxis(self:GetAngles():Forward(), 90)
     ang:RotateAroundAxis(self:GetAngles():Up(), 90)

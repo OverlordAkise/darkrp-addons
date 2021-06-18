@@ -161,13 +161,18 @@ net.Receive("luctus_mine_craft",function(len,ply)
       return
     end
   end
+  --Create entity first and check if it exists
+  local ent = ents.Create( item["Entity"] )
+  if not ent then return end
+  if not IsValid(ent) then return end
+  
   --Now that everything is ok we remove the ore and give the item
   for k,v in pairs(item) do
     if k=="Entity" then continue end
     ply:SetNWInt("ore_"..k,ply:GetNWInt("ore_"..k,-1)-v)
   end
   --ply:Give(item["Entity"])
-  local ent = ents.Create( item["Entity"] )
+  
   --button:SetModel( "models/dav0r/buttons/button.mdl" )
   ent:SetPos( ply:GetPos() )
   ent:Spawn()
