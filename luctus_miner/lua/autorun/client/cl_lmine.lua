@@ -68,16 +68,6 @@ net.Receive("luctus_mine_craft",function()
     row:SetPaintBackground(false)
     row:DockMargin(0,10,0,0)
     
-    local button = vgui.Create("DButton",row)
-    button:Dock(LEFT)
-    button:SetText("Craft")
-    button:DockMargin(10,0,0,0)
-    button.DoClick = function()
-      net.Start("luctus_mine_craft")
-        net.WriteString(v["Entity"])
-      net.SendToServer()
-    end
-    
     local label = vgui.Create("DLabel",row)
     label:Dock(LEFT)
     --label:SetFont("Trebuchet24")
@@ -96,6 +86,17 @@ net.Receive("luctus_mine_craft",function()
     end
     rText = string.sub(rText,1,#rText-1)
     rLabel:SetText(rText)
+    
+    local button = vgui.Create("DButton",row)
+    button:Dock(RIGHT)
+    button:SetText("Craft")
+    button:DockMargin(10,0,20,0)
+    button.DoClick = function()
+      net.Start("luctus_mine_craft")
+        net.WriteString(v["Entity"])
+      net.SendToServer()
+    end
+    
   end
 end)
 
