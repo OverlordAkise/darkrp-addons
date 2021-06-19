@@ -67,6 +67,7 @@ local shieldCol = Color(30,144,255)
 local darkenedCol = Color(40, 40, 40)
 local wepCol = Color(14, 14, 14, 250)
 local secCol = Color(255,155,0)
+local curJob = 0
 
 
 if avatar then avatar:Remove() end
@@ -77,19 +78,23 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
   surface.DrawRect(startX, startY, baseWidth, baseHeight)
   --Job
   surface.SetFont("LucidHUDFont")
-  draw.SimpleText( ply:Nick(), "LucidHUDFont", 12, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-  draw.SimpleText( ply:getDarkRPVar("job"), "LucidHUDFont", 12, startY + 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+  draw.SimpleText( ply:Nick(), "LucidHUDFont", 15, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+  draw.SimpleText( ply:getDarkRPVar("job"), "LucidHUDFont", 15, startY + 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
   --Avatar
   if !IsValid(avatar) then
-    avatar = vgui.Create("AvatarImage")
+    avatar = vgui.Create("SpawnIcon")
     avatar:SetPos( startX + 10, startY + 49 )
-    avatar:SetSize( 75, 75)
-    avatar:SetPlayer(ply, 64)
+    avatar:SetSize(75, 75)
+    avatar:SetModel(ply:GetModel())
     avatar:ParentToHUD()
     avatar.Think = function(self)
       wep = LocalPlayer():GetActiveWeapon()
       if wep:IsValid() and wep:GetClass() == "gmod_camera" then
         self:Remove()
+      end
+      if curJob ~= ply:Team() then
+        self:Remove()
+        curJob = ply:Team()
       end
     end
     avatar.OnScreenSizeChanged = function(self)
