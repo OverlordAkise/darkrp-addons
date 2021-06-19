@@ -48,6 +48,7 @@ function lucidDrawRect( x, y, w, h, col )
 end
 
 local function LucidCreateBase()
+  if Lucid then Lucid:Close() end
   Lucid = vgui.Create( 'DFrame' )
   Lucid:SetSize( 1000, 700 )
   Lucid:SetTitle( '' )
@@ -67,7 +68,7 @@ local function LucidCreateBase()
     draw.DrawText("Deaths", "LucidScoreFontSmall", 810, 77, COLOR_WHITE)
     draw.DrawText("Ping", "LucidScoreFontSmall", 890, 77, COLOR_WHITE)
     draw.DrawText(Lucid_Score_ServerName, "LucidScoreFontBig", w / 2, 5, Color( 255, 255, 255 ), TEXT_ALIGN_CENTER)
-    draw.DrawText("There are currently " .. #player.GetAll() .. " player(s) online.", "LucidScoreFontSmall", w / 2, h - 19, Color(3,169,244,255), TEXT_ALIGN_CENTER)
+    draw.DrawText("There are currently " .. #player.GetAll() .. " player(s) online.", "LucidScoreFontSmall", w / 2, h - 21, Color(255,255,255,255), TEXT_ALIGN_CENTER)
   end
 
   local website = vgui.Create( 'DLabel', Lucid )
@@ -112,6 +113,7 @@ local function LucidCreateBase()
   for k, v in pairs( player.GetAll() ) do
     local item = vgui.Create('DLabel', Lucid.PlayerList)
     item:SetSize(Lucid.PlayerList:GetWide() - 70, 30)
+    item:SetCursor("hand")
     local teamCol = team.GetColor( v:Team() )
 
     local self = Lucid.PlayerList
