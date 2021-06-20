@@ -51,6 +51,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
     print("[lwhitelist] ERROR DURING SQL SET INSERT!")
   else
     print("[lwhitelist] Successfully inserted new whitelist for user "..steamid)
+    print("[lwhitelist] "..steamid.." Whitelist: "..jtext)
   end
   
   local ent = nil
@@ -77,7 +78,6 @@ end)
 
 net.Receive("lucid_whitelist_get", function(len,ply)
   if not ply:IsAdmin() then return end
-  print("lucid_whitelist_get")
   local steamid = net.ReadString()
   
   if not (steamid:find("^STEAM_%d:%d:%d+$") or steamid == "everyone") then
@@ -90,10 +90,8 @@ net.Receive("lucid_whitelist_get", function(len,ply)
   net.Start("lucid_whitelist_get")
   net.WriteString(steamid)
   if(sqlData and sqlData != false and sqlData[1])then
-    print("Sending: "..sqlData[1].jsonlist)
     jsontab = sqlData[1].jsonlist
   else
-    print("Sending: {}")
     jsontab = "{}"
   end
   

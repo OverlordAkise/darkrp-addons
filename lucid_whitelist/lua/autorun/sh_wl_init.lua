@@ -1,8 +1,10 @@
---shared
+--Lucid Whitelist
+--Made by OverlordAkise
+
 hook.Add("postLoadCustomDarkRPItems", "lucid_whitelist", function()
-  print("Adding detour to jobs customCheck")
+  print("[lwhitelist] Adding detour to jobs customCheck")
   for job_index,job in pairs(RPExtraTeams) do
-    print("Adding detour to "..job.name)
+    print("[lwhitelist] Adding detour to "..job.name)
     if (job.lucid_customCheck == nil) then
       job.lucid_customCheck = job.customCheck or false
     end
@@ -11,6 +13,7 @@ hook.Add("postLoadCustomDarkRPItems", "lucid_whitelist", function()
       return (_G["lwhitelist_wspawn"] and _G["lwhitelist_wspawn"]:GetNWBool(job.name,false) == true) or (ply:GetNWBool(job.name,false) == true)
     end
   end
+  print("[lwhitelist] Finished adding detours to jobs")
 end)
 
 print("[lwhitelist] Lucid Whitelist shared loaded!")
