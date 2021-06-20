@@ -38,6 +38,11 @@ function openLucidWhitelistWindow()
   PlayerList.OnRowSelected = function(lst, index, pnl)
     frame.TargetSteamID:SetText(pnl:GetColumnText(2))
   end
+  function PlayerList:DoDoubleClick( lineID, line )
+    net.Start("lucid_whitelist_get")
+      net.WriteString(line:GetColumnText(2))
+    net.SendToServer()
+  end
   
   frame.TargetSteamID = vgui.Create("DTextEntry", frame)
   frame.TargetSteamID:Dock(BOTTOM)
@@ -50,8 +55,8 @@ function openLucidWhitelistWindow()
   ChangeButton.DoClick = function()
     if frame.TargetSteamID:GetText() ~= "SteamID here" then
       net.Start("lucid_whitelist_get")
-    net.WriteString(frame.TargetSteamID:GetText())
-    net.SendToServer()
+        net.WriteString(frame.TargetSteamID:GetText())
+      net.SendToServer()
     end
   end	
 end
