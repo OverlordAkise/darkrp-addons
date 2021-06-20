@@ -1,6 +1,6 @@
 --Luctus F4 Menu
 --Made by OverlordAkise
-
+ 
 luctusF4 = luctusF4 or {}
 luctusF4.curSkin = 1
 luctusF4.curItem = nil
