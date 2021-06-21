@@ -1,0 +1,192 @@
+--Lucid Warn
+--Made by OverlordAkise
+
+function openWarnMenu()
+		local Frame = vgui.Create("DFrame")
+		Frame:SetPos(5, 5)
+		Frame:SetSize(ScrW()/1.5, ScrH()/1.5)
+		Frame:Center()
+		Frame:SetTitle("LucidWarn | v2.0 | by OverlordAkise")
+		Frame:SetVisible(true)
+		Frame:SetDraggable(true)
+		Frame:ShowCloseButton(true)
+		Frame:MakePopup()
+		
+    DetailPanel = vgui.Create("DLabel", Frame)
+    DetailPanel:Dock(TOP)
+    DetailPanel:SetText("")
+    
+    WarningList = vgui.Create("DListView", Frame)
+		WarningList:Dock(FILL)
+		WarningList:AddColumn("ID"):SetFixedWidth(25)
+    WarningList:AddColumn("Active"):SetFixedWidth(30)
+    WarningList:AddColumn("WarneeID"):SetFixedWidth(125)
+    WarningList:AddColumn("PlayerID"):SetFixedWidth(125)
+		WarningList:AddColumn("Reason")
+    function WarningList:OnRowRightClick(lineID, line)
+      local Menu = DermaMenu()
+      local activeB = Menu:AddOption("Set Warn Active")
+      activeB:SetIcon( "icon16/add.png" )
+      local inactiveB = Menu:AddOption("Set Warn Inactive")
+      inactiveB:SetIcon( "icon16/cancel.png" )
+      if LocalPlayer():IsAdmin() then
+        local deleteB = Menu:AddOption("Delete Warn")
+        deleteB:SetIcon( "icon16/delete.png" )
+      end
+      function Menu:OptionSelected(selPanel, panelText)
+        if panelText == "Delete Warn" then 
+          if not LocalPlayer():IsAdmin() then return end
+          net.Start("lw_deletewarn")
+            net.WriteString(line:GetColumnText(1))
+            net.WriteString(line:GetColumnText(4))
+          net.SendToServer()
+          Frame:Close()
+          return 
+        end
+        net.Start("lw_updatewarn")
+          net.WriteString(line:GetColumnText(1))
+          net.WriteString(line:GetColumnText(4))
+          if panelText == "Set Warn Inactive" then
+            net.WriteBool(true)
+          else
+            net.WriteBool(false)
+          end
+				net.SendToServer()
+        Frame:Close()
+      end
+      Menu:Open()
+    end
+
+
+		local RightFrame = vgui.Create("DPanel", Frame)
+		RightFrame:Dock(LEFT)
+		RightFrame:SetSize(200, 0)
+		RightFrame.Paint = function(self, w, h)
+			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 0))
+		end
+		
+		local PlayerList = vgui.Create("DListView", RightFrame)
+		PlayerList:Dock(FILL)
+		PlayerList:SetMultiSelect(false)
+		PlayerList:AddColumn("Name")
+		PlayerList:AddColumn("SteamID")
+    PlayerList:SetSize(200, 0)
+		for k,v in pairs(player.GetAll()) do
+			PlayerList:AddLine(v:Name(), v:SteamID())
+		end
+    function PlayerList:DoDoubleClick( lineID, line )
+      WarningList:Clear()
+      net.Start("lw_requestwarns")
+        net.WriteString(line:GetColumnText(2))
+      net.SendToServer()
+    end
+    function PlayerList:OnRowRightClick(lineID, line)
+      local Menu = DermaMenu()
+      local btnWithIcon = Menu:AddOption("Warn")
+      btnWithIcon:SetIcon( "icon16/add.png" )
+      function Menu:OptionSelected(selPanel, panelText)
+        if panelText == "Warn" then
+          local name = line:GetColumnText(1)
+          local steamid = line:GetColumnText(2)
+          Derma_StringRequest(
+            "LucidWarn | Reason",
+            "Please enter a reason to warn "..name.." ("..steamid..")",
+            "RDM",
+            function(text)
+              net.Start("lw_warnplayer")
+                net.WriteString(steamid)
+                net.WriteString(text)
+              net.SendToServer()
+              Frame:Close()
+            end,function()end)
+        end
+      end
+      Menu:Open()
+    end
+		
+    
+    --Offline Warning Code below
+    
+    TargetSteamID = vgui.Create("DTextEntry", RightFrame)
+		TargetSteamID:Dock(BOTTOM)
+		TargetSteamID:SetText("Offline SteamID here")
+    
+    local GetWarnsButton = vgui.Create("DButton", RightFrame)
+		GetWarnsButton:Dock(BOTTOM)
+		GetWarnsButton:SetText("Get Offline Warns")
+		GetWarnsButton.DoClick = function()
+			if TargetSteamID:GetText() ~= "Offline SteamID here" then
+				net.Start("lw_requestwarns")
+          net.WriteString(TargetSteamID:GetText())
+        net.SendToServer()
+			end
+		end
+    
+		local WarnButton = vgui.Create("DButton", RightFrame)
+		WarnButton:Dock(BOTTOM)
+		WarnButton:SetText("Give Offline Warning")
+		WarnButton.DoClick = function()
+			if TargetSteamID:GetValue() != "" then
+        Derma_StringRequest(
+          "LucidWarn | Reason", 
+          "Please enter a reason to warn "..TargetSteamID:GetValue(),
+          "RDM",
+          function(text)
+            net.Start("lw_warnplayer")
+              net.WriteString(TargetSteamID:GetText())
+              net.WriteString(text)
+            net.SendToServer()
+            Frame:Close()
+          end,
+          function(text) end
+        )
+			end
+		end
+end
+
+net.Receive("lw_requestwarns",function()
+  WarningList:Clear()
+  DetailPanel:SetText("Unknown User")
+  local lenge = net.ReadInt(17)
+  if(lenge==0)then 
+    Derma_Message("This user doesn't have any warns!", "LucidWarn | Notification", "Close")
+    return 
+  end
+  local data = net.ReadData(lenge)
+  local jtext = util.Decompress(data)
+  local tab = util.JSONToTable(jtext)
+  PrintTable(tab)
+  local activeWarns = 0
+  local allWarns = 0
+  for k,v in pairs(tab) do
+    WarningList:AddLine(v["rowid"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
+    if(v["active"] == 1)then
+      activeWarns = activeWarns + 1
+    end
+    allWarns = allWarns + 1
+  end
+  if(allWarns > 0)then
+    DetailPanel:SetText("User: "..tab[1]["targetid"].." | Active Warns: "..activeWarns.." | All Warns: "..allWarns)
+  end
+end)
+
+-- Chat and Console Command for opening
+concommand.Add("warnmenu", function(ply, cmd, args)
+	if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+    print("[lwarn] You aren't allowed to access LucidWarn.")
+    return
+  end
+  openWarnMenu()
+end)
+
+hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
+	if (ply == LocalPlayer() and string.lower(text) == lwconfig.chatCommand) then
+		if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+      chat.AddText("[lwarn] You aren't allowed to access LucidWarn.")
+      return
+    end
+    openWarnMenu()
+	end
+end)
+
+print("[lucid_warn] Loaded CL file!")
