@@ -1,6 +1,11 @@
+--Lucid Logs
+--Made by OverlordAkise
+
 --CONFIG START
 
+--Chat command to open logs
 lucidLogChatCommand = "!logs"
+--Ranks that are allowed to browse logs
 lucidLogAllowedRanks = {
   ["superadmin"] = true,
   ["owner"] = true,
@@ -8,6 +13,8 @@ lucidLogAllowedRanks = {
   ["operator"] = true,
   ["moderator"] = true,
 }
+--How many days to keep logs for
+lucidLogRetainLogs = 3
 
 --CONFIG END
 
@@ -19,6 +26,7 @@ util.AddNetworkString("lucid_log")
 
 hook.Add("PostGamemodeLoaded","lucid_log",function()
   sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, msg TEXT )")
+  print("[lucidlog] Database initialized!")
 end)
 
 
@@ -530,3 +538,26 @@ net.Receive("lucid_log",function(len,ply)
   net.WriteData(a,#a)
   net.Send(ply)
 end)
+
+hook.Add("PlayerInitialSpawn","lucid_log_delete_old",function(ply)
+  local deleteTable = sql.Query("SELECT rowid FROM lucid_log WHERE datetime(date) < datetime('now','-"..lucidLogRetainLogs.." days');")
+  if deleteTable == false then
+    print("[lucidlog] ERROR DURING OLD LOG DELETION!")
+    print(sql.LastError())
+    return
+  end
+  if not deleteTable then return end
+  if #deleteTable > 0 then
+    print("[lucidlog] Deleting "..(#deleteTable).." logs that are over "..lucidLogRetainLogs.." days old!")
+    sql.Begin()
+    for k,v in pairs(deleteTable) do
+      if not tonumber(v.rowid) then continue end
+      sql.Query("DELETE FROM lucid_log WHERE rowid = "..v.rowid)
+    end
+    sql.Commit()
+    print("[lucidlog] Deleted old logs!")
+  end
+  hook.Remove("PlayerInitialSpawn","lucid_log_delete_old")
+end)
+
+print("[lucidlog] Loaded SV file!")

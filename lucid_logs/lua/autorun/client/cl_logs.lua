@@ -1,3 +1,6 @@
+--Lucid Logs
+--Made by OverlordAkise
+
 --CONFIG START
 
 local quickfilters = {
