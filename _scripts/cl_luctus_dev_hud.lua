@@ -23,8 +23,6 @@ concommand.Add("close",function(ply,cmd,args,argStr)
   showCloseClasses = not showCloseClasses
 end)
 
---concommand.Add("
-
 hook.Add("HUDPaint", "luctus_devtools", function()
   local lp = LocalPlayer()
   local scrh = ScrH()
@@ -44,15 +42,16 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   draw.DrawText("Wep WorldModel: "..(lp:GetActiveWeapon().WorldModel or "NIL"),"Default",10,scrh/2-40)
   draw.DrawText("Wep ViewModel: "..(lp:GetActiveWeapon().ViewModel or "NIL"),"Default",10,scrh/2-30)
   draw.DrawText("Distance: "..lp:GetPos():Distance(lp:GetEyeTrace().HitPos),"Default",10,scrh/2-20)
-  if lp:GetEyeTrace().Entity and IsValid(lp:GetEyeTrace().Entity) then
+  --if lp:GetEyeTrace().Entity and IsValid(lp:GetEyeTrace().Entity) then
+    local eye = lp:GetEyeTrace()
     local ent = lp:GetEyeTrace().Entity
-    PrintTable(ent:GetTable())
     draw.DrawText("Entity","Default",10,scrh/2-10,Color(0,0,255))
     draw.DrawText("Class: "..ent:GetClass(),"Default",10,scrh/2)
     draw.DrawText("Model: "..ent:GetModel(),"Default",10,scrh/2+10)
     draw.DrawText("Pos: "..math.Round(ent:GetPos().x,2).." "..math.Round(ent:GetPos().y,2).." "..math.Round(ent:GetPos().z,2),"Default",10,scrh/2+20)
     draw.DrawText("Vel.: "..math.Round(ent:GetVelocity():Length(),2),"Default",10,scrh/2+30)
     draw.DrawText("EntIndex: "..ent:EntIndex(),"Default",10,scrh/2+40)
+    draw.DrawText("HitTexture: "..eye.HitTexture,"Default",10,scrh/2+50)
     --draw.DrawText("MapCreationID: "..(ent.MapCreationID and ent:MapCreationID() or "NIL"),"Default",10,scrh/2+50)
     if ent:IsPlayer() then
       draw.DrawText("Name: "..ent:Nick(),"Default",10,scrh/2+60)
@@ -61,7 +60,7 @@ hook.Add("HUDPaint", "luctus_devtools", function()
       draw.DrawText("Health: "..ent:Health(),"Default",10,scrh/2+90)
       draw.DrawText("Weapon: "..(IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetClass() or "NIL"),"Default",10,scrh/2+100)
     end
-  end
+  --end
   for k,v in pairs(netMessages) do
     draw.DrawText(v[3],"Default",ScrW()-10,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
     draw.DrawText(v[2],"Default",ScrW()-170,scrh/2-200+(k*10))
@@ -134,14 +133,3 @@ function net.Start(name)
   old_netStart(name)
 end
 
---[[
-local tcounter = 0
-local lastTicks = 0
-timer.Create("ld_tickcount",1,0,function()
-  lastTicks = tcounter
-  tcounter = 0
-end)
-hook.Add("Tick","ld_tickcount",function()
-  tcounter = tcounter + 1
-end)
---]]
