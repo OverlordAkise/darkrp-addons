@@ -35,7 +35,7 @@ vgui.Create = function(...)
   local cPanel = oldvguiCreate(...)
   if not IsValid(cPanel) then return end
   timer.Simple(0,function()
-    if not IsValid(cPanel) then return end
+    if not cPanel or not IsValid(cPanel) or not cPanel.GetTitle or not IsValid(cPanel.lblTitle) then return end
     local o=isfunction(cPanel.GetTitle) and cPanel:GetTitle() or ""
     checkThat(o,"vguiCreate")
     if cPanel.ExploitCount then 
