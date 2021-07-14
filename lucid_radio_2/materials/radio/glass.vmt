@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "radio/trans"
+	"$envmap" "env_cubemap"
+	"$surfaceprop" "Glass"
+	"$envmapcontrast" 1
+	"$translucent" 1
+}

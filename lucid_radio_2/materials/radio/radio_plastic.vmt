@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "Radio/plastic_Base_Color"
+	$bumpmap "Radio/plastic_Normal"
+	$AmbientOcclusion "Radio/plastic_Ambient_Occlusion"
+	$parallaxmap "Radio/plastic_Height"
+
+
+	"$phong" 1
+	"$phongboost" "1.0"
+	"$phongexponent" "5"
+	"$phongfresnelranges" "[0.0 0.5 1.0]"
+
+	 $AmbientOcclusion "1"
+	 $reflectivity "[ 1  1  1]"
+	 $parallaxmapscale "0.05"
+}

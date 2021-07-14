@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "Radio/digital"
+	$selfillumtexture "Radio/digital"
+	$selfillummask "Radio/digital"
+	"$envmap" "env_cubemap"
+ 	"$envmapmask" "Radio/plastic2_Base_Color"
+ 	"$envmaptint" "[0.35 0.35 0.35]"
+
+
+	 $selfillum "1"
+}

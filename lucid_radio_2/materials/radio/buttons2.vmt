@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "Radio/buttons2"
+	"$envmap" "env_cubemap"
+ 	"$envmapmask" "Radio/plastic2_Base_Color"
+ 	"$envmaptint" "[0.15 0.15 0.15]"
+
+
+	 $translucent "1"
+}

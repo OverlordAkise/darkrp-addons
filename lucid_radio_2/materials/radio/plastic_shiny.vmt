@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "Radio/plastic2_Base_Color"
+
+	"$envmap" "env_cubemap"
+ 	"$envmapmask" "Radio/plastic2_Base_Color"
+ 	"$envmaptint" "[0.15 0.15 0.15]"
+
+}
