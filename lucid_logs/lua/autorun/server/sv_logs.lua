@@ -121,13 +121,17 @@ hook.Add("playerDroppedCheque","lucid_log_playerDroppedCheque",function(plySende
     log_push(plySender:Nick().."("..plySender:SteamID()..") created a "..amount.."$ cheque for "..plyReceiver:Nick().."("..plyReceiver:SteamID()..")")
 end)
 hook.Add("playerPickedUpCheque","lucid_log_playerPickedUpCheque",function(plyPickup, plyReceiver, amount, successBool, ent)
-    if not IsValid(plyPickup) or not IsValid(plyReceiver) then return end
+    if not IsValid(plyPickup) then return end
+    local mText = plyPickup:Nick().."("..plyPickup:SteamID()..") picked up a "..amount.."$ cheque"
+    if IsValid(plyReceiver) then
+      mText = mText + " written for "..plyReceiver:Nick().."("..plyReceiver:SteamID()..")"
+    end
     if successBool then
-        log_push(plyPickup:Nick().."("..ply:SteamID()..") picked up a "..amount.."$ cheque.")
+        log_push(mText)
     end
 end)
 hook.Add("playerToreUpCheque","lucid_log_playerToreUpCheque",function(plyTore, plyReceiver, amount, ent)
-    if not IsValid(plyTore) or not IsValid(plyReceiver) then return end
+    if not IsValid(plyTore) then return end
     log_push(plyTore:Nick().."("..plyTore:SteamID()..") tore up a "..amount.."$ cheque.")
 end)
 hook.Add("playerBoughtDoor","lucid_log_playerBoughtDoor",function(ply, ent, cost)
