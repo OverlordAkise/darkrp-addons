@@ -413,10 +413,12 @@ hook.Add("PlayerSay","lucid_log_PlayerSpawn",function(ply, text, team)
 end)
 hook.Add("PlayerDeath", "lucid_log_PlayerDeath", function(victim, inflictor, attacker)
     if not IsValid(victim) or not IsValid(inflictor) or not IsValid(attacker) then return end
+    local aname = attacker:IsPlayer() and attacker:Name() or attacker:GetClass()
+    local asteamID = attacker:IsPlayer() and attacker:SteamID() or "NULL"
     if ( victim == attacker ) then
         log_push(victim:Nick().."("..victim:SteamID()..") was killed by him-/herself")
     else
-        log_push(victim:Nick().."("..victim:SteamID()..") was killed by " .. attacker:Name().."("..attacker:SteamID()..")")
+        log_push(victim:Nick().."("..victim:SteamID()..") was killed by "..aname.."("..asteamID..") with "..inflictor:GetClass())
     end
 end)
 hook.Add("PlayerSilentDeath", "lucid_log_PlayerDeath", function(ply)
