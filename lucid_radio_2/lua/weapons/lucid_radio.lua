@@ -1,5 +1,6 @@
---Lucid's Radio
+--Lucid's Radio 2
 --Made by OverlordAkise
+--Difference to v1: A custom radio model
 
 SWEP.Weight = 5
 SWEP.AutoSwitchTo = false
