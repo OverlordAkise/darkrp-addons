@@ -2,7 +2,7 @@
 --Made by OverlordAkise
 
 --search for entities with the 'search' console command
---example: search 'class C_BaseEntity' func_door
+--example: search "class C_BaseEntity" func_door
 --toggle close class display with 'close'
 
 local netsPerSecond = 0
@@ -11,11 +11,17 @@ local netMessages = {}
 
 local marked = {}
 local showCloseClasses = true
+local markAll = false
 
 concommand.Add("search",function(ply,cmd,args,argStr)
   marked = {}
   for k,v in pairs(args) do
     marked[v] = true
+  end
+  if args[1] and args[1] == "*" then
+    markAll = true
+  else
+    markAll = false
   end
 end)
 
@@ -75,12 +81,33 @@ hook.Add("HUDPaint", "luctus_devtools", function()
     end
   end
   for k,v in pairs(allEnts) do
-    if marked[v:GetClass()] then
+    if marked[v:GetClass()] or markAll then
       local point = v:GetPos() + v:OBBCenter()
       local data2D = point:ToScreen()
       if ( not data2D.visible ) then continue end
       draw.DrawText(v:GetClass(),"Default", data2D.x, data2D.y)
     end
+  end
+end)
+
+
+
+local zeroAngle = Angle(0, 0, 0)
+hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
+	local ants = {LocalPlayer():GetEyeTrace().Entity}
+  if not ants[1] then return end
+  if markAll then ants = ents.GetAll() end
+  
+  for k,ent in pairs(ants) do
+    if ent:GetHitBoxGroupCount() == nil then continue end
+    for group=0, ent:GetHitBoxGroupCount() - 1 do
+      for hitbox=0, ent:GetHitBoxCount( group ) - 1 do
+        local pos, ang =  ent:GetBonePosition( ent:GetHitBoxBone(hitbox, group) )
+        local mins, maxs = ent:GetHitBoxBounds(hitbox, group)
+        render.DrawWireframeBox( pos, ang, mins, maxs, Color(51, 204, 255, 255), true )
+      end
+    end
+    render.DrawWireframeBox( ent:GetPos(), zeroAngle, ent:OBBMins(), ent:OBBMaxs(), Color(255, 204, 51, 255), true )
   end
 end)
 
@@ -96,15 +123,6 @@ function net.Incoming( len, client )
 	len = len - 16
 	func( len, client )
 end
-
---[[
-for k,v in pairs(usermessage.GetTable()) do
-  usermessage.Hook(k, function(msg)
-    ldevAddMessage("umsg",k)
-  end)
-end
-print("not ran!")
---]]
 
 --usermessage_IncomingMessage = usermessage.IncomingMessage
 function usermessage.IncomingMessage(name,msg)
@@ -132,4 +150,3 @@ function net.Start(name)
   ldevAddMessage("netOUT",name)
   old_netStart(name)
 end
-
