@@ -1,6 +1,5 @@
-
 --Lucid Scoreboard
---by OverlordAkise
+--Made by OverlordAkise
 
 local Lucid_Score_ServerName = "Lucid RP"
 local Lucid_Score_WebsiteLink = "https://mistforums.com/"
