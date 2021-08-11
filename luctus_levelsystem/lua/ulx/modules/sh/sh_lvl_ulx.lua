@@ -19,7 +19,7 @@ setlevel:help( "Sets level of player." )
 
 -- !givexp
 function ulx.givexp( calling_ply, target_ply, amount )
-  Luctus_givexp(ply,amount)
+  Luctus_givexp(target_ply,amount)
 	if target_ply.DarkRPUnInitialized then return end
 	ulx.fancyLogAdmin( calling_ply, "#A gave  #T #s XP", target_ply, amount )
 end
