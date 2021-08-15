@@ -1,16 +1,15 @@
---Advert-Command
+--Local-OOC-Command
 --Made by OverlordAkise, ported from FPTje's OOC
 
-hook.Add("PostGamemodeLoaded","luctus_advert",function()
+hook.Add("PostGamemodeLoaded","chef_looc",function()
   if not DarkRP then return end
-  DarkRP.removeChatCommand("/advert")
   DarkRP.declareChatCommand{
-    command = "advert",
-    description = "Global in-character chat.",
+    command = "looc",
+    description = "local out-of-character chat.",
     delay = 1.5
   }
   if SERVER then
-    local function advert(ply, args)
+    local function looc(ply, args)
       local DoSay = function(text)
           if text == "" then
               DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("invalid_x", DarkRP.getPhrase("arguments"), ""))
@@ -25,14 +24,14 @@ hook.Add("PostGamemodeLoaded","luctus_advert",function()
 
           local name = ply:Nick()
           for _, v in ipairs(player.GetAll()) do
-              DarkRP.talkToPerson(v, col, "[advert] " .. name, col2, text, ply)
+              DarkRP.talkToPerson(v, col, "[looc] " .. name, col2, text, ply)
           end
       end
       return args, DoSay
     end
-    DarkRP.defineChatCommand("advert", advert, true, 1.5)
+    DarkRP.defineChatCommand("looc", looc, true, 1.5)
   else
     --CLIENT
-    DarkRP.addChatReceiver("/advert", "speak in Advert", function(ply) return true end)
+    DarkRP.addChatReceiver("/looc", "speak in local ooc", function(ply) return true end)
   end
 end)
