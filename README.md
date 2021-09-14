@@ -1,7 +1,7 @@
 # DarkRP-Addons
 Free DarkRP Addons I made (first made for Eternity RP, RIP)  
 
-For a screenshot of the addons visit [https://luctus.at](https://luctus.at)
+For a screenshot of the addons visit [https://shira.at/gmod/luctus.html](https://shira.at/gmod/luctus.html)
 
 ### Warning
 These addons are tested by me on my own server. They are not thoroughly tested with 40+ players and 100 addons.  
