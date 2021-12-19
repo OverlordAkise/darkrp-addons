@@ -50,7 +50,7 @@ local function OpenMulticoreWindow()
 		draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
 		
 		if (s.Hovered) then
-			draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77)) -- Copyright 76561198110511213
+			draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
 		end
 	end
 	btn_yes:SetTextColor( Color(255, 255, 255) )
