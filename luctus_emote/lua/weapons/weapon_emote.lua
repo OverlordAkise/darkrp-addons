@@ -2,35 +2,35 @@
 --Made by OverlordAkise
 --Base animations vectors and applyAnimation function made by EGM and ​Mattzimann
 
-SWEP.Author					= "OverlordAkise"
-SWEP.Purpose				= "Do emotes!"
-SWEP.Instructions 			= "Leftclick to play, rightclick to select"
-SWEP.Category 				= "Emotes"
+SWEP.Author          = "OverlordAkise"
+SWEP.Purpose        = "Do emotes!"
+SWEP.Instructions       = "Leftclick to play, rightclick to select"
+SWEP.Category         = "Emotes"
 
-SWEP.PrintName				= "Emote"
-SWEP.Slot					= 0
-SWEP.SlotPos				= 5
-SWEP.DrawAmmo				= false
+SWEP.PrintName        = "Emote"
+SWEP.Slot          = 0
+SWEP.SlotPos        = 5
+SWEP.DrawAmmo        = false
 
-SWEP.Spawnable				= true
+SWEP.Spawnable        = true
 
-SWEP.ViewModel 				= "models/weapons/v_357.mdl"
-SWEP.WorldModel 			= "models/weapons/w_357.mdl"
+SWEP.ViewModel         = "models/weapons/v_357.mdl"
+SWEP.WorldModel       = "models/weapons/w_357.mdl"
 
-SWEP.Primary.ClipSize		= -1
-SWEP.Primary.DefaultClip	= -1
-SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			= "none"
+SWEP.Primary.ClipSize    = -1
+SWEP.Primary.DefaultClip  = -1
+SWEP.Primary.Automatic    = false
+SWEP.Primary.Ammo      = "none"
 
-SWEP.Secondary.ClipSize		= -1
-SWEP.Secondary.DefaultClip	= -1
-SWEP.Secondary.Automatic	= false
-SWEP.Secondary.Ammo			= "none"
+SWEP.Secondary.ClipSize    = -1
+SWEP.Secondary.DefaultClip  = -1
+SWEP.Secondary.Automatic  = false
+SWEP.Secondary.Ammo      = "none"
 
-SWEP.Weight					= 1
-SWEP.AutoSwitchTo			= false
-SWEP.AutoSwitchFrom			= false
-SWEP.deactivateOnMove		= 0
+SWEP.Weight          = 1
+SWEP.AutoSwitchTo      = false
+SWEP.AutoSwitchFrom      = false
+SWEP.deactivateOnMove    = 0
 
 SWEP.window = nil
 
@@ -42,14 +42,14 @@ function SWEP:PreDrawViewModel()
 end
 
 function SWEP:Initialize()
-	self:SetHoldType("normal")
+  self:SetHoldType("normal")
 end
 
 if CLIENT then
-	function SWEP:PrimaryAttack()
+  function SWEP:PrimaryAttack()
   end
   
-	function SWEP:SecondaryAttack()
+  function SWEP:SecondaryAttack()
     if IsValid(self.window) then return end
     self.window = vgui.Create("DFrame")
     self.window:SetTitle("Emote Menu")
@@ -107,7 +107,7 @@ if CLIENT then
         end
       end
     end
-	end
+  end
   
   function SWEP:DrawHUD()
     local col = Color(100,100,100,240)
@@ -117,36 +117,47 @@ if CLIENT then
     draw.SimpleTextOutlined(LocalPlayer():GetNWString("la_animation"), "DermaLarge", ScrW()/2, ScrH()*0.6, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 3, Color(0,0,0,255))
   end
   
+  function SWEP:OnRemove()
+    if IsValid(self.window) then self.window:Close() end
+  end
+  function SWEP:Holster()
+    if IsValid(self.window) then self.window:Close() end
+    return true
+  end
+  function SWEP:OnDrop()
+    if IsValid(self.window) then self.window:Close() end
+  end
+  
 end
 
 if SERVER then
-	function SWEP:PrimaryAttack()
-		ply = self.Owner
+  function SWEP:PrimaryAttack()
+    ply = self.Owner
 
-		if not ply:GetNWBool("la_in_animation") then
-			if not ply:Crouching() and ply:GetVelocity():Length() < 5 and not ply:InVehicle() then
-				ToggleEmoteStatus(ply, true)
-			end
-		else
-			ToggleEmoteStatus(ply, false)
-		end
-	end
-
-	function SWEP:SecondaryAttack()
+    if not ply:GetNWBool("la_in_animation") then
+      if not ply:Crouching() and ply:GetVelocity():Length() < 5 and not ply:InVehicle() then
+        ToggleEmoteStatus(ply, true)
+      end
+    else
+      ToggleEmoteStatus(ply, false)
+    end
   end
 
-	function SWEP:OnRemove()
-		local ply = self.Owner
-		ToggleEmoteStatus(ply, false)
-	end
+  function SWEP:SecondaryAttack()
+  end
 
-	function SWEP:OnDrop()
-		local ply = self.Owner
-		ToggleEmoteStatus(ply, false)
-	end
+  function SWEP:OnRemove()
+    local ply = self.Owner
+    ToggleEmoteStatus(ply, false)
+  end
 
-	function SWEP:Holster()
-		ToggleEmoteStatus(self.Owner, false)
-		return true
-	end
+  function SWEP:OnDrop()
+    local ply = self.Owner
+    ToggleEmoteStatus(ply, false)
+  end
+
+  function SWEP:Holster()
+    ToggleEmoteStatus(self.Owner, false)
+    return true
+  end
 end
