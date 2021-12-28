@@ -185,7 +185,7 @@ function luctusNPCMenu()
 
   local pickaxeButton = vgui.Create("DButton",MineNPCPanel)
   pickaxeButton:Dock(BOTTOM)
-  pickaxeButton:SetText("Gib mir eine Spitzhacke!")
+  pickaxeButton:SetText("Give me a pickaxe!")
   pickaxeButton.DoClick = function()
     net.Start("luctus_get_pickaxe")
     net.SendToServer()

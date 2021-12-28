@@ -129,12 +129,13 @@ net.Receive("luctus_mine_npc",function(len,ply)
   ply:addMoney(npc:GetNWInt("sOre_"..ore,100)*num)
   ply:SetNWInt("ore_"..ore,ply:GetNWInt("ore_"..ore,0)-num)
   ply:SendLua("surface.PlaySound('ambient/levels/labs/coinslot1.wav')")
-  DarkRP.notify(ply,3,5,"Erze im Wert von "..(npc:GetNWInt("sOre_"..ore,100)*num).."$ verkauft!")
+  DarkRP.notify(ply,3,5,"You sold your ore for "..(npc:GetNWInt("sOre_"..ore,100)*num).."$!")
   
   --PrintMessage(HUD_PRINTTALK, ore.." / "..num)
 end)
 
 net.Receive("luctus_get_pickaxe", function(len,ply)
+  if not ply:getJobTable().name == luctus.mine.jobName then return end
   ply:Give("weapon_crowbar")
 end)
 
@@ -142,7 +143,7 @@ net.Receive("luctus_mine_craft",function(len,ply)
   local sitem = net.ReadString()
   if not sitem or sitem == "" then return end
   if (#ply:getPocketItems() >= GAMEMODE.Config.pocketitems) then
-    DarkRP.notify(ply,1,5,"Error: Bitte mache einen Platz in deiner Pocket frei!")
+    DarkRP.notify(ply,1,5,"Error: Please make room in your pocket!")
     return 
   end
   local item = {}
@@ -157,7 +158,7 @@ net.Receive("luctus_mine_craft",function(len,ply)
     if k=="Entity" then continue end
     --Why in the fuck is GetNWInt a string?
     if tonumber(ply:GetNWInt("ore_"..k,-1)) < tonumber(v) then
-      DarkRP.notify(ply,1,5,"Error: Du hast nicht genügend Ressourcen dafür!")
+      DarkRP.notify(ply,1,5,"Error: You don't have enough resources for that!")
       return
     end
   end

@@ -3,6 +3,9 @@
 
 luctus = luctus or {}
 luctus.mine = {}
+-- Which job can get a pickaxe from the NPC
+-- The fancy name here:
+luctus.mine.jobName = "Miner"
 luctus.mine.orePercent = 33
 luctus.mine.minSpawnTime = 30
 luctus.mine.maxSpawnTime = 120
@@ -16,8 +19,6 @@ luctus.mine.ores = {
   {Name = "Diamond", PriceMin = 400, PriceMax = 500, Color=Color(0,191,255,255), DropPercent = 3},
   {Name = "Ruby", PriceMin = 800, PriceMax = 1200, Color=Color(255,5,5,255), DropPercent = 2},
 }
-
---[luctus_miner] addons/luctus_miner/lua/autorun/server/sv_lmine_init.lua:126: attempt to compare string with number
 
 luctus.mine.craftables = {
   {Entity = "m9k_knife", Coal=50, Bronze=50,Silver=5},
