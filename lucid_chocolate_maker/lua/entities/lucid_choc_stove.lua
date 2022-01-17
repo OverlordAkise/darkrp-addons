@@ -1,3 +1,7 @@
+--Made by D34THC47
+--https://steamcommunity.com/sharedfiles/filedetails/?id=2195413561
+--Stupidly rewritten by OverlordAkise (has alzheimers)
+
 AddCSLuaFile()
 ENT.Type = 'anim'
 ENT.Base = "base_gmodentity"
