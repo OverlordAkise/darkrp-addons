@@ -1,4 +1,5 @@
---Made by D34THC47
+--Made by ThatCatGuy
+--https://github.com/ThatCatGuy
 --https://steamcommunity.com/sharedfiles/filedetails/?id=2195413561
 --Stupidly rewritten by OverlordAkise (has alzheimers)
 
