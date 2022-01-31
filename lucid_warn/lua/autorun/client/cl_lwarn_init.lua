@@ -308,7 +308,8 @@ end)
 -- Chat and Console Command for opening
 concommand.Add("warnmenu", function(ply, cmd, args)
 	if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
-    print("[lwarn] You aren't allowed to access LucidWarn.")
+    net.Start("lw_requestwarns_user")
+    net.SendToServer()
     return
   end
   openWarnMenu()
@@ -316,12 +317,12 @@ end)
 
 hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
 	if (ply == LocalPlayer() and string.lower(text) == lwconfig.chatCommand) then
-		--if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+		if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
       net.Start("lw_requestwarns_user")
       net.SendToServer()
       return
-    --end
-    --openWarnMenu()
+    end
+    openWarnMenu()
 	end
 end)
 
