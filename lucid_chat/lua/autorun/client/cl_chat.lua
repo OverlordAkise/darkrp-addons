@@ -26,6 +26,7 @@ surface.CreateFont( "eChat_18", {
 	extended = false,
 })
 
+--These don't work because DarkRP doesn't send PLAYER objects, only nicknames
 function chefGetChatColor(group)
 	return Color(255,255,255,255)
 end
@@ -48,7 +49,6 @@ function eChat.buildBox()
   eChat.frame.Paint = function( self, w, h )
 		eChat.blur( self, 10, 20, 255 )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 200 ) )
-		
 		draw.RoundedBox( 0, 0, 0, w, 25, Color( 80, 80, 80, 100 ) )
 	end
 	eChat.oldPaint = eChat.frame.Paint
