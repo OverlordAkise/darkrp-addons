@@ -119,14 +119,14 @@ function eChat.buildBox()
 			if eChat.curHistory <= 0 then eChat.curHistory = #eChat.history end
 			local h = eChat.history[eChat.curHistory]
 			self:SetText(h)
-      self:SetCaretPos(#h+1)
+      self:SetCaretPos(#h)
 		elseif code == KEY_DOWN then
       if #eChat.history == 0 then return end
 			eChat.curHistory = eChat.curHistory +1
 			if eChat.curHistory > #eChat.history then eChat.curHistory = 1 end
 			local h = eChat.history[eChat.curHistory]
 			self:SetText(h)
-      self:SetCaretPos(#h+1)
+      self:SetCaretPos(#h)
 		elseif code == KEY_ENTER then
 			-- Replicate the client pressing enter
 			if string.Trim( self:GetText() ) != "" then
