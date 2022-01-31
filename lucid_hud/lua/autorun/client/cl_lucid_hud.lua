@@ -57,7 +57,8 @@ local maxBarSize = 220
 local iconOffset = 25
 
 --more optimization
-local mainBoxCol = Color(14, 14, 14, 250)
+local featureCol = Color(0, 195, 165)
+local mainBoxCol = Color(32, 34, 37, 220)
 local backgroundCol = Color(26,26,26)
 local hpCol = Color(220, 20, 60, 190)
 local armorCol = Color(30, 144, 255)
@@ -71,11 +72,13 @@ local curJob = 0
 
 
 if avatar then avatar:Remove() end
-hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
+hook.Add( 'HUDPaint', 'luctus_hud', function()
   local ply = LocalPlayer()
   --MainBox
-  surface.SetDrawColor(mainBoxCol)
+  surface.SetDrawColor(featureCol)
   surface.DrawRect(startX, startY, baseWidth, baseHeight)
+  surface.SetDrawColor(backgroundCol)
+  surface.DrawRect(startX+2, startY+2, baseWidth - 4, baseHeight - 4)
   --Job
   surface.SetFont("LucidHUDFont")
   draw.SimpleText( ply:Nick(), "LucidHUDFont", 15, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
@@ -121,7 +124,7 @@ hook.Add( 'HUDPaint', 'HUD_DRAW_HUD', function()
   --Green Money
   surface.SetDrawColor(moneyCol)
   surface.DrawRect(barX + iconOffset, barY + 55, maxBarSize - iconOffset, barHeight)
-  draw.SimpleText(DarkRP.formatMoney(ply:getDarkRPVar( "money" )), "LucidHUDFont", 215, barY+59, color_white, TEXT_ALIGN_CENTER)
+  draw.SimpleText(DarkRP.formatMoney(ply:getDarkRPVar( "money" )) .. "(+"..ply:getDarkRPVar("salary")..")", "LucidHUDFont", 215, barY+59, color_white, TEXT_ALIGN_CENTER)
   --Icons
   CreateImageIcon(health_icon, 104, startY + 54, healthCol)
   CreateImageIcon(shield_icon, 103,startY + 81, shieldCol)

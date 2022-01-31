@@ -114,15 +114,15 @@ function luctusPrettifyScrollbar(el)
   function el:Paint() return end
 	function el.btnGrip:Paint(w, h)
     draw.RoundedBox(0,0,0,w,h,color_white)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,240))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
 	end
 	function el.btnUp:Paint(w, h)
 		draw.RoundedBox(0,0,0,w,h,color_white)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,240))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
 	end
 	function el.btnDown:Paint(w, h)
 		draw.RoundedBox(0,0,0,w,h,color_white)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,240))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
 	end
 end
 
@@ -136,7 +136,8 @@ function lucidlog_createLogWindow()
   lucidlog.log_win:MakePopup()
   lucidlog.log_win:ShowCloseButton(false)
   function lucidlog.log_win:Paint(w,h)
-		draw.RoundedBox(0,0,0,w,h,Color(0,0,0,254)) 
+		draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
 	end
   function lucidlog.log_win:OnKeyCodePressed( key ) 
     if ( key == KEY_LALT ) then
@@ -155,13 +156,15 @@ function lucidlog_createLogWindow()
   CloseButton:SetText("X")
   CloseButton:SetPos(900-22,2)
   CloseButton:SetSize(20,20)
-  CloseButton:SetColor(color_white)
+  CloseButton:SetTextColor(Color(255,0,0))
   CloseButton.DoClick = function()
     lucidlog.log_win:Close()
   end
   CloseButton.Paint = function(self,w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(255,255,255))
-    draw.RoundedBox(0,1,1,w-2,h-2,Color(0,0,0))
+    draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    end
   end
 
   local toppanel = vgui.Create("DPanel",lucidlog.log_win)
@@ -223,11 +226,11 @@ function lucidlog_createLogWindow()
   end
   function lucidlog.LeftButton:Paint(w,h)
     draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,255))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
   end
   function lucidlog.LeftButton:Think()
     if self:IsHovered() then
-      self:SetTextColor(Color(50,50,255))
+      self:SetTextColor(Color(0, 195, 165))
     else
       self:SetTextColor(Color(255,255,255))
     end
@@ -250,11 +253,11 @@ function lucidlog_createLogWindow()
   end
   function lucidlog.RightButton:Paint(w,h)
     draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,255))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
   end
   function lucidlog.RightButton:Think()
     if self:IsHovered() then
-      self:SetTextColor(Color(50,50,255))
+      self:SetTextColor(Color(0, 195, 165))
     else
       self:SetTextColor(Color(255,255,255))
     end
@@ -263,7 +266,7 @@ function lucidlog_createLogWindow()
   lucidlog.SearchButton = vgui.Create("DButton",toppanel)
   lucidlog.SearchButton:SetText( "Search" )
   lucidlog.SearchButton:Dock(RIGHT)
-  lucidlog.SearchButton:SetTextColor(Color(255,255,255))
+  lucidlog.SearchButton:SetTextColor(Color(0, 195, 165))
   lucidlog.SearchButton.DoClick = function()
     lucidlog.category = ""
     lucidlog.page = 0
@@ -272,11 +275,11 @@ function lucidlog_createLogWindow()
   end
   function lucidlog.SearchButton:Paint(w,h)
     draw.RoundedBox(0,0,0,w,h,Color(0,255,0,255))
-		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(0,0,0,255))
+		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
   end
   function lucidlog.SearchButton:Think()
     if self:IsHovered() then
-      self:SetTextColor(Color(50,50,255))
+      self:SetTextColor(Color(0, 195, 165))
     else
       self:SetTextColor(Color(255,255,255))
     end
@@ -375,12 +378,12 @@ function lucidLogCreateButton(name,filter,category,categoryList)
     lucidlog_clientRequest()
   end
   function DButton:Paint(w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(0,0,0,255))
+    draw.RoundedBox(0,0,0,w,h,Color(32, 34, 37))
 		draw.RoundedBox(0, 1, h-2, w, h-1, Color(200,200,200,255))
   end
   function DButton:Think()
     if self:IsHovered() then
-      self:SetTextColor(Color(50,50,255))
+      self:SetTextColor(Color(0, 195, 165))
     else
       self:SetTextColor(Color(255,255,255))
     end

@@ -174,3 +174,5 @@ else
     end
   end
 end
+
+print("[SH] Luctus Emotes loaded!")

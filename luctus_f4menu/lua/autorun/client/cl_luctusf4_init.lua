@@ -18,7 +18,7 @@ luctusF4.bgColor1 = Color(10, 10, 10, 80)
 local white = Color(255, 255, 255, 255)
 local black = Color(0, 0, 0)
 local lblack = Color(0,0,0,253)
-local red = Color(255, 20, 20, 50)
+local red = Color(0, 195, 165)
 
 luctusF4.lang = {
   ['commands'] = 'Commands',
@@ -419,15 +419,32 @@ end
 local function createF4Menu()
   --Draw Main Window
 	luctusF4.mainFrame = vgui.Create("DFrame")
-  luctusF4.mainFrame:SetTitle("")
+  luctusF4.mainFrame:SetTitle("F4")
 	luctusF4.mainFrame:SetSize(1100, 650)
+  luctusF4.mainFrame:ShowCloseButton(false)
 	luctusF4.mainFrame:Center()
 	function luctusF4.mainFrame:Paint(w,h)
-		draw.RoundedBox(0,0,0,w,h,Color(0,0,0,253))
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
 	end
 	function luctusF4.mainFrame:OnRemove()
 		gui.EnableScreenClicker(false)
 	end
+  
+  local closeButton = vgui.Create("DButton",luctusF4.mainFrame)
+    closeButton:SetPos(1100-32,2)
+    closeButton:SetSize(30,20)
+    closeButton:SetText("X")
+    closeButton:SetTextColor( Color(0, 195, 165) )
+    closeButton.DoClick = function(s)
+      luctusF4.mainFrame:Close()
+    end
+    function closeButton:Paint(w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+      if (self.Hovered) then
+        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+      end
+    end
   
 	drawTabsPanel()
 	drawMainFrameHeader()
