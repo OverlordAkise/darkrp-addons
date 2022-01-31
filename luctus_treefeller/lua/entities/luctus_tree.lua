@@ -54,7 +54,7 @@ if SERVER then
   end
   
   function ENT:OnTakeDamage(damage)
-    if IsValid(damage:GetAttacker()) and damage:GetAttacker():IsPlayer() then
+    if IsValid(damage:GetAttacker()) and damage:GetAttacker():IsPlayer() and damage:GetAttacker():GetActiveWeapon():GetClass() == "weapon_luctus_axe" then
       self:SetHP(self:GetHP() - 20)
       if self:GetHP() <= 0 then
         self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
