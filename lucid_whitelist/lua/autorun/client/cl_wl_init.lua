@@ -23,9 +23,30 @@ end)
 function openLucidWhitelistWindow()
   local frame = vgui.Create("DFrame")
   frame:SetSize(600, 400)
+  frame:ShowCloseButton(false)
   frame:SetTitle("Lucid Whitelist | v2.0 | by OverlordAkise")
   frame:Center()
   frame:MakePopup(true)
+  function frame:Paint(w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+  end
+  
+  --Close Button Top Right
+  local CloseButton = vgui.Create("DButton", frame)
+  CloseButton:SetText("X")
+  CloseButton:SetPos(600-22,2)
+  CloseButton:SetSize(20,20)
+  CloseButton:SetTextColor(Color(255,0,0))
+  CloseButton.DoClick = function()
+    frame:Close()
+  end
+  CloseButton.Paint = function(self,w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    end
+  end
   
   local rightPanel = vgui.Create("DPanel", frame)
   rightPanel:Dock(RIGHT)
@@ -36,6 +57,7 @@ function openLucidWhitelistWindow()
   local offlinePanel = vgui.Create("DLabel", rightPanel)
   offlinePanel:Dock(BOTTOM)
   offlinePanel:DockMargin(10,10,10,0)
+  offlinePanel:SetTextColor(Color(0, 195, 165))
   offlinePanel:SetZPos(101) -- = above changebutton
   offlinePanel:SetText("Change for offline players:")
   
@@ -56,7 +78,15 @@ function openLucidWhitelistWindow()
         net.WriteString(TargetSteamID:GetText())
       net.SendToServer()
     end
-  end	
+  end
+  function ChangeButton:Paint(w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(27, 29, 34))
+    ChangeButton:SetTextColor(color_white)
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+      ChangeButton:SetTextColor(Color(0, 195, 165))
+    end
+  end
   
   local PlayerList = vgui.Create("DListView", frame)
   PlayerList:Dock(FILL)
@@ -84,9 +114,30 @@ net.Receive("lucid_whitelist_get", function()
   
   local frame = vgui.Create("DFrame")
   frame:SetSize(400, 450)
+  frame:ShowCloseButton(false)
   frame:SetTitle("Changing for "..steamid)
   frame:Center()
   frame:MakePopup(true)
+  function frame:Paint(w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+  end
+  
+  --Close Button Top Right
+  local CloseButton = vgui.Create("DButton", frame)
+  CloseButton:SetText("X")
+  CloseButton:SetPos(400-22,2)
+  CloseButton:SetSize(20,20)
+  CloseButton:SetTextColor(Color(255,0,0))
+  CloseButton.DoClick = function()
+    frame:Close()
+  end
+  CloseButton.Paint = function(self,w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    end
+  end
   
   local namePanel = vgui.Create("DLabel", frame)
   namePanel:Dock(TOP)
@@ -117,6 +168,7 @@ net.Receive("lucid_whitelist_get", function()
   SaveButton:Dock(BOTTOM)
   SaveButton:SetText("SAVE")
   SaveButton:DockMargin(10,10,10,10)
+  SaveButton:SetTextColor(color_white)
   SaveButton.DoClick = function()
     --print("[lwhitelist] Saving new whitelist")
     local newtab = {}
@@ -133,6 +185,14 @@ net.Receive("lucid_whitelist_get", function()
     net.WriteData(a,#a)
     net.SendToServer()
     frame:Close()
+  end
+  function SaveButton:Paint(w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(27, 29, 34))
+    SaveButton:SetTextColor(color_white)
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+      SaveButton:SetTextColor(Color(0, 195, 165))
+    end
   end
 end)
 

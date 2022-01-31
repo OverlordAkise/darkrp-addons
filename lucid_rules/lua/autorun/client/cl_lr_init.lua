@@ -7,7 +7,8 @@ function openLucidRulesWindow()
   frame:MakePopup()
   frame:ShowCloseButton(false)
   frame.Paint = function(self,w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(0,0,0))
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
   end
   local frameX, frameY = frame:GetSize()
   
@@ -16,13 +17,15 @@ function openLucidRulesWindow()
   CloseButton:SetText("X")
   CloseButton:SetPos(frameX-22,2)
   CloseButton:SetSize(20,20)
-  CloseButton:SetColor(color_white)
+  CloseButton:SetTextColor(Color(0, 195, 165))
   CloseButton.DoClick = function()
     frame:Close()
   end
   CloseButton.Paint = function(self,w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(255,255,255))
-    draw.RoundedBox(0,1,1,w-2,h-2,Color(0,0,0))
+    draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    end
   end
 
   --[[
