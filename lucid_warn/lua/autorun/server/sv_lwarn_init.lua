@@ -5,6 +5,7 @@ util.AddNetworkString("lw_requestwarns")
 util.AddNetworkString("lw_warnplayer")
 util.AddNetworkString("lw_updatewarn")
 util.AddNetworkString("lw_deletewarn")
+util.AddNetworkString("lw_requestwarns_user")--new
 
 function lwCheckPunishment(steamid)
   local activeWarns = sql.Query("SELECT SUM(active) FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
@@ -65,6 +66,23 @@ net.Receive("lw_requestwarns", function(len, ply)
   local steamid = net.ReadString()
 	local data = sql.Query("SELECT rowid,* FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
   net.Start("lw_requestwarns")
+  if data then
+    local t = util.TableToJSON(data)
+    local a = util.Compress(t)
+    net.WriteInt(#a,17)
+    net.WriteData(a,#a)
+  else
+    net.WriteInt(0,17)
+  end
+  net.Send(ply)
+end)
+
+net.Receive("lw_requestwarns_user", function(len, ply)
+  if not ply.lwarnCD then ply.lwarnCD = 0 end
+  if ply.lwarnCD > CurTime() then return end
+  ply.lwarnCD = CurTime()+5
+	local data = sql.Query("SELECT rowid,* FROM lwarn_warns WHERE targetid="..sql.SQLStr(ply:SteamID())..";")
+  net.Start("lw_requestwarns_user")
   if data then
     local t = util.TableToJSON(data)
     local a = util.Compress(t)

@@ -9,8 +9,27 @@ function openWarnMenu()
 		Frame:SetTitle("LucidWarn | v2.0 | by OverlordAkise")
 		Frame:SetVisible(true)
 		Frame:SetDraggable(true)
-		Frame:ShowCloseButton(true)
+		Frame:ShowCloseButton(false)
 		Frame:MakePopup()
+    function Frame:Paint(w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+      draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+    end
+    --Close Button Top Right
+    local CloseButton = vgui.Create("DButton", Frame)
+    CloseButton:SetText("X")
+    CloseButton:SetPos(ScrW()/1.5-22,2)
+    CloseButton:SetSize(20,20)
+    CloseButton:SetTextColor(Color(255,0,0))
+    CloseButton.DoClick = function()
+      Frame:Close()
+    end
+    CloseButton.Paint = function(self,w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+      if (self.Hovered) then
+        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+      end
+    end
 		
     DetailPanel = vgui.Create("DLabel", Frame)
     DetailPanel:Dock(TOP)
@@ -23,6 +42,15 @@ function openWarnMenu()
     WarningList:AddColumn("WarneeID"):SetFixedWidth(125)
     WarningList:AddColumn("PlayerID"):SetFixedWidth(125)
 		WarningList:AddColumn("Reason")
+    for k,v in pairs(WarningList.Columns) do
+      v.Header:SetTextColor(Color(0, 195, 165))
+      v.Header.Paint = function(self,w,h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(27, 29, 34))
+        if (self.Hovered) then
+          draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+        end
+      end
+    end
     function WarningList:OnRowRightClick(lineID, line)
       local Menu = DermaMenu()
       local activeB = Menu:AddOption("Set Warn Active")
@@ -71,6 +99,15 @@ function openWarnMenu()
 		PlayerList:AddColumn("Name")
 		PlayerList:AddColumn("SteamID")
     PlayerList:SetSize(200, 0)
+    for k,v in pairs(PlayerList.Columns) do
+      v.Header:SetTextColor(Color(0, 195, 165))
+      v.Header.Paint = function(self,w,h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(27, 29, 34))
+        if (self.Hovered) then
+          draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+        end
+      end
+    end
 		for k,v in pairs(player.GetAll()) do
 			PlayerList:AddLine(v:Name(), v:SteamID())
 		end
@@ -114,6 +151,7 @@ function openWarnMenu()
     local GetWarnsButton = vgui.Create("DButton", RightFrame)
 		GetWarnsButton:Dock(BOTTOM)
 		GetWarnsButton:SetText("Get Offline Warns")
+    GetWarnsButton:SetTextColor(Color(0, 195, 165))
 		GetWarnsButton.DoClick = function()
 			if TargetSteamID:GetText() ~= "Offline SteamID here" then
 				net.Start("lw_requestwarns")
@@ -121,10 +159,18 @@ function openWarnMenu()
         net.SendToServer()
 			end
 		end
+    function GetWarnsButton:Paint(w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+      draw.RoundedBox(0, 0+1, 0+1, w-2, h-2, Color(47, 49, 54))
+      if (self.Hovered) then
+        draw.RoundedBox(0, 0+1, 0+1, w-2, h-2, Color(66, 70, 77))
+      end
+    end
     
 		local WarnButton = vgui.Create("DButton", RightFrame)
 		WarnButton:Dock(BOTTOM)
 		WarnButton:SetText("Give Offline Warning")
+    WarnButton:SetTextColor(Color(0, 195, 165))
 		WarnButton.DoClick = function()
 			if TargetSteamID:GetValue() != "" then
         Derma_StringRequest(
@@ -132,6 +178,11 @@ function openWarnMenu()
           "Please enter a reason to warn "..TargetSteamID:GetValue(),
           "RDM",
           function(text)
+            local steamid = TargetSteamID:GetText()
+            if steamid == "Offline SteamID here" then
+              Derma_Message("Please enter a steamid first!", "LucidWarn | Notification", "Close")
+              return
+            end
             net.Start("lw_warnplayer")
               net.WriteString(TargetSteamID:GetText())
               net.WriteString(text)
@@ -142,6 +193,13 @@ function openWarnMenu()
         )
 			end
 		end
+    function WarnButton:Paint(w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+      draw.RoundedBox(0, 0+1, 0+1, w-2, h-2, Color(47, 49, 54))
+      if (self.Hovered) then
+        draw.RoundedBox(0, 0+1, 0+1, w-2, h-2, Color(66, 70, 77))
+      end
+    end
 end
 
 net.Receive("lw_requestwarns",function()
@@ -170,6 +228,83 @@ net.Receive("lw_requestwarns",function()
   end
 end)
 
+net.Receive("lw_requestwarns_user",function()
+  local lenge = net.ReadInt(17)
+  if(lenge==0)then 
+    Derma_Message("You don't have any warns!", "LucidWarn | Notification", "Close")
+    return 
+  end
+  
+  local Frame = vgui.Create("DFrame")
+  Frame:SetPos(5, 5)
+  Frame:SetSize(500, 600)
+  Frame:Center()
+  Frame:SetTitle("LucidWarn | v2.0 | by OverlordAkise")
+  Frame:SetVisible(true)
+  Frame:SetDraggable(true)
+  Frame:ShowCloseButton(false)
+  Frame:MakePopup()
+  function Frame:Paint(w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+  end
+  --Close Button Top Right
+  local CloseButton = vgui.Create("DButton", Frame)
+  CloseButton:SetText("X")
+  CloseButton:SetPos(500-22,2)
+  CloseButton:SetSize(20,20)
+  CloseButton:SetTextColor(Color(255,0,0))
+  CloseButton.DoClick = function()
+    Frame:Close()
+  end
+  CloseButton.Paint = function(self,w,h)
+    draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+    if (self.Hovered) then
+      draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    end
+  end
+  DetailPanel = vgui.Create("DLabel", Frame)
+  DetailPanel:Dock(TOP)
+  DetailPanel:SetText(LocalPlayer():Nick())
+  
+  WarningList = vgui.Create("DListView", Frame)
+  WarningList:Dock(FILL)
+  WarningList:AddColumn("ID"):SetFixedWidth(25)
+  WarningList:AddColumn("Active"):SetFixedWidth(30)
+  WarningList:AddColumn("WarneeID"):SetFixedWidth(125)
+  WarningList:AddColumn("PlayerID"):SetFixedWidth(125)
+  WarningList:AddColumn("Reason")
+  for k,v in pairs(WarningList.Columns) do
+    v.Header:SetTextColor(Color(0, 195, 165))
+    v.Header.Paint = function(self,w,h)
+      draw.RoundedBox(0, 0, 0, w, h, Color(27, 29, 34))
+      if (self.Hovered) then
+        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+      end
+    end
+  end
+  
+  function WarningList:DoDoubleClick( lineID, line )
+    Derma_Message("Reason for your warn: \n" .. line:GetValue(5), "LucidWarn | Warn Reason", "Close")
+  end
+
+  local data = net.ReadData(lenge)
+  local jtext = util.Decompress(data)
+  local tab = util.JSONToTable(jtext)
+  local activeWarns = 0
+  local allWarns = 0
+  for k,v in pairs(tab) do
+    WarningList:AddLine(v["rowid"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
+    if(v["active"] == 1)then
+      activeWarns = activeWarns + 1
+    end
+    allWarns = allWarns + 1
+  end
+  if(allWarns > 0)then
+    DetailPanel:SetText("User: "..LocalPlayer():Nick().." | Active Warns: "..activeWarns.." | All Warns: "..allWarns)
+  end
+end)
+
 -- Chat and Console Command for opening
 concommand.Add("warnmenu", function(ply, cmd, args)
 	if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
@@ -181,11 +316,12 @@ end)
 
 hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
 	if (ply == LocalPlayer() and string.lower(text) == lwconfig.chatCommand) then
-		if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
-      chat.AddText("[lwarn] You aren't allowed to access LucidWarn.")
+		--if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+      net.Start("lw_requestwarns_user")
+      net.SendToServer()
       return
-    end
-    openWarnMenu()
+    --end
+    --openWarnMenu()
 	end
 end)
 
