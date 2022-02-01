@@ -6,79 +6,34 @@ hook.Add("postLoadCustomDarkRPItems", "luctus_jobranks_init", function()
 
   --CONFIG START HERE
   
-  --Put the Job name in the square brackets
-  --the curly brackets contain:
-  --  The short name infront of your Player name
-  --  The long name behind your Job name
-  --  If the rank can up / downrank other players
-  --  What weapons the rank spawns with
-  -- An Example of an Officer who can de/uprank and spawns with a crowbar:
-  --  [2] = {"[O]", "Officer", true, {"weapon_crowbar"}},
-  
-  luctus_jobranks[TEAM_MTFE6] = {
-    [1] = {"[R]", "Recuit"},
-    [2] = {"[PVT]", "Private"},
-    [3] = {"[PFC]", "Private First Class"},
-    [4] = {"[SPC]", "Specialist"},
-    [5] = {"[CPL]", "Corporal"},
-    [6] = {"[SGT]", "Sergeant"},
-    [7] = {"[SSGT]", "Staff Sergeant"},
-    [8] = {"[SFC] ", "Sergeant First Class"},
-    [9] = {"[FSG]", "First Sergeant",true},
-    [10] = {"[SGM]", "Sergeant Major",true},
-    [11] = {"[LT]", "Lieutenant",true},
-    [12] = {"[CPT]", "Captain",true},
-    [13] = {"[MAJ]", "Major",true}
-  }
-  
-  luctus_jobranks[TEAM_MTFN7] = {
-    [1] = {"[SGT]", "Sergeant"},
-    [2] = {"[SSGT]", "Staff Sergeant"},
-    [3] = {"[SFC] ", "Sergeant First Class"},
-    [4] = {"[FSG]", "First Sergeant",true},
-    [5] = {"[SGM]", "Sergeant Major",true},
-    [6] = {"[LT]", "Lieutenant",true},
-    [7] = {"[CPT]", "Captain",true},
-    [8] = {"[MAJ]", "Major",true}
-  }
-  
-  --You can also copy ranks, but the ranks of players will NOT copy over! Only the config gets copied!
-  luctus_jobranks[TEAM_MTFD5] = luctus_jobranks[TEAM_MTFN7]
-  
-  luctus_jobranks[TEAM_MTFA1] = {
-    [1] = {"[LCOL]", "Lieutenant Colonel",true},
-    [2] = {"[COL]", "Colonel",true}
-  }
-  
+  --Explanation:
+
+  --1   "[R]",          The short name infront of your Player name
+  --2   "Rekrut",       The long name behind your Job name
+  --3   false,          If the rank can up / downrank other players
+  --4   {"m9k_mp5sd"},  What weapons the rank spawns with
+  --5   15              Custom Salary (added ontop of base job salary)
+
+  --An Example:
   luctus_jobranks[TEAM_SECURITY] = {
-    [1] = {"[R]", "Rekrut",false,{"guthscp_keycard_lvl_2","m9k_mp5sd"}},
-    [2] = {"[P]", "Private",false,{"guthscp_keycard_lvl_3","m9k_mp5sd"}},
-    [3] = {"[C]", "Corporal",false,{"guthscp_keycard_lvl_3","m9k_mp5sd"}},
-    [4] = {"[SGT]", "Seargent",false,{"guthscp_keycard_lvl_3","m9k_m4a1"}},
-    [5] = {"[L]", "Leader",false,{"guthscp_keycard_lvl_3","m9k_m4a1"}},
-    [6] = {"[WC]", "Watchcommander",true,{"guthscp_keycard_lvl_3","m9k_m16a4_acog"}},
-    [7] = {"[Chief]", "Chief",true,{"guthscp_keycard_lvl_4","m9k_m16a4_acog"}}
+    [1] = {"[R]", "Rekrut",false,{"guthscp_keycard_lvl_2","m9k_mp5sd"},15},
+    [2] = {"[P]", "Private",false,{"guthscp_keycard_lvl_3","m9k_mp5sd"},20},
+    [3] = {"[C]", "Corporal",false,{"guthscp_keycard_lvl_3","m9k_mp5sd"},25},
+    [4] = {"[SGT]", "Seargent",false,{"guthscp_keycard_lvl_3","m9k_m4a1"},30},
+    [5] = {"[L]", "Leader",false,{"guthscp_keycard_lvl_3","m9k_m4a1"},45},
+    [6] = {"[WC]", "Watchcommander",true,{"guthscp_keycard_lvl_3","m9k_m16a4_acog"},60},
+    [7] = {"[Chief]", "Chief",true,{"guthscp_keycard_lvl_4","m9k_m16a4_acog"},100}
   }
   
-  luctus_jobranks[TEAM_WISSENSCHAFTLER] = {
-    [1] = {"[JR]", "Junior"},
-    [2] = {"[AD]", "Advanced"},
-    [3] = {"[PFS]", "Professor"},
-    [4] = {"[PF]", "Prof"},
-    [5] = {"[SPF]", "Senior Professor"},
-    [6] = {"[WH]", "Wächter"},
-    [7] = {"[SWH]", "Science of Wächter",true}
+  --Required/Mandatory are only the first 2 things: Short-Name and Long-Name
+  --This is also valid:
+  luctus_jobranks[TEAM_MTFA1] = {
+    [1] = {"[LCOL]", "Lieutenant Colonel"},
+    [2] = {"[COL]", "Colonel"}
   }
   
-  luctus_jobranks[TEAM_ARZT] = {
-    [1] = {"[S]", "Student"},
-    [2] = {"[AA]", "Assistents Arzt"},
-    [3] = {"[FA]", "Facharzt"},
-    [4] = {"[SA]", "Stabsarzt"},
-    [5] = {"[OA]", "Oberarzt"},
-    [6] = {"[CA]", "Chefarzt",true},
-    [7] = {"[L]", "Leitung",true}
-  }
+  --You can also copy rankconfigs, but the ranks of players will NOT copy over! Only the config gets copied!
+  luctus_jobranks[TEAM_MTFE5] = luctus_jobranks[TEAM_MTFA1]
   
   
   --CONFIG END HERE
@@ -139,6 +94,10 @@ function luctusRankup(ply,teamcmd,executor)
     ply:PrintMessage(HUD_PRINTTALK, "Du wurdest befördert!")
     ply:SetNWString("l_nametag", luctus_jobranks[ply:Team()][newId][1])
     ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[ply:Team()][newId][2]..")")
+    ply:setDarkRPVar("salary", ply:getJobTable().salary)
+    if luctus_jobranks[ply:Team()][newId][5] then
+      ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[ply:Team()][newId][5])
+    end
     ply.lrankID = newId
   else
     print("[luctus_jobranks] ERROR DURING SQL SELECT RANKUP!")
@@ -167,6 +126,10 @@ function luctusRankdown(ply,teamcmd,executor)
     ply:PrintMessage(HUD_PRINTTALK, "Du wurdest degradiert!")
     ply:SetNWString("l_nametag", luctus_jobranks[ply:Team()][newId][1])
     ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[ply:Team()][newId][2]..")")
+    ply:setDarkRPVar("salary", ply:getJobTable().salary)
+    if luctus_jobranks[ply:Team()][newId][5] then
+      ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[ply:Team()][newId][5])
+    end
     ply.lrankID = newId
   end
 end
@@ -304,6 +267,10 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
       rankid = tonumber(rankid)
       ply:SetNWString("l_nametag",luctus_jobranks[afterNum][rankid][1])
       ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[afterNum][rankid][2]..")")
+      ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary)
+      if luctus_jobranks[afterNum][rankid][5] then
+        ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary + luctus_jobranks[afterNum][rankid][5])
+      end
       ply.lrankID = rankid
     else
       local inres = sql.Query("INSERT INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(RPExtraTeams[afterNum].command)..",1)")
@@ -317,8 +284,16 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
       end
       ply:SetNWString("l_nametag", luctus_jobranks[afterNum][1][1])
       ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[afterNum][1][2]..")")
+      ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary)
+      if luctus_jobranks[afterNum][1][5] then
+        ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary + luctus_jobranks[afterNum][1][5])
+      end
       ply.lrankID = 1
     end
   end
-    
+end)
+
+hook.Add("playerGetSalary", "luctus_jobranks_salary", function(Player, Amount)
+  --Fix salary? For whatever reason DarkRP is ignoring ply:getDarkRPVar("salary")
+  return false, "Payday! You received $" .. Player:getDarkRPVar("salary") .. "!", Player:getDarkRPVar("salary")
 end)
