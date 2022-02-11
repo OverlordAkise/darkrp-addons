@@ -22,9 +22,63 @@ net.Receive("luctus_gangs", function(len,ply)
   elseif method == "kick" then
     luctusKickGang(ply,net.ReadString())
   elseif method == "getmembers" then
-    luctusGetMembers(ply)
+    luctusGetGangMembers(ply)
+  elseif method == "sendmoney" then
+    luctusRetrieveGangMoney(ply,net.ReadString())
+  elseif method == "getmoney" then
+    luctusDepositGangMoney(ply,net.ReadString())
   end
 end)
+
+function luctusRetrieveGangMoney(ply,stramount)
+  local amount = tonumber(stramount)
+  if not amount or amount < 1 then
+    DarkRP.notify(ply,1,5,"Please enter a number and more than 1!")
+    return
+  end
+  local gangname = ply:GetNWString("gang","")
+  if gangname == "" then return end
+  local res = sql.QueryRow("SELECT * FROM luctus_gangs WHERE name = "..sql.SQLStr(gangname))
+  if res == false then
+    print("[luctus_gangs] ERROR DURING RETRIEVEGANGMONEY SQL 1/2!")
+    print(sql.LastError())
+    return
+  end
+  local availableMoney = tonumber(res.money)
+  if not availableMoney or availableMoney == 0 then return end
+  if amount > availableMoney then amount = availableMoney end
+  ply:addMoney(amount)
+  res = sql.Query("UPDATE luctus_gangs SET money = "..(availableMoney-amount).." WHERE name = "..sql.SQLStr(gangname))
+  if res == false then
+    print("[luctus_gangs] ERROR DURING RETRIEVEGANGMONEY SQL 2/2!")
+    print("[luctus_gangs] WARNING: WHILE THIS PERSISTS PLAYERS CAN GET INFINITE MONEY!")
+    print(sql.LastError())
+    return
+  end
+  DarkRP.notify(ply,0,5,"You retrieved "..amount.."$ from your gang!")
+end
+
+function luctusDepositGangMoney(ply,stramount)
+  local amount = tonumber(stramount)
+  if not amount or amount < 1 then
+    DarkRP.notify(ply,1,5,"Please enter a number and more than 1!")
+    return
+  end
+  local gangname = ply:GetNWString("gang","")
+  if gangname == "" then return end
+  if not ply:canAfford(amount) then
+    DarkRP.notify(ply,1,5,"You don't have that much money!")
+    return
+  end
+  ply:addMoney(-1 * amount)
+  res = sql.Query("UPDATE luctus_gangs SET money = money + "..amount.." WHERE name = "..sql.SQLStr(gangname))
+  if res == false then
+    print("[luctus_gangs] ERROR DURING DEPOSITGANGMONEY SQL 2/2!")
+    print(sql.LastError())
+    return
+  end
+  DarkRP.notify(ply,0,5,"You deposit "..amount.."$ to your gang!")
+end
 
 function luctusCreateGang(ply,name)
   local res = sql.Query("INSERT INTO luctus_gangs(createtime,creator,name,motd,money,xp,level) VALUES(datetime('now', 'localtime'), "..sql.SQLStr(ply:SteamID())..", "..sql.SQLStr(name)..",'NONE',0,0,1)")
@@ -162,7 +216,7 @@ function luctusKickGang(kicker,steamid)
   DarkRP.notify(kicker,0,5,"Successfully kicked player! Please refresh the list!")
 end
 
-function luctusGetMembers(ply)
+function luctusGetGangMembers(ply)
   local gangname = ply:GetNWString("gang","")
   if gangname == "" then return end
   local res = sql.Query("SELECT * FROM luctus_gangmember WHERE gangname = "..sql.SQLStr(gangname))

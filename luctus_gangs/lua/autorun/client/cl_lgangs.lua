@@ -159,7 +159,6 @@ function openGangMenu(tab)
     draw.DrawText("Gangname: "..tab.name..
       "\n\nCreator: "..luctusGetCreator(tab.creator)..
       "\nCreated: "..tab.createtime..
-      --"\n\nMoney:\t"..tab.money..
       --"\nLevel:\t"..tab.level..
       --"\nXP:\t\t"..tab.xp..
       "\n\nMOTD:\n"..tab.motd
@@ -269,6 +268,46 @@ function openGangMenu(tab)
   sheet:AddSheet( "Invite", invite, "icon16/group_add.png" )
   
   
+  --MONEY panel
+  local money = vgui.Create( "DPanel", sheet )
+  money.Paint = function(self, w, h) end
+  money:Dock(FILL)
+  
+  money.Paint = function(self, w, h)
+    draw.DrawText("Gang-Money: "..tab.money,"luctus_gang_font",10,20,color_white,TEXT_ALIGN_LEFT)
+  end
+  
+  local moneyDepositButton = vgui.Create("DButton",money)
+  moneyDepositButton:SetSize(100,50)
+  moneyDepositButton:SetPos(10,70)
+  luctusNiceButton(moneyDepositButton)
+  moneyDepositButton:SetText("Deposit Money")
+  function moneyDepositButton:DoClick()
+    Derma_StringRequest("Luctus Gang | Deposit Money", "How much money do you want to deposit?", "", function(text)
+      net.Start("luctus_gangs")
+        net.WriteString("getmoney")
+        net.WriteString(text)
+      net.SendToServer()
+      Frame:Close()
+    end, function() end)
+  end
+  
+  local moneyRetrieveButton = vgui.Create("DButton",money)
+  moneyRetrieveButton:SetSize(100,50)
+  moneyRetrieveButton:SetPos(120,70)
+  luctusNiceButton(moneyRetrieveButton)
+  moneyRetrieveButton:SetText("Deposit Money")
+  function moneyRetrieveButton:DoClick()
+    Derma_StringRequest("Luctus Gang | Retrieve Money", "How much money do you want to retrieve?", "", function(text)
+      net.Start("luctus_gangs")
+        net.WriteString("sendmoney")
+        net.WriteString(text)
+      net.SendToServer()
+      Frame:Close()
+    end, function() end)
+  end
+  
+  sheet:AddSheet( "Money", money, "icon16/money.png" )
   
   --SETTINGS panel
   local settings = vgui.Create( "DPanel", sheet )
@@ -321,8 +360,6 @@ function openGangMenu(tab)
       Frame:Close()
     end, "No", function() end)
   end
-  
-  
   
   sheet:AddSheet( "Settings", settings, "icon16/cog.png" )
   
