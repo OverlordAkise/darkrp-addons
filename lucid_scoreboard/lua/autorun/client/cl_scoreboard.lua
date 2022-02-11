@@ -21,7 +21,7 @@ local Lucid_Score_Staff = {
 }
 
 local Lucid_Options = {
-  ["ulx bring"] = function(v) print(v) RunConsoleCommand("ulx", "bring", v:Nick()) end,
+  ["ulx bring"] = function(v) RunConsoleCommand("ulx", "bring", v:Nick()) end,
   ["ulx return"] = function(v) RunConsoleCommand("ulx", "return", v:Nick()) end,
   ["ulx freeze"] = function(v) RunConsoleCommand("ulx", "freeze", v:Nick()) end,
   ["ulx unfreeze"] = function(v) RunConsoleCommand("ulx", "unfreeze", v:Nick()) end,
