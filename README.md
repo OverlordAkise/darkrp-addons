@@ -1,6 +1,9 @@
 # DarkRP-Addons
 Free DarkRP Addons I made (first made for Eternity RP, RIP)  
 
+** DO NOT REUPLOAD MY ADDON! **  
+** Copyright 2022 OverlordAkise. It is not allowed to upload this content on on steam except by the Steam Account OverlordAkise **
+
 For a screenshot of the addons visit [https://shira.at/gmod/luctus.html](https://shira.at/gmod/luctus.html)
 
 ### Warning
