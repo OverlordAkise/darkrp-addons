@@ -159,7 +159,7 @@ hook.Add( 'HUDPaint', 'luctus_hud', function()
       draw.SimpleText(wep:Clip1(), "LucidAmmoFont", scrw-145, scrh-150, color_white, TEXT_ALIGN_RIGHT)
       draw.SimpleText(ply:GetAmmoCount(ammo_type), "LucidHUDFont", scrw-100, scrh-113, color_white, TEXT_ALIGN_RIGHT)
       surface.SetDrawColor(secCol)
-      surface.DrawRect(scrw-240,scrh-90,(wep:Clip1()*190)/wep:GetMaxClip1(),20)
+      surface.DrawRect(scrw-240,scrh-90,math.Clamp((wep:Clip1()*190)/wep:GetMaxClip1(),0,190),20)
     end
   end
 end)
