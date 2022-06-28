@@ -1,6 +1,14 @@
 --Luctus Levelsystem
 --Made by OverlordAkise
 
+-- CONFIG
+
+LUCTUS_XP_TIMER = 300 --seconds, interval for giving XP
+LUCTUS_XP_TIMER_XP = 20 --how many XP every interval
+LUCTUS_XP_KILL = 5 --how many XP per player kill
+
+-- CONFIG END
+
 hook.Add("PostGamemodeLoaded","luctus_scpnames",function()
     local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_levelsystem( steamid TEXT, exp INT, lvl INT )")
     if res == false then
@@ -93,13 +101,13 @@ end)
 
 hook.Add("PlayerDeath","LVL_SetLevel",function(ply,inflictor,attacker)
     if attacker:IsPlayer() && IsValid(attacker) then
-        attacker:addXP(5)
+        attacker:addXP(LUCTUS_XP_KILL)
     end
 end)
 
-timer.Create("luctus_lvl_timer",300,0,function()
+timer.Create("luctus_lvl_timer",LUCTUS_XP_TIMER,0,function()
     for k,v in pairs(player.GetAll()) do
-        v:addXP(20)
+        v:addXP(LUCTUS_XP_TIMER_XP)
     end
 end)
 
