@@ -71,9 +71,6 @@ function ToggleEscapeMenu()
 
 	for k, v in ipairs(ESC_BUTTONS) do
 		local btn = vgui.Create('DButton', ESCAPE_FRAME)
-        PrintTable(v)
-        print(k)
-        print(y_offset + (k-1)*30)
 		btn:SetPos(20, y_offset + k*30)
 		btn:SetSize(ScrW() * .25, 27)
 		btn:SetText("")
