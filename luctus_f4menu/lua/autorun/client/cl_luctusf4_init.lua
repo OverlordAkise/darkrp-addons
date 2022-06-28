@@ -79,12 +79,12 @@ local function buttonClickSound()
 	surface.PlaySound('ui/buttonclick.wav')
 end
 
-local function luctusPaintHover(self,w,h,bOutline)
+local function luctusPaintHover(self,w,h,bOutline,col)
   if not bOutline then
     surface.SetDrawColor(red)
     surface.DrawRect(0, 0, w, h)
   end
-  surface.SetDrawColor(lblack)
+  surface.SetDrawColor(col and col or lblack)
 	surface.DrawRect(1, 1, w - 2, h - 2)
   if self:IsHovered() then
     self:SetTextColor(red)
@@ -530,7 +530,7 @@ function luctusF4.openTab(name)
     end
     
     --skip this one in the for loop
-		if not shouldDisplayItem then continue end
+    if not shouldDisplayItem and name ~= "jobs" then continue end
     
     atleastOneItem = true
 
@@ -588,8 +588,10 @@ function luctusF4.openTab(name)
     categoryRow:SetSize(0, 66)
     categoryRow:Dock(TOP)
     categoryRow:DockMargin(0, 3, 0, 0)
-
-    function categoryRow:Paint(w, h) luctusPaintHover(self,self:GetWide(),self:GetTall(),true) end
+    categoryRow.shouldBeDisabled = not shouldDisplayItem and name == "jobs"
+    function categoryRow:Paint(w, h)
+        luctusPaintHover(self,self:GetWide(),self:GetTall(),true, self.shouldBeDisabled and Color(90,90,90,255) or nil)
+    end
 
     function categoryRow.DoClick()
       luctusF4.curSkin = 1
@@ -644,27 +646,38 @@ function luctusF4.openTab(name)
     rowName:SetTextColor(white)
     rowName:SizeToContentsX()
 
+    -- item price, job salary
     local rowPrice = categoryRow:Add('DPanel')
     rowPrice:Dock(RIGHT)
     rowPrice:DockMargin(0, 0, 5, 0)
     rowPrice:SizeToContentsX()
 
     function rowPrice.Paint(w, h)
-      draw.RoundedBox(28.49, 5, 5, rowPrice:GetTall() - 8, rowPrice:GetWide() - 8, Color(10, 10, 10, 120))
+      --draw.RoundedBox(0, 0, 0, rowPrice:GetTall(), rowPrice:GetWide(), Color(255, 255, 255, 120))
     end
 
     function rowPrice:OnMousePressed()
       categoryRow:DoClick()
     end
-
-    -- item price
     local rowMoney = rowPrice:Add('DLabel')
     rowMoney:Dock(FILL)
     rowMoney:DockMargin(0, 0, 0, 0)
     rowMoney:SetText('$' .. (item.price and item.price or item.salary))
-    rowMoney:SetFont('edf_roboto16')
+    rowMoney:SetFont('edf_roboto20')
     rowMoney:SetContentAlignment(5)
     rowMoney:SetTextColor(white)
+    
+    --Levelsystem if exists
+    if name == "jobs" and item.level then
+      local levellabel = categoryRow:Add('DLabel')
+      levellabel:Dock(RIGHT)
+      levellabel:DockMargin(6, 0, 0, 0)
+      levellabel:SetText("Lv."..item.level)
+      --levellabel:SetText("Lv.10")
+      levellabel:SetFont('edf_roboto20')
+      levellabel:SetTextColor(white)
+      --levellabel:SizeToContentsX()
+    end
 
     -- Add initial stuff to right panel
     if not initRight then
