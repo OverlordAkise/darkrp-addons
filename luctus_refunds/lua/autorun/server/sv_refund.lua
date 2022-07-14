@@ -1,7 +1,7 @@
 --Luctus Refunds
 --Made by OverlordAkise
 
-LUCTUS_REFUND_TIMER_DELAY = 10 --how often entities get saved
+LUCTUS_REFUND_TIMER_DELAY = 120 --how often entities get saved
 
 
 --Config end
@@ -61,7 +61,7 @@ timer.Create("luctus_calculate_refunds",LUCTUS_REFUND_TIMER_DELAY,0,function()
         if not LUCTUS_REFUNDS_JOINED[v:SteamID()] then continue end
         LUCTUS_REFUNDS[v:SteamID()] = 0
     end
-    print("[luctus_refunds] Calculating refunds...")
+    --print("[luctus_refunds] Calculating refunds...")
     
     --DarkRP ents
     for k,v in pairs(allents) do
@@ -71,12 +71,12 @@ timer.Create("luctus_calculate_refunds",LUCTUS_REFUND_TIMER_DELAY,0,function()
         end
         if IsValid(owner) and LUCTUS_REFUNDS[owner:SteamID()] and v:GetClass() ~= "prop_physics" and LUCTUS_REFUNDS_JOINED[owner:SteamID()] then
             local entclass = v:GetClass()
-            print("Player:")
-            print(owner)
-            print("Ent:")
-            print(v)
-            print("Price:")
-            print(luctusGetEntWorth(entclass))
+            --print("Player:")
+            --print(owner)
+            --print("Ent:")
+            --print(v)
+            --print("Price:")
+            --print(luctusGetEntWorth(entclass))
             LUCTUS_REFUNDS[owner:SteamID()] = LUCTUS_REFUNDS[owner:SteamID()] + luctusGetEntWorth(entclass)
             --ch_bitminer
             if entclass == "ch_bitminer_shelf" then
@@ -113,10 +113,10 @@ timer.Create("luctus_calculate_refunds",LUCTUS_REFUND_TIMER_DELAY,0,function()
     end
     
 
-    print("[luctus_refunds] Calculation done!")
-    PrintTable(LUCTUS_REFUNDS)
+    --print("[luctus_refunds] Calculation done!")
+    --PrintTable(LUCTUS_REFUNDS)
     file.Write("refunds.txt",util.TableToJSON(LUCTUS_REFUNDS))
-    print("[luctus_refunds] Refunds saved!")
+    --print("[luctus_refunds] Refunds saved!")
     print("[luctus_refunds] Time taken: "..(SysTime()-ss).."s")
 end)
 
@@ -183,8 +183,6 @@ hook.Add("player_disconnect","luctus_refunds_anti_abuse",function(tab)
         if tab.reason == "Disconnect by user." then
             print("[luctus_refunds] User left by their will, removing refund")
             LUCTUS_REFUNDS[tab.networkid] = 0
-        else
-            print("[luctus_refunds] User vanished, leaving refund open")
         end
     end
     LUCTUS_REFUNDS_JOINED[tab.networkid] = nil
