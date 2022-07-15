@@ -34,7 +34,7 @@ hook.Add("PlayerInitialSpawn","luctus_refunds_get_ents",function()
     
     end
     
-    PrintTable(LUCTUS_RP_ENTS)
+    --PrintTable(LUCTUS_RP_ENTS)
     --Why PlayerInitialSpawn? Because i need for all ents to get created and added, and no hook is after "InitPostEntity" except this
     hook.Remove("PlayerInitialSpawn","luctus_refunds_get_ents")
 end)
