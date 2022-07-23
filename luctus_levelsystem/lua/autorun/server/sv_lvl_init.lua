@@ -27,14 +27,6 @@ function plymeta:setXP(xp)
     self:setDarkRPVar("xp",xp)
 end
 
-function plymeta:getLevel()
-    return self:getDarkRPVar("level")
-end
-
-function plymeta:getXP()
-    return self:getDarkRPVar("xp")
-end
-
 function plymeta:addXP(amount)
 	local curXP = self:getXP() + amount
     local curLevel = self:getLevel()
