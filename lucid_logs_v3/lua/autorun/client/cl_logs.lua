@@ -1,4 +1,4 @@
---Lucid Logs
+--Luctus Logs
 --Made by OverlordAkise
 
 --CONFIG START
@@ -130,15 +130,17 @@ end
 function lucidlog_createLogWindow()
   if not lucidlog.log then return end
   lucidlog.log_win = vgui.Create("DFrame")
-  lucidlog.log_win:SetTitle("LucidLog v3.0 | by OverlordAkise")
+  lucidlog.log_win:SetTitle("LucidLog v3.1 | by OverlordAkise")
   lucidlog.log_win:SetSize( 900, 500 )
   lucidlog.log_win:Center()
+  lucidlog.log_win:SetX(ScrW()+300)
   lucidlog.log_win:MakePopup()
   lucidlog.log_win:ShowCloseButton(false)
+  lucidlog.log_win:MoveTo(ScrW()/2-lucidlog.log_win:GetWide()/2, lucidlog.log_win:GetY(),0.5,0)
   function lucidlog.log_win:Paint(w,h)
-		draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+    draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
     draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
-	end
+  end
   function lucidlog.log_win:OnKeyCodePressed( key ) 
     if ( key == KEY_LALT ) then
       lucidlog.clickable = false
@@ -158,7 +160,14 @@ function lucidlog_createLogWindow()
   CloseButton:SetSize(20,20)
   CloseButton:SetTextColor(Color(255,0,0))
   CloseButton.DoClick = function()
-    lucidlog.log_win:Close()
+    gui.EnableScreenClicker( false )
+    lucidlog.log_win:SetMouseInputEnabled( false )
+    lucidlog.log_win:SetKeyboardInputEnabled( false )
+    lucidlog.clickable = false
+    lucidlog.log_win:MoveTo(-1*ScrW(), lucidlog.log_win:GetY(),0.5,0)
+    timer.Simple(0.5,function()
+      lucidlog.log_win:Close()
+    end)
   end
   CloseButton.Paint = function(self,w,h)
     draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
@@ -424,3 +433,5 @@ function lucidlog_clientRequest()
     net.WriteString(lucidlog.category)
   net.SendToServer()
 end
+
+print("[luctus_logs] cl loaded")
