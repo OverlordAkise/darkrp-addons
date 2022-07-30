@@ -45,9 +45,9 @@ end
 
 local function CreateScoreboard()
     if ScoreFrame then ScoreFrame:Close() end
-    ScoreFrame = vgui.Create( 'DFrame' )
+    ScoreFrame = vgui.Create("DFrame")
     ScoreFrame:SetSize( 1000, 700 )
-    ScoreFrame:SetTitle( '' )
+    ScoreFrame:SetTitle("")
     ScoreFrame:SetDraggable( false )
     ScoreFrame:SetVisible( true )
     ScoreFrame:ShowCloseButton( false )
@@ -107,16 +107,12 @@ local function CreateScoreboard()
     end
 
     for k, v in pairs( player.GetAll() ) do
-        local item = vgui.Create('DLabel', ScoreFrame.PlayerList)
+        local item = vgui.Create("DLabel", ScoreFrame.PlayerList)
         item:SetSize(ScoreFrame.PlayerList:GetWide() - 70, 30)
         item:SetCursor("hand")
-        local teamCol = team.GetColor( v:Team() )
-
-        local self = ScoreFrame.PlayerList
-        local _y = 7
 
         item.Paint = function( me, w, h )
-            if !IsValid(v) then item:Remove() return end
+            if not IsValid(v) then item:Remove() return end
             if k % 2 == 0 then
                 surfaceDrawRectCol( 0, 0, w, h, Color(54, 57, 62) )
             else
@@ -137,7 +133,6 @@ local function CreateScoreboard()
             end
             Inspect = DermaMenu()
             for k,v in SortedPairs(scoreboard_admin_options) do
-                print(k)
                 Inspect:AddOption(k)
             end
             function Inspect:OptionSelected(option, optionText)
@@ -156,11 +151,11 @@ local function CreateScoreboard()
         local mute = vgui.Create( "DImageButton", item )
         mute:SetSize( 16, 16 )
         mute:SetPos(item:GetWide() + 35, 7 )
-        mute:SetImage( v:IsMuted() and 'icon16/sound_mute.png' or 'icon16/sound.png' )
+        mute:SetImage( v:IsMuted() and "icon16/sound_mute.png" or "icon16/sound.png" )
 
         mute.DoClick = function()
             if !v:IsMuted() then v:SetMuted( true ) else v:SetMuted( false ) end
-            mute:SetImage( v:IsMuted() and 'icon16/sound_mute.png' or 'icon16/sound.png' )
+            mute:SetImage( v:IsMuted() and "icon16/sound_mute.png" or "icon16/sound.png" )
         end
 
         ScoreFrame.PlayerList:AddItem( item )
