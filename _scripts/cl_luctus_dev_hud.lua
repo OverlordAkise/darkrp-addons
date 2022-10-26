@@ -26,8 +26,9 @@ local entitiesRemoved = {}
 local marked = {}
 local showCloseClasses = true
 local markAll = false
+local showBBox = true
 
-concommand.Add("search",function(ply,cmd,args,argStr)
+concommand.Add("devsearch",function(ply,cmd,args,argStr)
   marked = {}
   for k,v in pairs(args) do
     marked[v] = true
@@ -39,16 +40,20 @@ concommand.Add("search",function(ply,cmd,args,argStr)
   end
 end)
 
+concommand.Add("devclose",function(ply,cmd,args,argStr)
+  showCloseClasses = not showCloseClasses
+end)
+
+concommand.Add("devbox",function(ply,cmd,args,argStr)
+  showBBox = not showBBox
+end)
+
 hook.Add("NotifyShouldTransmit","luctus_devtools",function(ent, shouldTransmit)
     if shouldTransmit then
         ldevAddTransAdd(ent)
     else
         ldevAddTransRem(ent)
     end
-end)
-
-concommand.Add("close",function(ply,cmd,args,argStr)
-  showCloseClasses = not showCloseClasses
 end)
 
 local color_dark = Color(40,40,40,230)
@@ -156,6 +161,7 @@ hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
   local ants = {LocalPlayer():GetEyeTrace().Entity}
   if not ants[1] then return end
   if markAll then ants = ents.GetAll() end
+  if not showBBox then return end
   
   for k,ent in pairs(ants) do
     if not ent:IsValid() then return end
