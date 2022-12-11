@@ -8,15 +8,25 @@ require("gwsockets")
 ggwsocket = GWSockets.createWebSocket("ws://localhost:9091/ws")
 
 function ggwsocket:onMessage(txt)
+    print("[LUCTUS_MSC] RECEIVING:",txt)
     local cmd = string.Split(txt," ")[1]
     if cmd == "RFUNK" then
-        PrintMessage(HUD_PRINTTALK, "[LANGSTRECKENFUNK] "..string.Replace(txt,"RFUNK ",""))
+        MSCSendMessage("[Langstreckenfunk]",string.Replace(txt,"RFUNK ",""))
     end
 end
 
 --End of config
 
 ggwsocket_isconnected = true
+
+util.AddNetworkString("luctus_msc_chat")
+function MSCSendMessage(tag,msg)
+    --PrintMessage(HUD_PRINTTALK, tag.." "..msg)
+    net.Start("luctus_msc_chat")
+        net.WriteString(tag)
+        net.WriteString(msg)
+    net.Broadcast()
+end
 
 function ggwsocket:onError(txt)
     print("[LUCTUS_SYNC] Error: ", txt)
