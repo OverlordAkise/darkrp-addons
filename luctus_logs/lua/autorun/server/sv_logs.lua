@@ -30,6 +30,11 @@ end)
 
 lucid_log = {}
 
+--public function
+function LuctusLog(cat,text)
+    log_push(cat,text)
+end
+
 local function log_push(cat,text)
   print("[luctus_logs] "..sql.SQLStr(text))
   sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
@@ -115,7 +120,9 @@ end
 
 
 
---Logger
+----------------------------
+-- Logging Hooks - DarkRP --
+----------------------------
 
 --[[
 --Too much spam
