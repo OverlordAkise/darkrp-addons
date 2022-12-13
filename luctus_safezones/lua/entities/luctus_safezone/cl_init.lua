@@ -19,7 +19,7 @@ function ENT:Draw()
 	local B1, B2, B3, B4 = Vector(Min.x, Min.y, Min.z), Vector(Min.x, Max.y, Min.z), Vector(Max.x, Max.y, Min.z), Vector(Max.x, Min.y, Min.z)
 	local T1, T2, T3, T4 = Vector(Min.x, Min.y, Max.z), Vector(Min.x, Max.y, Max.z), Vector(Max.x, Max.y, Max.z), Vector(Max.x, Min.y, Max.z)
 	
-  render.DrawLine( B1, B2, Col, true )
+	render.DrawLine( B1, B2, Col, true )
 	render.DrawLine( B2, B3, Col, true )
 	render.DrawLine( B3, B4, Col, true )
 	render.DrawLine( B4, B1, Col, true )
