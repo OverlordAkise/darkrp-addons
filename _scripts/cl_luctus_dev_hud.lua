@@ -23,10 +23,13 @@ local entitiesRemovedLastSecond = 0
 local entitiesAdded = {}
 local entitiesRemoved = {}
 
+--local mouseX = 0
+--local mouseY = 0
+
 local marked = {}
 local showCloseClasses = true
 local markAll = false
-local showBBox = true
+local showBBox = false
 
 concommand.Add("devsearch",function(ply,cmd,args,argStr)
   marked = {}
@@ -41,11 +44,11 @@ concommand.Add("devsearch",function(ply,cmd,args,argStr)
 end)
 
 concommand.Add("devclose",function(ply,cmd,args,argStr)
-  showCloseClasses = not showCloseClasses
+    showCloseClasses = not showCloseClasses
 end)
 
 concommand.Add("devbox",function(ply,cmd,args,argStr)
-  showBBox = not showBBox
+    showBBox = not showBBox
 end)
 
 hook.Add("NotifyShouldTransmit","luctus_devtools",function(ent, shouldTransmit)
@@ -58,12 +61,33 @@ end)
 
 local color_dark = Color(40,40,40,230)
 
+LstartHeight = 100
+Lwidth = 10
+local function lineheight(num)
+    LstartHeight = LstartHeight + 10
+    if num then
+        LstartHeight = LstartHeight + num
+    end
+    if LstartHeight > ScrH() then
+        LstartHeight = 100
+        Lwidth = Lwidth + 400
+    end
+    return LstartHeight
+end
+
 hook.Add("HUDPaint", "luctus_devtools", function()
   local lp = LocalPlayer()
   local scrh = ScrH()
   local scrw = ScrW()
   local localEnts = ents.FindInSphere(lp:GetPos(),512)
   local allEnts = ents.GetAll()
+  LstartHeight = 100
+  Lwidth = 10
+  draw.RoundedBox(0,scrw/2-1,scrh/2-1,2,2,color_white)
+  
+  --mouse
+  --surface.SetDrawColor(0,0,255)
+  --surface.DrawLine(scrw/2, scrh/2, scrw/2+(mouseX*3), scrh/2+(mouseY*3) )
   
   if showCloseClasses then
     for k,v in pairs(localEnts) do
@@ -86,47 +110,74 @@ hook.Add("HUDPaint", "luctus_devtools", function()
     draw.RoundedBox(0,0,0,scrw,scrh,color_dark)
   end
   
-  draw.DrawText("General","Default",10,scrh/2-200)
-  draw.DrawText("#ents: "..#allEnts,"Default",10,scrh/2-190)
-  draw.DrawText("#ents in 512units: "..#localEnts,"Default",10,scrh/2-170)
-  draw.DrawText("#nets/s: "..netsPerSecond,"Default",10,scrh/2-160)
-  draw.DrawText("#trans+/s: "..transmitsAddPerSecond,"Default",10,scrh/2-150)
-  draw.DrawText("#trans-/s: "..transmitsRemPerSecond,"Default",10,scrh/2-140)
-  draw.DrawText("#ents+/s: "..entitiesAddedLastSecond,"Default",10,scrh/2-130)
-  draw.DrawText("#ents-/s: "..entitiesRemovedLastSecond,"Default",10,scrh/2-120)
+  draw.DrawText("General","Default",Lwidth,lineheight())
+  draw.DrawText("#ents: "..#allEnts,"Default",Lwidth,lineheight())
+  draw.DrawText("#ents in 512units: "..#localEnts,"Default",Lwidth,lineheight(10))
+  draw.DrawText("#nets/s: "..netsPerSecond,"Default",Lwidth,lineheight())
+  draw.DrawText("#trans+/s: "..transmitsAddPerSecond,"Default",Lwidth,lineheight())
+  draw.DrawText("#trans-/s: "..transmitsRemPerSecond,"Default",Lwidth,lineheight())
+  draw.DrawText("#ents+/s: "..entitiesAddedLastSecond,"Default",Lwidth,lineheight())
+  draw.DrawText("#ents-/s: "..entitiesRemovedLastSecond,"Default",Lwidth,lineheight())
 
-  draw.DrawText("You","Default",10,scrh/2-80,Color(0,255,0))
-  draw.DrawText("Model: "..lp:GetModel(),"Default",10,scrh/2-70)
-  draw.DrawText("Pos: "..math.Round(lp:GetPos().x,2).." "..math.Round(lp:GetPos().y,2).." "..math.Round(lp:GetPos().z,2),"Default",10,scrh/2-60)
-  draw.DrawText("Vel: "..math.Round(lp:GetVelocity():Length(),2),"Default",10,scrh/2-50)
-  draw.DrawText("Wep WorldModel: "..(lp:GetActiveWeapon().WorldModel or "NIL"),"Default",10,scrh/2-40)
-  draw.DrawText("Wep ViewModel: "..(lp:GetActiveWeapon().ViewModel or "NIL"),"Default",10,scrh/2-30)
-  draw.DrawText("Distance: "..lp:GetPos():Distance(lp:GetEyeTrace().HitPos),"Default",10,scrh/2-20)
+  draw.DrawText("You","Default",Lwidth,lineheight(10),Color(0,255,0))
+  draw.DrawText("Model: "..lp:GetModel(),"Default",Lwidth,lineheight())
+  draw.DrawText("Pos: "..math.Round(lp:GetPos().x,2).." "..math.Round(lp:GetPos().y,2).." "..math.Round(lp:GetPos().z,2),"Default",Lwidth,lineheight())
+  draw.DrawText("Ang: "..math.Round(lp:GetAngles().p,2).." "..math.Round(lp:GetAngles().y,2).." "..math.Round(lp:GetAngles().r,2),"Default",Lwidth,lineheight())
+  draw.DrawText("Vel: "..math.Round(lp:GetVelocity():Length(),2),"Default",Lwidth,lineheight())
+  draw.DrawText("Wep WorldModel: "..(lp:GetActiveWeapon().WorldModel or "NIL"),"Default",Lwidth,lineheight())
+  draw.DrawText("Wep ViewModel: "..(lp:GetActiveWeapon().ViewModel or "NIL"),"Default",Lwidth,lineheight())
+  draw.DrawText("Distance: "..lp:GetPos():Distance(lp:GetEyeTrace().HitPos),"Default",Lwidth,lineheight())
   --if lp:GetEyeTrace().Entity and IsValid(lp:GetEyeTrace().Entity) then
     local eye = lp:GetEyeTrace()
     local ent = lp:GetEyeTrace().Entity
-    draw.DrawText("Entity","Default",10,scrh/2-10,Color(0,0,255))
-    draw.DrawText("Class: "..ent:GetClass(),"Default",10,scrh/2)
-    draw.DrawText("Model: "..ent:GetModel(),"Default",10,scrh/2+10)
-    draw.DrawText("Pos: "..math.Round(ent:GetPos().x,2).." "..math.Round(ent:GetPos().y,2).." "..math.Round(ent:GetPos().z,2),"Default",10,scrh/2+20)
-    draw.DrawText("Vel.: "..math.Round(ent:GetVelocity():Length(),2),"Default",10,scrh/2+30)
-    draw.DrawText("EntIndex: "..ent:EntIndex(),"Default",10,scrh/2+40)
-    draw.DrawText("HitTexture: "..eye.HitTexture,"Default",10,scrh/2+50)
-    
-    local owner = ent:CPPIGetOwner()
-    if owner then
-    draw.DrawText("Owner: "..owner:Name(),"Default",10,scrh/2+60)
-    draw.DrawText("SteamName: "..owner:SteamName(),"Default",10,scrh/2+70)
-    draw.DrawText("SteamID: "..owner:SteamID(),"Default",10,scrh/2+80)
+    if math.Round(lp:GetAngles().p,2) >= 89 then
+        ent = lp
+    end
+    draw.DrawText("Entity","Default",Lwidth,lineheight(10),Color(0,0,255))
+    draw.DrawText("Class: "..ent:GetClass(),"Default",Lwidth,lineheight())
+    draw.DrawText("Model: "..ent:GetModel(),"Default",Lwidth,lineheight())
+    draw.DrawText("Pos: "..math.Round(ent:GetPos().x,2).." "..math.Round(ent:GetPos().y,2).." "..math.Round(ent:GetPos().z,2),"Default",Lwidth,lineheight())
+    draw.DrawText("Vel.: "..math.Round(ent:GetVelocity():Length(),2),"Default",Lwidth,lineheight())
+    draw.DrawText("EntIndex: "..ent:EntIndex(),"Default",Lwidth,lineheight())
+    draw.DrawText("HitTexture: "..eye.HitTexture,"Default",Lwidth,lineheight())
+    draw.DrawText("HitMaterials: ","Default",Lwidth,lineheight(10),Color(200,100,255))
+    if ent:GetClass() ~= "worldspawn" then
+        for k,v in ipairs(ent:GetMaterials()) do
+            draw.DrawText(k.."->"..v,"Default",Lwidth,lineheight())
+            if k >= 4 then 
+                draw.DrawText(#ent:GetMaterials().." more","Default",Lwidth,lineheight())
+                break
+            end
+        end
+    end
+    if ent.CPPIGetOwner then
+        local owner = ent:CPPIGetOwner()
+        if owner and IsValid(owner) then
+        draw.DrawText("Owner: "..owner:Name(),"Default",Lwidth,lineheight())
+        draw.DrawText("SteamName: "..owner:SteamName(),"Default",Lwidth,lineheight())
+        draw.DrawText("SteamID: "..owner:SteamID(),"Default",Lwidth,lineheight())
+        end
     end
     
     if ent:IsPlayer() then
-      draw.DrawText("Name: "..ent:Nick(),"Default",10,scrh/2+100)
-      draw.DrawText("SteamName: "..ent:SteamName(),"Default",10,scrh/2+110)
-      draw.DrawText("SteamID: "..ent:SteamID(),"Default",10,scrh/2+120)
-      draw.DrawText("Ping: "..(ent:Ping()),"Default",10,scrh/2+130)
-      draw.DrawText("Health: "..ent:Health(),"Default",10,scrh/2+140)
-      draw.DrawText("Weapon: "..(IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetClass() or "NIL"),"Default",10,scrh/2+150)
+      draw.DrawText("Name: "..ent:Nick(),"Default",Lwidth,lineheight(10))
+      draw.DrawText("SteamName: "..(ent.SteamName and ent:SteamName() or ent:Nick()),"Default",Lwidth,lineheight())
+      draw.DrawText("SteamID: "..ent:SteamID(),"Default",Lwidth,lineheight())
+      draw.DrawText("Ping: "..(ent:Ping()),"Default",Lwidth,lineheight())
+      draw.DrawText("Health: "..ent:Health(),"Default",Lwidth,lineheight())
+      draw.DrawText("Weapon: "..(IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetClass() or "NIL"),"Default",Lwidth,lineheight())
+    end
+    
+    draw.DrawText("NWVar:","Default",Lwidth,lineheight(10),Color(255,255,0))
+    for k,v in pairs(ent:GetNWVarTable()) do
+        draw.DrawText(k.." -> "..(isbool(v) and (v and "true" or "false") or v),"Default",Lwidth,lineheight())
+    end
+    
+    draw.DrawText("NetworkVar:","Default",Lwidth,lineheight(10),Color(0,255,255))
+    if ent.GetNetworkVars and ent:GetNetworkVars() then
+        for k,v in pairs(ent:GetNetworkVars()) do
+            draw.DrawText(k.." -> "..v,"Default",Lwidth,lineheight())
+        end
     end
   --end
   
@@ -155,13 +206,19 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   end
 end)
 
+--[[
+hook.Add("CreateMove","luctus_dev_hud_mouse",function(cmd)
+    mouseX = cmd:GetMouseX()
+    mouseY = cmd:GetMouseY()
+end)
+--]]
 
 local zeroAngle = Angle(0, 0, 0)
 hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
+  if not showBBox then return end
   local ants = {LocalPlayer():GetEyeTrace().Entity}
   if not ants[1] then return end
   if markAll then ants = ents.GetAll() end
-  if not showBBox then return end
   
   for k,ent in pairs(ants) do
     if not ent:IsValid() then return end
