@@ -1,8 +1,6 @@
 --Luctus Logs
 --Made by OverlordAkise
 
---CONFIG START
-
 lucid_log_quickfilters = {
   "PlayerSay",
   "PlayerSpawn",
@@ -32,9 +30,17 @@ lucid_log_quickfilters = {
   "Hitman"
 }
 
-lucid_log_gas_quickfilters = {}
+--custom addon support
+--gDeathSystem
+if MedConfig then
+    table.insert(lucid_log_quickfilters,"gDeathSystem")
+end
+--cuffs
+if hook.GetTable()["SetupMove"] and hook.GetTable()["SetupMove"]["Cuffs_MovePenalty"] then
+    table.insert(lucid_log_quickfilters,"cuffs")
+end
 
---CONFIG END
+lucid_log_gas_quickfilters = {}
 
 GAS = {}
 GAS.Logging = {}
