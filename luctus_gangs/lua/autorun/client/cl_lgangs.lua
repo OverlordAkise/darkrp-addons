@@ -35,6 +35,7 @@ timer.Create("luctus_gang_members_sync",1,0,function()
 end)
 
 hook.Add("HUDPaint","luctus_gangs_party",function()
+  if #luctus_gang_members == 0 then return end
   if LUCTUS_PARTY_HUD then
     surface.SetDrawColor(0, 195, 165, 255)
     surface.DrawOutlinedRect(5,ScrH()/2-200+20,210,(#luctus_gang_members*20)+10,2)
@@ -149,22 +150,27 @@ function openGangMenu(tab)
   
   --MAIN SHEET
   local sheet = vgui.Create( "DColumnSheet", Frame )
-  sheet:Dock( FILL )
+  sheet:Dock(FILL)
   
   
   
   --OVERVIEW panel
-  local overview = vgui.Create( "DPanel", sheet )
-  overview.Paint = function(self, w, h)
-    draw.DrawText("Gangname: "..tab.name..
+  local overview = vgui.Create( "DTextEntry", sheet )
+  overview:SetMultiline(true)
+  overview:SetText("Gangname: "..tab.name..
       "\n\nCreator: "..luctusGetCreator(tab.creator)..
       "\nCreated: "..tab.createtime..
       --"\nLevel:\t"..tab.level..
       --"\nXP:\t\t"..tab.xp..
       "\n\nMOTD:\n"..tab.motd
     ,"luctus_gang_font",10,20,color_white,TEXT_ALIGN_LEFT)
-  end
   overview:Dock(FILL)
+  overview:DockMargin(0,10,0,0)
+  overview:SetTextColor(color_white)
+  overview:SetFont("luctus_gang_font")
+  overview:SetDrawLanguageID(false)
+  overview:SetEditable(false)
+  overview:SetPaintBackground(false)
   sheet:AddSheet( "Overview", overview, "icon16/report.png" )
   
   
@@ -274,7 +280,7 @@ function openGangMenu(tab)
   money:Dock(FILL)
   
   money.Paint = function(self, w, h)
-    draw.DrawText("Gang-Money: "..tab.money,"luctus_gang_font",10,20,color_white,TEXT_ALIGN_LEFT)
+    draw.DrawText("Gang-Money: "..tab.money.."$","luctus_gang_font",10,20,color_white,TEXT_ALIGN_LEFT)
   end
   
   local moneyDepositButton = vgui.Create("DButton",money)
@@ -328,10 +334,10 @@ function openGangMenu(tab)
   partyButton:SetSize(100,50)
   partyButton:SetPos(120,10)
   luctusNiceButton(partyButton)
-  partyButton:SetText("Turn "..(LUCTUS_PARTY_HUD and "on" or "off").." party HUD")
+  partyButton:SetText("Turn "..(LUCTUS_PARTY_HUD and "off" or "on").." party HUD")
   function partyButton:DoClick()
     LUCTUS_PARTY_HUD = not LUCTUS_PARTY_HUD
-    self:SetText("Turn "..(LUCTUS_PARTY_HUD and "on" or "off").." party HUD")
+    self:SetText("Turn "..(LUCTUS_PARTY_HUD and "off" or "on").." party HUD")
   end
   
   local motdButton = vgui.Create("DButton",settings)

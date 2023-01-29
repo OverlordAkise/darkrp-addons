@@ -275,10 +275,11 @@ hook.Add("PlayerSay", "luctus_gangs_chat", function(ply,text,team)
         net.WriteTable(luctusGetGangInfo(ply:GetNWString("gang","")))
       net.Send(ply)
     else
-      DarkRP.notify(ply, 1, 4, "You are not in a gang! Either create one at the NPC or join one!")
+      DarkRP.notify(ply, 1, 4, "You are not in a gang! Either create one with '!creategang' or join one!")
     end
     return ""
   end
+  --[[
   --debugging
   if text == "!lg" then
     PrintTable(sql.QueryRow("SELECT rowid,* FROM luctus_gangs"))
@@ -286,6 +287,7 @@ hook.Add("PlayerSay", "luctus_gangs_chat", function(ply,text,team)
   if text == "!lm" then
     PrintTable(sql.QueryRow("SELECT rowid,* FROM luctus_gangmember"))
   end
+  --]]
 end)
 
 
