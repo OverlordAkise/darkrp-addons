@@ -19,8 +19,9 @@ ENT.AdminSpawnable = true
 ENT.sizeMul = LUCTUS_NLR_SIZE
 ENT.player = nil
 
-if SERVER then 
-  function ENT:Initialize()
+if SERVER then
+
+function ENT:Initialize()
     --print(self:GetPos())
     --print(player.GetAll()[1]:GetEyeTrace().HitPos)
     self:SetModel(self.Model)
@@ -31,8 +32,8 @@ if SERVER then
 
     self.Phys = self:GetPhysicsObject()
     if self.Phys and self.Phys:IsValid() then
-      self.Phys:Sleep()
-      self.Phys:EnableCollisions( false )
+        self.Phys:Sleep()
+        self.Phys:EnableCollisions( false )
     end
     
     local va, vb = self:GetModelBounds()
@@ -45,26 +46,29 @@ if SERVER then
     self:DrawShadow( false )
     self:SetNotSolid( true )
     self:SetNoDraw( false )
-  end
+end
   
-  function ENT:StartTouch(ent)
+function ENT:StartTouch(ent)
     if self.player and IsValid(self.player) then
-      luctusTakeWeapons(self.player)
+        luctusTakeWeapons(self.player)
     end
-  end
+end
   
-  function ENT:EndTouch(ent)
+function ENT:EndTouch(ent)
     if self.player and IsValid(self.player) then
-      luctusGiveWeaponsBack(self.player)
+        luctusGiveWeaponsBack(self.player)
     end
-  end
+end
   
 else
   --CLIENT
-  function ENT:Draw()
-      self:DrawModel()
-  end
-  function ENT:Initialize()
+  
+function ENT:Draw()
+    self:DrawModel()
+end
+
+function ENT:Initialize()
     self:SetNoDraw(true)
-  end
+end
+
 end
