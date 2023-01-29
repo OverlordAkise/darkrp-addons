@@ -16,7 +16,7 @@ hook.Add("PlayerSpawnObject", "luctus_safezones_nospawning", function(ply, model
   end
 end)
 
-hook.Add("PlayerInitialSpawn", "luctus_safezone_init", function(ply)
+function LuctusSafezoneHandleSpawns()
   local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_safezones(pos_one VARCHAR(200), pos_two VARCHAR(200))")
   if res == false then 
     print("[luctus_safezones] ERROR DURING TABLE CREATION!")
@@ -46,7 +46,10 @@ hook.Add("PlayerInitialSpawn", "luctus_safezone_init", function(ply)
   end
   print("[luctus_safezones] Safezones spawned!")
   hook.Remove("PlayerInitialSpawn", "luctus_safezone_init")
-end)
+end
+
+hook.Add("PlayerInitialSpawn", "luctus_safezone_init", LuctusSafezoneHandleSpawns)
+hook.Add("PostCleanupMap", "luctus_safezone_init", LuctusSafezoneHandleSpawns)
 
 function luctusLeftSafezone(ply)
   ply.luctusInSafezone = false
