@@ -62,6 +62,9 @@ if SERVER then
 else
   --CLIENT
   function ENT:Draw()
-      self:DrawModel() 
+      self:DrawModel()
+  end
+  function ENT:Initialize()
+    self:SetNoDraw(true)
   end
 end

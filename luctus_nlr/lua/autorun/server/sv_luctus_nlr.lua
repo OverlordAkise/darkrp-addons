@@ -2,8 +2,9 @@
 --Made by OverlordAkise
 
 util.AddNetworkString("luctus_nlr_greyscreen")
+util.AddNetworkString("luctus_nlr_showzone")
 
-hook.Add("PostPlayerDeath","luctus_nlr_set",function(ply)
+function LuctusNlrHandleDeath(ply)
   if ply.nlrzone and IsValid(ply.nlrzone) then
     ply.nlrzone:Remove()
   end
@@ -14,7 +15,16 @@ hook.Add("PostPlayerDeath","luctus_nlr_set",function(ply)
   ent:SetPos(ply:GetPos())
   ent:Spawn()
   luctusStartNLRTimer(ply)
-end)
+  timer.Simple(0.5,function()
+    net.Start("luctus_nlr_showzone")
+      net.WriteEntity(ent)
+    net.Send(ply)
+  end)
+end
+
+hook.Add("MedicSys_PlayerDeath","luctus_nlr_set_gd",LuctusNlrHandleDeath)
+hook.Add("PostPlayerDeath","luctus_nlr_set",LuctusNlrHandleDeath)
+
 
 function luctusStartNLRTimer(ply)
   timer.Create(ply:SteamID().."_nlrzone",300,1,function()

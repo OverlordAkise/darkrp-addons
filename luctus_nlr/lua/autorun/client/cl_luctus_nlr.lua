@@ -1,6 +1,12 @@
 --Luctus NLR
 --Made by OverlordAkise
 
+net.Receive("luctus_nlr_showzone",function()
+  local ent = net.ReadEntity()
+  if not IsValid(ent) then return end
+  ent:SetNoDraw(false)
+end)
+
 net.Receive("luctus_nlr_greyscreen",function()
   local toggle = net.ReadBool()
   if toggle then
