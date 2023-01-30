@@ -5,10 +5,10 @@ lwconfig = {}
 
 --What groups have access to the warn admin system
 lwconfig.allowedGroups = {
-  ["superadmin"] = true,
-  ["admin"] = true,
-  ["moderator"] = true,
-  ["supporter"] = true,
+    ["superadmin"] = true,
+    ["admin"] = true,
+    ["moderator"] = true,
+    ["supporter"] = true,
 }
 --How many active warns until you get kicked for new warns
 lwconfig.warnsToKick = 3
@@ -21,9 +21,9 @@ lwconfig.chatCommand = "!warn"
 
 
 lwconfig.warnsToBan = {
---[warns] = time in minutes,
-  [5] = 1440, --after 5 active warns 24h ban
-  [10] = 44640, --10 warns = 1 month ban
+  --[warnsNeeded] = bantime in minutes,
+    [5] = 1440, --after 5 active warns 24h ban
+    [10] = 44640, --10 warns = 1 month ban
 }
 
 print("[luctus_warn] Loaded SH file!")
