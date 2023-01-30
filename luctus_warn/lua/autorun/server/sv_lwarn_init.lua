@@ -1,4 +1,4 @@
---LucidWarn
+--Luctus Warn
 --Made by OverlordAkise
 
 util.AddNetworkString("lw_requestwarns")
@@ -159,4 +159,4 @@ hook.Add("Initialize", "lwarn_init", function()
   sql.Query("CREATE TABLE IF NOT EXISTS lwarn_logs (time DATETIME, log TEXT)")
 end)
 
-print("[lucid_warn] Loaded SV file!")
+print("[luctus_warn] Loaded SV file!")

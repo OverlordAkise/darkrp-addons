@@ -1,4 +1,4 @@
---Lucid Warn
+--Luctus Warn
 --Made by OverlordAkise
 
 function openWarnMenu()
@@ -326,4 +326,4 @@ hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead)
 	end
 end)
 
-print("[lucid_warn] Loaded CL file!")
+print("[luctus_warn] Loaded CL file!")

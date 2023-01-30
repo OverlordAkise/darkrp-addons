@@ -1,4 +1,4 @@
---LucidWarn
+--Luctus Warn
 --Made by OverlordAkise
 
 lwconfig = {}
@@ -26,4 +26,4 @@ lwconfig.warnsToBan = {
   [10] = 44640, --10 warns = 1 month ban
 }
 
-print("[lucid_warn] Loaded SH file!")
+print("[luctus_warn] Loaded SH file!")
