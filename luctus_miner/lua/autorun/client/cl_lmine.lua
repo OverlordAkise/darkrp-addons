@@ -5,7 +5,7 @@ function luctusMineHUD()
   local text = ""
   surface.SetFont("DermaLarge")
   local tW, tH = surface.GetTextSize(text)
-  surface.SetDrawColor(Color(0,0,0,200))
+  surface.SetDrawColor(0,0,0,200)
   surface.DrawRect(ScrW()/2+50, ScrH()-110, 5 + #luctus.mine.ores * 55, 50)
   for k,v in pairs(luctus.mine.ores) do
     surface.SetTextColor(v["Color"])
