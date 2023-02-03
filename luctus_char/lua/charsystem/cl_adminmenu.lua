@@ -15,6 +15,7 @@ local function DrawBlur( panel , amount ) -- blur function
   end
 end
 
+local white_ish = Color(200, 200, 200, 255)
 
 function OpenAdminSystem(characters, steamid)
   if IsValid(AdminFrame) then return end
@@ -113,7 +114,7 @@ function OpenAdminSystem(characters, steamid)
   Char1Button:SetText( "Slot 1" )
   Char1Button:SetFont( "Trebuchet24" )
   function Char1Button.Paint( self , w , h )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 200, 200, 200 , 255 ) )
+    draw.RoundedBox( 0 , 0 , 0 , w , h , white_ish )
   end
   function Char1Button.DoClick()
     CharName:SetText(characters[1] and characters[1].name or "None")
@@ -128,7 +129,7 @@ function OpenAdminSystem(characters, steamid)
   Char2Button:SetText( "Slot 2" )
   Char2Button:SetFont( "Trebuchet24" )
   function Char2Button.Paint( self , w , h )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 200, 200, 200 , 255 ) )
+    draw.RoundedBox( 0 , 0 , 0 , w , h , white_ish )
   end
   function Char2Button.DoClick()
     CharName:SetText(characters[2] and characters[2].name or "None")
@@ -143,7 +144,7 @@ function OpenAdminSystem(characters, steamid)
   Char3Button:SetText( "Slot 3" )
   Char3Button:SetFont( "Trebuchet24" )
   function Char3Button.Paint( self , w , h )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 200, 200, 200 , 255 ) )
+    draw.RoundedBox( 0 , 0 , 0 , w , h , white_ish )
   end
   function Char3Button.DoClick()
     CharName:SetText(characters[3] and characters[3].name or "None")

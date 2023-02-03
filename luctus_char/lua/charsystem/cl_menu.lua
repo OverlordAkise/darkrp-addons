@@ -23,6 +23,11 @@ local function DrawBlur( panel , amount ) -- blur function
   end
 end
 
+local color_dark = Color(0, 0, 0, 190)
+local color_red_transparent = Color(255, 0, 0, 155)
+local color_dark_transparent_1 = Color(0, 0, 0, 175)
+local color_dark_transparent_2 = Color(0, 0, 0, 100)
+local color_dark_transparent_3 = Color(0, 0, 0, 120)
 
 function LuctusChar.DeleteCharMenuOpen(slot,name)
   if not IsValid(BgFrame) then return end
@@ -35,9 +40,9 @@ function LuctusChar.DeleteCharMenuOpen(slot,name)
   DeleteWindow:ShowCloseButton(false)
   function DeleteWindow.Paint(self, w, h)
     DrawBlur( self , 3 )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175) )
-    draw.RoundedBox( 0 , 0 , 0 , w , 20 , Color( 0 , 0 , 0 , 190 ) )
-    draw.SimpleText("Really delete this character?", "Trebuchet24", w/2, h/2 - 30, Color(255,0,0,155), TEXT_ALIGN_CENTER)
+    draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark_transparent_1 )
+    draw.RoundedBox( 0 , 0 , 0 , w , 20 , color_dark )
+    draw.SimpleText("Really delete this character?", "Trebuchet24", w/2, h/2 - 30, color_red_transparent, TEXT_ALIGN_CENTER)
     draw.SimpleText(name, "Trebuchet24", w/2, h/2, color_white, TEXT_ALIGN_CENTER)
   end
 
@@ -94,9 +99,9 @@ function LuctusChar.NameInputMenuOpen(slot)
   NameInput:ShowCloseButton(false)
   function NameInput.Paint(self, w, h)
     DrawBlur( self , 3 )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175) )
-    draw.RoundedBox( 0 , 0 , 0 , w , 20 , Color( 0 , 0 , 0 , 190 ) )
-    draw.SimpleText(NameError, "Trebuchet18", w/2, h-50, Color(255,0,0,155), TEXT_ALIGN_CENTER)
+    draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark )
+    draw.RoundedBox( 0 , 0 , 0 , w , 20 , color_dark )
+    draw.SimpleText(NameError, "Trebuchet18", w/2, h-50, color_red_transparent, TEXT_ALIGN_CENTER)
   end
 
 
@@ -169,7 +174,7 @@ function LuctusChar.OpenCharMenu(CharTable)
   BgFrame:MakePopup()
   function BgFrame:Paint(w, h)
 		DrawBlur( self , 5 )
-    draw.RoundedBox(0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175 ))
+    draw.RoundedBox(0 , 0 , 0 , w , h , color_dark)
 	end
   function BgFrame:OnKeyCodePressed( keyCode ) 
 		if (keyCode == 93) then --if F2 pressed
@@ -183,7 +188,7 @@ function LuctusChar.OpenCharMenu(CharTable)
   TopPanel:SetSize( ScrW(), 60)
   TopPanel.Paint = function( self , w , h )
     DrawBlur( self , 3 )
-    draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 100 ) )
+    draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark_transparent_2 )
   end
 
 
@@ -206,7 +211,7 @@ function LuctusChar.OpenCharMenu(CharTable)
     CustomButton:SetFont( "Trebuchet24" )
     function CustomButton.Paint( self , w , h )
       DrawBlur( self , 3 )
-      draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175 ) )
+      draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark )
     end
     function CustomButton.DoClick()
       gui.OpenURL( v[2] )
@@ -231,8 +236,8 @@ function LuctusChar.OpenCharMenu(CharTable)
     CharPanel:SetSize( px , py )
     CharPanel.Paint = function( self , w , h )
       DrawBlur( self , 3 )
-      draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175 ) )
-      draw.RoundedBox(0,0,0,w,h*0.2,Color(0,0,0,190))
+      draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark )
+      draw.RoundedBox(0,0,0,w,h*0.2,color_dark)
     end
     local CharModelPan = vgui.Create( "DModelPanel" , CharPanel ) -- char 1 model preview
     CharModelPan:SetPos( 0 , py*0.15 )
@@ -286,7 +291,7 @@ function LuctusChar.OpenCharMenu(CharTable)
     CharPlay:SetSize( ScrW() * 0.260 , ScrH() * 0.074 )
     CharPlay:SetFont( "Trebuchet24" )
     CharPlay.Paint = function( self , w , h )
-      draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 120 ) )
+      draw.RoundedBox( 0 , 0 , 0 , w , h , color_dark_transparent_3 )
     end
     if(character.playing) then
       CharPlay:SetText( "Currently playing!" )
