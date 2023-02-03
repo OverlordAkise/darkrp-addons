@@ -88,7 +88,7 @@ function ENT:Draw()
     draw.NoTexture()
     surface.DrawPoly( tri )
 
-    draw.SimpleText("Medic","ChefsFancyFont",0,-40,Color(255,255,255,255) , 1 , 1)
+    draw.SimpleText("Medic","ChefsFancyFont",0,-40,color_white , 1 , 1)
   cam.End3D2D()
   end
 end
@@ -137,8 +137,8 @@ net.Receive("luctus_medic_npc",function()
     BuyButton:SetSize(450,40)
     BuyButton.Paint = function(self, w, h)
       draw.RoundedBox(0, 0, 0, w, h, Color(255,255,255,230))
-      draw.SimpleText(k.." HP", "Font", 5, 0+h/2-13, Color(0,0,0,255), TEXT_ALIGN_LEFT)
-      draw.SimpleText(v, "Font", w-5, 0+h/2-13, Color(0,0,0,255), TEXT_ALIGN_RIGHT)
+      draw.SimpleText(k.." HP", "Font", 5, 0+h/2-13, color_black, TEXT_ALIGN_LEFT)
+      draw.SimpleText(v, "Font", w-5, 0+h/2-13, color_black, TEXT_ALIGN_RIGHT)
     end
     BuyButton.DoClick = function(self)
       net.Start("luctus_medic_npc")

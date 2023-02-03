@@ -25,7 +25,6 @@ text_hover_color = Color(40, 40, 40)
 
 surface.CreateFont("EscapeFont", {font = "Arial", size = 20, weight = 400})
 
-local color_black = Color(0,0,0,255)
 local ESCAPE_FRAME = nil
 
 local blur = Material('pp/blurscreen')

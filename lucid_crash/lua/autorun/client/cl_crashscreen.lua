@@ -27,19 +27,22 @@ end)
 surface.CreateFont( "LucidScoreFontBig", { font = "Montserrat", size = 35, weight = 800, antialias = true, bold = true })
 surface.CreateFont( "LucidScoreFontSmall", { font = "Montserrat", size = 20, weight = 700, antialias = true, bold = true })
 
+local color_black_transparent = Color(0,0,0,190)
+local color_grey = Color(140, 140, 140, 220)
+local color_dark_grey_transparent = Color(40,40,40,190)
 
 hook.Add( "InitPostEntity", "LucidCrashScreenInit", function(ply)
-  lcrashScreen = vgui.Create("DPanel")
-	lcrashScreen:SetSize(ScrW(),ScrH())
-	lcrashScreen:SetAlpha(0)
-	lcrashScreen:SetVisible(false)
-  lcrashScreen.disconnected = false
+	lcrashScreen = vgui.Create("DPanel")
+		lcrashScreen:SetSize(ScrW(),ScrH())
+		lcrashScreen:SetAlpha(0)
+		lcrashScreen:SetVisible(false)
+	lcrashScreen.disconnected = false
 
 	--Create a paint function.
 	lcrashScreen.Paint = function( s, w, h )
 
 		--Draw the background.
-		surface.SetDrawColor(Color(0,0,0,190))
+		surface.SetDrawColor(color_black_transparent)
 		surface.DrawRect(0,0,w,h)
 
 		surface.SetDrawColor(color_white)
@@ -50,7 +53,7 @@ hook.Add( "InitPostEntity", "LucidCrashScreenInit", function(ply)
 	end
 
 	local paintFunction = function( s, w, h )
-		surface.SetDrawColor(s:IsHovered() and Color(140,140,140,220) or Color(40,40,40,190))
+		surface.SetDrawColor(s:IsHovered() and color_grey or color_dark_grey_transparent)
 		surface.DrawRect(0,0,w,h)
 
 		surface.SetDrawColor(color_white)

@@ -13,7 +13,7 @@ function ENT:Draw()
     local text = "Police\nConfiscation Box"
     surface.SetDrawColor( 0, 0, 0, 150 )
     surface.DrawRect( -20, -13, 115, 59 )
-    draw.DrawText(text, "TargetID", 37, 0, Color( 255, 255, 255, 255 ),TEXT_ALIGN_CENTER)
+    draw.DrawText(text, "TargetID", 37, 0, color_white,TEXT_ALIGN_CENTER)
   cam.End3D2D()
   
   ang:RotateAroundAxis(ang:Forward(),-73)
@@ -22,6 +22,6 @@ function ENT:Draw()
     local text = "Drop items via\nyour GravGun\nhere"
     surface.SetDrawColor( 0, 0, 0, 150 )
     surface.DrawRect( -20, -13, 115, 59 )
-    draw.DrawText(text, "ChatFont", 37, 0, Color( 255, 255, 255, 255 ),TEXT_ALIGN_CENTER)
+    draw.DrawText(text, "ChatFont", 37, 0, color_white,TEXT_ALIGN_CENTER)
   cam.End3D2D()
 end

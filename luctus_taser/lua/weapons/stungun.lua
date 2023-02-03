@@ -60,11 +60,11 @@ function SWEP:Reload()
 	self:SetNextPrimaryFire( CurTime() + 2.2 )
 
 	self.Weapon:SendWeaponAnim( ACT_VM_RELOAD )
-	self.Owner:SetAnimation( PLAYER_RELOAD )
+	self:GetOwner():SetAnimation( PLAYER_RELOAD )
 
 
 	if( CLIENT ) then return end
-	self.Owner:EmitSound( "Weapon_Pistol.Reload" )
+	self:GetOwner():EmitSound( "Weapon_Pistol.Reload" )
 
 	timer.Simple( 2, function()
 		if IsValid( self ) then
@@ -78,8 +78,8 @@ end
 function SWEP:Trace()
 	local mins = Vector( -20, 0, 0 )
 	local maxs = Vector( 20, 0, 0 )
-	local startpos = self.Owner:GetPos() + self.Owner:GetForward() * 40 + self.Owner:GetUp() * 60
-	local dir = self.Owner:GetAngles():Forward()
+	local startpos = self:GetOwner():GetPos() + self:GetOwner():GetForward() * 40 + self:GetOwner():GetUp() * 60
+	local dir = self:GetOwner():GetAngles():Forward()
 	local range = LTAZER_MAXRANGE
 
 	local tr = util.TraceHull({
@@ -87,7 +87,7 @@ function SWEP:Trace()
 		endpos = startpos + dir * range,
 		maxs = maxs,
 		mins = mins,
-		filter = self.Owner
+		filter = self:GetOwner()
 	})
 
 	return tr
@@ -112,11 +112,11 @@ function SWEP:PrimaryAttack()
 	end
 
 	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
+	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 
 	if( SERVER ) then
 		self:Clean()
-		self.Owner:EmitSound( "npc/roller/mine/rmine_shockvehicle2.wav", 100 ,100 )
+		self:GetOwner():EmitSound( "npc/roller/mine/rmine_shockvehicle2.wav", 100 ,100 )
 
 		local tr = self:Trace()
 
@@ -127,14 +127,14 @@ function SWEP:PrimaryAttack()
 		self.tracker[ 2 ] = ents.Create( "stungun_rope" )
 		self.tracker[ 2 ]:Spawn()
 
-		local bone = self.Owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
+		local bone = self:GetOwner():LookupBone( "ValveBiped.Bip01_R_Hand" )
 		if( bone ) then
-			bone = self.Owner:GetBonePosition( bone )
+			bone = self:GetOwner():GetBonePosition( bone )
 			self.tracker[ 1 ]:SetPos( bone + self:GetRight() * 10 + self:GetUp() * 3 + self:GetForward() * 15 )
 			self.tracker[ 2 ]:SetPos( bone + self:GetRight() * 12 + self:GetUp() * 3 + self:GetForward() * 15 )
 		else
-			self.tracker[ 1 ]:SetPos( self:GetPos() + self.Owner:GetUp() * 50 )
-			self.tracker[ 2 ]:SetPos( self:GetPos() + self.Owner:GetUp() * 50 )
+			self.tracker[ 1 ]:SetPos( self:GetPos() + self:GetOwner():GetUp() * 50 )
+			self.tracker[ 2 ]:SetPos( self:GetPos() + self:GetOwner():GetUp() * 50 )
 		end
 
 		if tr.Entity and tr.Entity:IsPlayer() then

@@ -46,7 +46,7 @@ if CLIENT then
     --ang:RotateAroundAxis(LocalPlayer():GetAngles():Right(),90)
     
     cam.Start3D2D(p, Angle(0, LocalPlayer():EyeAngles().y - 90, 90), 0.4)
-      draw.RoundedBox(0, -51, 0, 102, 20, Color(255,255,255,255))
+      draw.RoundedBox(0, -51, 0, 102, 20, color_white)
       draw.RoundedBox(0, -50, 1, math.max((self:GetOreHP()*100)/self.HP,0), 18, Color(0,255,0,255))
     cam.End3D2D()
   end

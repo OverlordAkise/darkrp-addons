@@ -60,6 +60,11 @@ hook.Add("NotifyShouldTransmit","luctus_devtools",function(ent, shouldTransmit)
 end)
 
 local color_dark = Color(40,40,40,230)
+local color_green = Color(0,255,0)
+local color_blue = Color(0,0,255)
+local color_pink = Color(200,100,255)
+local color_yellow = Color(255,255,0)
+local color_turquoise = Color(0,255,255)
 
 LstartHeight = 100
 Lwidth = 10
@@ -119,7 +124,7 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   draw.DrawText("#ents+/s: "..entitiesAddedLastSecond,"Default",Lwidth,lineheight())
   draw.DrawText("#ents-/s: "..entitiesRemovedLastSecond,"Default",Lwidth,lineheight())
 
-  draw.DrawText("You","Default",Lwidth,lineheight(10),Color(0,255,0))
+  draw.DrawText("You","Default",Lwidth,lineheight(10),color_green)
   draw.DrawText("Model: "..lp:GetModel(),"Default",Lwidth,lineheight())
   draw.DrawText("Pos: "..math.Round(lp:GetPos().x,2).." "..math.Round(lp:GetPos().y,2).." "..math.Round(lp:GetPos().z,2),"Default",Lwidth,lineheight())
   draw.DrawText("Ang: "..math.Round(lp:GetAngles().p,2).." "..math.Round(lp:GetAngles().y,2).." "..math.Round(lp:GetAngles().r,2),"Default",Lwidth,lineheight())
@@ -133,14 +138,14 @@ hook.Add("HUDPaint", "luctus_devtools", function()
     if math.Round(lp:GetAngles().p,2) >= 89 then
         ent = lp
     end
-    draw.DrawText("Entity","Default",Lwidth,lineheight(10),Color(0,0,255))
+    draw.DrawText("Entity","Default",Lwidth,lineheight(10),color_blue)
     draw.DrawText("Class: "..ent:GetClass(),"Default",Lwidth,lineheight())
     draw.DrawText("Model: "..ent:GetModel(),"Default",Lwidth,lineheight())
     draw.DrawText("Pos: "..math.Round(ent:GetPos().x,2).." "..math.Round(ent:GetPos().y,2).." "..math.Round(ent:GetPos().z,2),"Default",Lwidth,lineheight())
     draw.DrawText("Vel.: "..math.Round(ent:GetVelocity():Length(),2),"Default",Lwidth,lineheight())
     draw.DrawText("EntIndex: "..ent:EntIndex(),"Default",Lwidth,lineheight())
     draw.DrawText("HitTexture: "..eye.HitTexture,"Default",Lwidth,lineheight())
-    draw.DrawText("HitMaterials: ","Default",Lwidth,lineheight(10),Color(200,100,255))
+    draw.DrawText("HitMaterials: ","Default",Lwidth,lineheight(10),color_pink)
     if ent:GetClass() ~= "worldspawn" then
         for k,v in ipairs(ent:GetMaterials()) do
             draw.DrawText(k.."->"..v,"Default",Lwidth,lineheight())
@@ -168,12 +173,12 @@ hook.Add("HUDPaint", "luctus_devtools", function()
       draw.DrawText("Weapon: "..(IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetClass() or "NIL"),"Default",Lwidth,lineheight())
     end
     
-    draw.DrawText("NWVar:","Default",Lwidth,lineheight(10),Color(255,255,0))
+    draw.DrawText("NWVar:","Default",Lwidth,lineheight(10),color_yellow)
     for k,v in pairs(ent:GetNWVarTable()) do
         draw.DrawText(k.." -> "..(isbool(v) and (v and "true" or "false") or v),"Default",Lwidth,lineheight())
     end
     
-    draw.DrawText("NetworkVar:","Default",Lwidth,lineheight(10),Color(0,255,255))
+    draw.DrawText("NetworkVar:","Default",Lwidth,lineheight(10),color_turquoise)
     if ent.GetNetworkVars and ent:GetNetworkVars() then
         for k,v in pairs(ent:GetNetworkVars()) do
             draw.DrawText(k.." -> "..v,"Default",Lwidth,lineheight())
@@ -213,6 +218,9 @@ hook.Add("CreateMove","luctus_dev_hud_mouse",function(cmd)
 end)
 --]]
 
+local color_light_blue = Color(51, 204, 255, 255)
+local color_dark_yellow = Color(255, 204, 51, 255)
+
 local zeroAngle = Angle(0, 0, 0)
 hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
   if not showBBox then return end
@@ -227,10 +235,10 @@ hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
       for hitbox=0, ent:GetHitBoxCount( group ) - 1 do
         local pos, ang =  ent:GetBonePosition( ent:GetHitBoxBone(hitbox, group) )
         local mins, maxs = ent:GetHitBoxBounds(hitbox, group)
-        render.DrawWireframeBox( pos, ang, mins, maxs, Color(51, 204, 255, 255), true )
+        render.DrawWireframeBox( pos, ang, mins, maxs, color_light_blue, true )
       end
     end
-    render.DrawWireframeBox( ent:GetPos(), zeroAngle, ent:OBBMins(), ent:OBBMaxs(), Color(255, 204, 51, 255), true )
+    render.DrawWireframeBox( ent:GetPos(), zeroAngle, ent:OBBMins(), ent:OBBMaxs(), color_dark_yellow, true )
   end
 end)
 

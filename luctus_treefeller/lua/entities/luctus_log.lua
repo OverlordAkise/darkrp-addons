@@ -47,7 +47,7 @@ function ENT:Draw()
   ang:RotateAroundAxis(self:GetAngles():Forward(), 90)
   ang:RotateAroundAxis(self:GetAngles():Up(), 90)
   cam.Start3D2D(p, Angle(0, LocalPlayer():EyeAngles().y - 90, 90), 0.4)
-    draw.SimpleTextOutlined(self.selltext, "Trebuchet24", 0, 0, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0,0,0,255))
+    draw.SimpleTextOutlined(self.selltext, "Trebuchet24", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
   cam.End3D2D()
 end
 

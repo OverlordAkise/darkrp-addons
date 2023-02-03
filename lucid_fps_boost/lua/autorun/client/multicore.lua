@@ -3,7 +3,13 @@
 
 
 CreateClientConVar("lucid_enable_multicore", "0", true, false, "Automatically enables multicore upon joining the server")
-    
+
+local color_grey_1 = Color(32, 34, 37)
+local color_grey_2 = Color(54, 57, 62)
+local color_grey_3 = Color(47, 49, 54)
+local color_grey_4 = Color(66, 70, 77)
+local color_turquoise = Color(0, 195, 165)
+
 local function OpenMulticoreWindow()
     local window = vgui.Create("DFrame")
     window:SetTitle("")
@@ -12,8 +18,8 @@ local function OpenMulticoreWindow()
     window:MakePopup()
     window:ShowCloseButton(false)
     function window.Paint(s, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
-        draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+        draw.RoundedBox(0, 0, 0, w, h, color_grey_1)
+        draw.RoundedBox(0, 1, 1, w - 2, h - 2, color_grey_2)
     end
 
     local btns = vgui.Create("DPanel", window)
@@ -25,7 +31,7 @@ local function OpenMulticoreWindow()
     title:SetText("Enable Multicore Rendering?")
     title:SetFont("DermaLarge")
     title:Center()
-    title:SetTextColor( Color(255, 255, 255) )
+    title:SetTextColor( color_white )
     title:SetContentAlignment(8)
     title:Dock(FILL)
     title:DockMargin(0, 0, 0, 0)
@@ -34,7 +40,7 @@ local function OpenMulticoreWindow()
     subtext:SetText("This could boost your FPS!")
     subtext:SetFont("Trebuchet18")
     subtext:Center()
-    subtext:SetTextColor( Color(0, 195, 165) )
+    subtext:SetTextColor( color_turquoise )
     subtext:SetContentAlignment(5)
     subtext:Dock(FILL)
     subtext:DockMargin(0, 0, 0, 0)
@@ -43,17 +49,17 @@ local function OpenMulticoreWindow()
     btn_yes:SetText("Yes")
     btn_yes:SetFont("DermaDefault")
     btn_yes:Center()
-    btn_yes:SetTextColor( Color(255, 255, 255) )
+    btn_yes:SetTextColor( color_white )
     btn_yes:SetWide(window:GetWide() * 0.5 - 14)
     btn_yes:Dock(LEFT)
     function btn_yes.Paint(s, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+        draw.RoundedBox(0, 0, 0, w, h, color_grey_3)
         
         if (s.Hovered) then
-            draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+            draw.RoundedBox(0, 0, 0, w, h, color_grey_4)
         end
     end
-    btn_yes:SetTextColor( Color(255, 255, 255) )
+    btn_yes:SetTextColor( color_white )
     btn_yes.DoClick = function()
         RunConsoleCommand("gmod_mcore_test", "1")
         RunConsoleCommand("mat_queue_mode", "-1")
@@ -77,21 +83,21 @@ local function OpenMulticoreWindow()
     btn_no:SetWide(window:GetWide() * 0.5 - 14)
     btn_no:Dock(RIGHT)
     function btn_no.Paint(s, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
-        
+        draw.RoundedBox(0, 0, 0, w, h, color_grey_3)
+
         if (s.Hovered) then
-            draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+            draw.RoundedBox(0, 0, 0, w, h, color_grey_4)
         end
     end
-    btn_no:SetTextColor( Color(255, 255, 255) )
+    btn_no:SetTextColor( color_white )
     btn_no.DoClick = function()
         RunConsoleCommand("lucid_enable_multicore","0")
         window:Remove()
         surface.PlaySound( "garrysmod/ui_click.wav" )
         LocalPlayer():ChatPrint( "Multicore Rendering not enabled." )
     end
-    
-end        
+
+end
                 
 hook.Add("InitPostEntity","lucid_open_fps",function()
     timer.Simple(5,function()

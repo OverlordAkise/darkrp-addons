@@ -116,9 +116,9 @@ function SWEP:PrimaryAttack()
   if CLIENT then return end
 
   local tr = util.TraceLine({
-    start = self.Owner:EyePos(),
-    endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 80,
-    filter = self.Owner
+    start = self:GetOwner():EyePos(),
+    endpos = self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * 80,
+    filter = self:GetOwner()
   })
 
   if IsValid(tr.Entity) and tr.Entity:GetClass() == "prop_ragdoll" then
@@ -136,7 +136,7 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:BeginDefib(ply, ragdoll)
-  local spawnPos = self:FindPosition(self.Owner)
+  local spawnPos = self:FindPosition(self:GetOwner())
 
   if not spawnPos then
     self:FireError("ERROR - KEIN PLATZ")
@@ -176,7 +176,7 @@ function SWEP:FireSuccess()
   self:SetDefibState(STATE_NONE)
   self:SetNextPrimaryFire(CurTime() + 1)
   
-  hook.Call("UsedDefib", GAMEMODE, self.Owner)
+  hook.Call("UsedDefib", GAMEMODE, self:GetOwner())
 
   --self:Remove()
 end
@@ -185,7 +185,7 @@ function SWEP:Think()
   if CLIENT then return end
 
   if self:GetDefibState() == STATE_PROGRESS then
-    if not IsValid(self.Owner) then
+    if not IsValid(self:GetOwner()) then
       self:FireError()
       return
     end
@@ -196,9 +196,9 @@ function SWEP:Think()
     end
 
     local tr = util.TraceLine({
-      start = self.Owner:EyePos(),
-      endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 80,
-      filter = self.Owner
+      start = self:GetOwner():EyePos(),
+      endpos = self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * 80,
+      filter = self:GetOwner()
     })
 
     if tr.Entity ~= self.TargetRagdoll then
@@ -223,7 +223,7 @@ end
 
 function SWEP:HandleRespawn()
   local ply, ragdoll = self.TargetPly, self.TargetRagdoll
-  local spawnPos = self:FindPosition(self.Owner)
+  local spawnPos = self:FindPosition(self:GetOwner())
 
   if not spawnPos then
     return false

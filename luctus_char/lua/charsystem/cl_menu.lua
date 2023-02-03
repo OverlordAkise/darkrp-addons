@@ -38,7 +38,7 @@ function LuctusChar.DeleteCharMenuOpen(slot,name)
     draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175) )
     draw.RoundedBox( 0 , 0 , 0 , w , 20 , Color( 0 , 0 , 0 , 190 ) )
     draw.SimpleText("Really delete this character?", "Trebuchet24", w/2, h/2 - 30, Color(255,0,0,155), TEXT_ALIGN_CENTER)
-    draw.SimpleText(name, "Trebuchet24", w/2, h/2, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+    draw.SimpleText(name, "Trebuchet24", w/2, h/2, color_white, TEXT_ALIGN_CENTER)
   end
 
   local CloseButton = vgui.Create("DButton", DeleteWindow)

@@ -81,8 +81,8 @@ function SWEP:Initialize()
 		self:CreateModels(self.WElements) // create worldmodels
 		
 		// init view model bone build function
-		if IsValid(self.Owner) then
-			local vm = self.Owner:GetViewModel()
+		if IsValid(self:GetOwner()) then
+			local vm = self:GetOwner():GetViewModel()
 			if IsValid(vm) then
 				self:ResetBonePositions(vm)
 				
@@ -197,7 +197,7 @@ end
 
 function SWEP:PrimaryAttack()
 
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	if ( !self.IronSightsPos ) then return end
 	if ( self.NextSecondaryAttack > CurTime() ) then return end
 	
@@ -207,16 +207,16 @@ function SWEP:PrimaryAttack()
 
 	
 	
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	self.Owner:ViewPunch( Angle( -10, 0, 0 ) )
+	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+	self:GetOwner():ViewPunch( Angle( -10, 0, 0 ) )
 	if ply:Health() > 10 then
 		self.NextSecondaryAttack = CurTime() + 1
-		timer.Simple( 1, function() self.Owner:EmitSound( 'ambient/voices/cough1.wav' ) end )
+		timer.Simple( 1, function() self:GetOwner():EmitSound( 'ambient/voices/cough1.wav' ) end )
 		self:EmitSound ( "npc/barnacle/barnacle_gulp"..math.random(1,2)..".wav" )
 			if SERVER then
 				timer.Simple ( 1, function() ply:TakeDamage( 10, ply, self.Weapon  ) end )
 			end
-		timer.Simple( 1, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self.Owner, self.Owner:LookupAttachment("mouth") ) end )
+		timer.Simple( 1, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self:GetOwner(), self:GetOwner():LookupAttachment("mouth") ) end )
 		timer.Simple( 1, function() self:SetIronsights(b) end )
 	end
 	if ply:Health() < 11 then
@@ -225,9 +225,9 @@ function SWEP:PrimaryAttack()
 			if SERVER then
 				timer.Simple ( 2, function() ply:TakeDamage( 10, ply, self.Weapon ) end )
 			end
-		timer.Simple ( 1.5, function() self.Owner:EmitSound ( "npc/zombie/zombie_pain1.wav" ) end )
-		timer.Simple ( 1.5, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self.Owner, self.Owner:LookupAttachment("mouth") ) end )
-		timer.Simple ( 1.5, function() ParticleEffectAttach( "vomit_barnacle_b", PATTACH_POINT_FOLLOW, self.Owner, self.Owner:LookupAttachment("mouth") ) end )
+		timer.Simple ( 1.5, function() self:GetOwner():EmitSound ( "npc/zombie/zombie_pain1.wav" ) end )
+		timer.Simple ( 1.5, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self:GetOwner(), self:GetOwner():LookupAttachment("mouth") ) end )
+		timer.Simple ( 1.5, function() ParticleEffectAttach( "vomit_barnacle_b", PATTACH_POINT_FOLLOW, self:GetOwner(), self:GetOwner():LookupAttachment("mouth") ) end )
 		timer.Simple( 1, function() self:SendWeaponAnim( ACT_VM_THROW ) end )
 	
 	end
@@ -235,13 +235,13 @@ end
 
 function SWEP:Reload()
   if CLIENT then return end
-  self.Owner:DropWeapon()
+  self:GetOwner():DropWeapon()
 end
 
 
 function SWEP:SecondaryAttack()
 
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	local worldpos1 = self.GetForward
 	local worldpos2 = self.GetPos
 	if ( !self.IronSightsPos ) then return end
@@ -253,22 +253,22 @@ function SWEP:SecondaryAttack()
 	self.NextSecondaryAttack = CurTime() + 3.5
 	
 	
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	timer.Simple( 0.25, function() self.Owner:SetAnimation( PLAYER_ATTACK1 ) end )
-	timer.Simple( 0.5, function() self.Owner:SetAnimation( PLAYER_ATTACK1 ) end )
-	self.Owner:ViewPunch( Angle( -10, 0, 0 ) )
-	timer.Simple( 0.5, function() self.Owner:ViewPunch( Angle( -30, 0, 0 ) ) end )
-	timer.Simple( 0.25, function() self.Owner:ViewPunch( Angle( -20, 0, 0 ) ) end )
+	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+	timer.Simple( 0.25, function() self:GetOwner():SetAnimation( PLAYER_ATTACK1 ) end )
+	timer.Simple( 0.5, function() self:GetOwner():SetAnimation( PLAYER_ATTACK1 ) end )
+	self:GetOwner():ViewPunch( Angle( -10, 0, 0 ) )
+	timer.Simple( 0.5, function() self:GetOwner():ViewPunch( Angle( -30, 0, 0 ) ) end )
+	timer.Simple( 0.25, function() self:GetOwner():ViewPunch( Angle( -20, 0, 0 ) ) end )
 	self:EmitSound ( "npc/barnacle/barnacle_gulp"..math.random(1,2)..".wav" )
 	timer.Simple( 0.5, function() self:EmitSound ( "npc/barnacle/barnacle_gulp"..math.random(1,2)..".wav" ) end )
 	timer.Simple( 0.25, function() self:EmitSound ( "npc/barnacle/barnacle_gulp"..math.random(1,2)..".wav" ) end )
-	timer.Simple( 2, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self.Owner, self.Owner:LookupAttachment("mouth") ) end )
+	timer.Simple( 2, function() ParticleEffectAttach( "blood_impact_red_01_goop", PATTACH_POINT_FOLLOW, self:GetOwner(), self:GetOwner():LookupAttachment("mouth") ) end )
 	timer.Simple( 1, function() self:SetIronsights(b) end )
 		if SERVER then
 			timer.Simple ( 2.5, function() ply:TakeDamage( 10000, ply, self.Weapon  ) end )
 		end
-	timer.Simple ( 2, function() self.Owner:EmitSound ( "npc/zombie/zombie_pain1.wav" ) end )
-	timer.Simple ( 2, function() ParticleEffectAttach( "vomit_barnacle_b", PATTACH_POINT_FOLLOW, self.Owner, self.Owner:LookupAttachment("mouth") ) end )
+	timer.Simple ( 2, function() self:GetOwner():EmitSound ( "npc/zombie/zombie_pain1.wav" ) end )
+	timer.Simple ( 2, function() ParticleEffectAttach( "vomit_barnacle_b", PATTACH_POINT_FOLLOW, self:GetOwner(), self:GetOwner():LookupAttachment("mouth") ) end )
 	timer.Simple( 0.75, function() self:SendWeaponAnim( ACT_VM_THROW ) end )
 	util.Decal( ( "decals/blood" ), ply:GetPos(ply), ply:GetPos(ply) )
 	
@@ -294,7 +294,7 @@ function SWEP:PlayerDeath( ply, inflictor, attacker )
 end
 
 function SWEP:Think()
-local ply = self.Owner
+local ply = self:GetOwner()
 	if not ( ply:Alive() ) then
 	
 		timer.Remove ("throw")
@@ -316,8 +316,8 @@ end
 
 function SWEP:Holster()
 	
-	if CLIENT and IsValid(self.Owner) then
-		local vm = self.Owner:GetViewModel()
+	if CLIENT and IsValid(self:GetOwner()) then
+		local vm = self:GetOwner():GetViewModel()
 		if IsValid(vm) then
 			self:ResetBonePositions(vm)
 		end
@@ -335,7 +335,7 @@ if CLIENT then
 	SWEP.vRenderOrder = nil
 	function SWEP:ViewModelDrawn()
 		
-		local vm = self.Owner:GetViewModel()
+		local vm = self:GetOwner():GetViewModel()
 		if !IsValid(vm) then return end
 		
 		if (!self.VElements) then return end
@@ -463,8 +463,8 @@ if CLIENT then
 
 		end
 		
-		if (IsValid(self.Owner)) then
-			bone_ent = self.Owner
+		if (IsValid(self:GetOwner())) then
+			bone_ent = self:GetOwner()
 		else
 			// when the weapon is dropped
 			bone_ent = self
@@ -589,8 +589,8 @@ if CLIENT then
 				pos, ang = m:GetTranslation(), m:GetAngles()
 			end
 			
-			if (IsValid(self.Owner) and self.Owner:IsPlayer() and 
-				ent == self.Owner:GetViewModel() and self.ViewModelFlip) then
+			if (IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() and 
+				ent == self:GetOwner():GetViewModel() and self.ViewModelFlip) then
 				ang.r = -ang.r // Fixes mirrored models
 			end
 		

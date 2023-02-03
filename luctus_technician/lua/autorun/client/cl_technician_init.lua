@@ -51,7 +51,7 @@ function luctusTechnicianHUD()
 		surface.DrawRect( SW*0.3, SH/2+20, (SW*0.4)*(SmoothedProgress*0.01), 20 )
 		surface.SetDrawColor( 255, 255, 255, 5 )
 		surface.DrawRect( SW*0.3, SH/2+20, SW*0.4, 20 )
-    draw.SimpleTextOutlined( "Repairing...", "Trebuchet24", SW/2, SH/2+60, Color( 255, 255, 255, 255 ),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+    draw.SimpleTextOutlined( "Repairing...", "Trebuchet24", SW/2, SH/2+60, color_white,TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,color_black)
 	end
   --Show broken entities on the screen
   for _, ent in ipairs( ents.FindByClass( "luctus_tec*" ) ) do
@@ -59,7 +59,7 @@ function luctusTechnicianHUD()
 		local point = ent:GetPos() + ent:OBBCenter()
 		local data2D = point:ToScreen()
 		if ( not data2D.visible ) then continue end
-		draw.SimpleTextOutlined("r", "Marlett", data2D.x, data2D.y, Color( 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-    draw.SimpleTextOutlined(math.Round(LocalPlayer():GetPos():Distance(ent:GetPos())), "DermaDefault", data2D.x, data2D.y+20, Color( 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		draw.SimpleTextOutlined("r", "Marlett", data2D.x, data2D.y, Color( 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,color_black)
+    draw.SimpleTextOutlined(math.Round(LocalPlayer():GetPos():Distance(ent:GetPos())), "DermaDefault", data2D.x, data2D.y+20, Color( 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,color_black)
 	end
 end

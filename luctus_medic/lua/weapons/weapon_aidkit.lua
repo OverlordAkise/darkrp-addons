@@ -70,18 +70,18 @@ end
 function SWEP:PrimaryAttack()
   if ( CLIENT ) then return end
 
-	if ( self.Owner:IsPlayer() ) then
-		self.Owner:LagCompensation( true )
+	if ( self:GetOwner():IsPlayer() ) then
+		self:GetOwner():LagCompensation( true )
 	end
 
 	local tr = util.TraceLine( {
-		start = self.Owner:GetShootPos(),
-		endpos = self.Owner:GetShootPos() + self.Owner:GetAimVector() * 64,
-		filter = self.Owner
+		start = self:GetOwner():GetShootPos(),
+		endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 64,
+		filter = self:GetOwner()
 	} )
 
-	if ( self.Owner:IsPlayer() ) then
-		self.Owner:LagCompensation( false )
+	if ( self:GetOwner():IsPlayer() ) then
+		self:GetOwner():LagCompensation( false )
 	end
 
 	local ent = tr.Entity
@@ -94,17 +94,17 @@ function SWEP:PrimaryAttack()
 		ent:EmitSound( HealSound )
 		self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
 		self:SetNextPrimaryFire( CurTime() + self:SequenceDuration() + 0.5 )
-		self.Owner:SetAnimation( PLAYER_ATTACK1 )
+		self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 		self:Remove()
 	else
-		self.Owner:EmitSound( DenySound )
+		self:GetOwner():EmitSound( DenySound )
 		self:SetNextPrimaryFire( CurTime() + 1 )
 	end
 end
 
 function SWEP:SecondaryAttack()
   if ( CLIENT ) then return end
-	local ent = self.Owner
+	local ent = self:GetOwner()
 	local need = 25
 	if ( IsValid( ent ) ) then need = math.min( ent:GetMaxHealth() - ent:Health(), 25 ) end
 	if ( IsValid( ent ) && ent:Health() < ent:GetMaxHealth() ) then
@@ -112,7 +112,7 @@ function SWEP:SecondaryAttack()
 		ent:EmitSound( HealSound )
 		self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
 		self:SetNextSecondaryFire( CurTime() + self:SequenceDuration() + 0.5 )
-		self.Owner:SetAnimation( PLAYER_ATTACK1 )
+		self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 		self:Remove()
 	else
 		ent:EmitSound( DenySound )
@@ -122,7 +122,7 @@ end
 
 function SWEP:Reload()
   if CLIENT then return end
-  self.Owner:DropWeapon()
+  self:GetOwner():DropWeapon()
 end
 
 hook.Add( "PlayerCanPickupWeapon", "luctus_no_double_aidkit", function( ply, weapon )
@@ -152,8 +152,8 @@ function SWEP:Initialize()
 		self:CreateModels(self.WElements) -- create worldmodels
 		
 		-- init view model bone build function
-		if IsValid(self.Owner) then
-			local vm = self.Owner:GetViewModel()
+		if IsValid(self:GetOwner()) then
+			local vm = self:GetOwner():GetViewModel()
 			if IsValid(vm) then
 				self:ResetBonePositions(vm)
 				
@@ -176,8 +176,8 @@ end
 
 function SWEP:Holster()
 	
-	if CLIENT and IsValid(self.Owner) then
-		local vm = self.Owner:GetViewModel()
+	if CLIENT and IsValid(self:GetOwner()) then
+		local vm = self:GetOwner():GetViewModel()
 		if IsValid(vm) then
 			self:ResetBonePositions(vm)
 		end
@@ -195,7 +195,7 @@ if CLIENT then
 	SWEP.vRenderOrder = nil
 	function SWEP:ViewModelDrawn()
 		
-		local vm = self.Owner:GetViewModel()
+		local vm = self:GetOwner():GetViewModel()
 		if !IsValid(vm) then return end
 		
 		if (!self.VElements) then return end
@@ -323,8 +323,8 @@ if CLIENT then
 
 		end
 		
-		if (IsValid(self.Owner)) then
-			bone_ent = self.Owner
+		if (IsValid(self:GetOwner())) then
+			bone_ent = self:GetOwner()
 		else
 			-- when the weapon is dropped
 			bone_ent = self
@@ -449,8 +449,8 @@ if CLIENT then
 				pos, ang = m:GetTranslation(), m:GetAngles()
 			end
 			
-			if (IsValid(self.Owner) and self.Owner:IsPlayer() and 
-				ent == self.Owner:GetViewModel() and self.ViewModelFlip) then
+			if (IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() and 
+				ent == self:GetOwner():GetViewModel() and self.ViewModelFlip) then
 				ang.r = -ang.r -- Fixes mirrored models
 			end
 		

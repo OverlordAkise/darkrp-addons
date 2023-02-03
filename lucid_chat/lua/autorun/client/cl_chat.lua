@@ -35,6 +35,10 @@ function chefGetChatTag(group)
 	return ""
 end
 
+local color_dark = Color(30, 30, 30, 200)
+local color_dark_transparent = Color(30, 30, 30, 100)
+local color_grey = Color(80, 80, 80, 100)
+
 --// Builds the chatbox but doesn't display it
 function eChat.buildBox()
 	eChat.frame = vgui.Create("DFrame")
@@ -48,8 +52,8 @@ function eChat.buildBox()
 	eChat.frame:SetMinHeight( 100 )
   eChat.frame.Paint = function( self, w, h )
 		eChat.blur( self, 10, 20, 255 )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 200 ) )
-		draw.RoundedBox( 0, 0, 0, w, 25, Color( 80, 80, 80, 100 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, color_dark )
+		draw.RoundedBox( 0, 0, 0, w, 25, color_grey )
 	end
 	eChat.oldPaint = eChat.frame.Paint
   --eChat.frame.OnSizeChanged = function(self, newW, newH)
@@ -83,7 +87,7 @@ function eChat.buildBox()
 	eChat.entry:SetHighlightColor( Color(52, 152, 219) )
 	eChat.entry:SetPos( 45, eChat.frame:GetTall() - eChat.entry:GetTall() - 5 )
 	eChat.entry.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 100 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, color_dark_transparent )
 		derma.SkinHook( "Paint", "TextEntry", self, w, h )
 	end
 
@@ -154,7 +158,7 @@ function eChat.buildBox()
 	eChat.chatLog:SetSize( eChat.frame:GetWide() - 10, eChat.frame:GetTall() - 60 )
 	eChat.chatLog:SetPos( 5, 30 )
 	eChat.chatLog.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 100 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, color_dark_transparent )
 	end
 	eChat.chatLog.Think = function( self )
 		if eChat.lastMessage then
@@ -183,7 +187,7 @@ function eChat.buildBox()
 	say:SetPos( 5, eChat.frame:GetTall() - eChat.entry:GetTall() - 5 )
 	
 	say.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 100 ) )
+		draw.RoundedBox( 0, 0, 0, w, h, color_dark_transparent )
 		draw.DrawText( text, "eChat_18", 2, 1, color_white )
 	end
 

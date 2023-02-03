@@ -142,15 +142,15 @@ function SWEP:Think()
 end
 
 function SWEP:PrimaryAttack()
-  self.pos_one = self.Owner:GetEyeTrace().HitPos
+  self.pos_one = self:GetOwner():GetEyeTrace().HitPos
 end
 
 function SWEP:SecondaryAttack()
   if not self.pos_one then
-    self.Owner:PrintMessage(HUD_PRINTTALK, "Please set the first point first! (leftclick)")
+    self:GetOwner():PrintMessage(HUD_PRINTTALK, "Please set the first point first! (leftclick)")
     return
   end
-  self.pos_two = self.Owner:GetEyeTrace().HitPos
+  self.pos_two = self:GetOwner():GetEyeTrace().HitPos
   if CLIENT then return end
   luctusSaveSafezone(self.pos_one, self.pos_two)
   self.pos_one = nil
@@ -164,7 +164,7 @@ end
 if SERVER then return end
 
 function SWEP:DrawHUD()
-  draw.SimpleTextOutlined("Leftclick = place first point", "DermaLarge", 10, ScrH()/2.5, Color(255,255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(0,0,0,255))
-  draw.SimpleTextOutlined("Rightclick = place second point & save", "DermaLarge", 10, ScrH()/2.5+40, Color(255,255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(0,0,0,255))
-  draw.SimpleTextOutlined("Reload = Open menu to delete safezones", "DermaLarge", 10, ScrH()/2.5+80, Color(255,255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, Color(0,0,0,255))
+  draw.SimpleTextOutlined("Leftclick = place first point", "DermaLarge", 10, ScrH()/2.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, color_black)
+  draw.SimpleTextOutlined("Rightclick = place second point & save", "DermaLarge", 10, ScrH()/2.5+40, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, color_black)
+  draw.SimpleTextOutlined("Reload = Open menu to delete safezones", "DermaLarge", 10, ScrH()/2.5+80, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 2, color_black)
 end

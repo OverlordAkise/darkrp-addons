@@ -95,14 +95,17 @@ function SWEP:Reload()
     end
   end
 end
- 
+
+local color_green = Color(0, 255, 19)
+local color_dark = Color(20, 20, 20)
+
 function SWEP:Think()
   if not deviceScreen then return end
 	deviceScreen.Paint = function()
 		if self.isOn then --radio on
-			draw.RoundedBox( 8, 0, 0, deviceScreen:GetWide(), deviceScreen:GetTall(), Color(0,255,19) )
+			draw.RoundedBox( 8, 0, 0, deviceScreen:GetWide(), deviceScreen:GetTall(), color_green )
 		else
-			draw.RoundedBox( 8, 0, 0, deviceScreen:GetWide(), deviceScreen:GetTall(), Color(20,20,20) )
+			draw.RoundedBox( 8, 0, 0, deviceScreen:GetWide(), deviceScreen:GetTall(), color_dark )
 		end
 	end
 end

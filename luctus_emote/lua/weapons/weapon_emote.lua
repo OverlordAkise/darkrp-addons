@@ -112,9 +112,9 @@ if CLIENT then
   function SWEP:DrawHUD()
     local col = Color(100,100,100,240)
     if LocalPlayer():GetNWBool("la_in_animation") then
-      col = Color(255,255,255,255)
+      col = color_white
     end
-    draw.SimpleTextOutlined(LocalPlayer():GetNWString("la_animation"), "DermaLarge", ScrW()/2, ScrH()*0.6, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 3, Color(0,0,0,255))
+    draw.SimpleTextOutlined(LocalPlayer():GetNWString("la_animation"), "DermaLarge", ScrW()/2, ScrH()*0.6, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 3, color_black)
   end
   
   function SWEP:OnRemove()
@@ -132,7 +132,7 @@ end
 
 if SERVER then
   function SWEP:PrimaryAttack()
-    ply = self.Owner
+    local ply = self:GetOwner()
 
     if not ply:GetNWBool("la_in_animation") then
       if not ply:Crouching() and ply:GetVelocity():Length() < 5 and not ply:InVehicle() then
@@ -147,17 +147,17 @@ if SERVER then
   end
 
   function SWEP:OnRemove()
-    local ply = self.Owner
+    local ply = self:GetOwner()
     ToggleEmoteStatus(ply, false)
   end
 
   function SWEP:OnDrop()
-    local ply = self.Owner
+    local ply = self:GetOwner()
     ToggleEmoteStatus(ply, false)
   end
 
   function SWEP:Holster()
-    ToggleEmoteStatus(self.Owner, false)
+    ToggleEmoteStatus(self:GetOwner(), false)
     return true
   end
 end

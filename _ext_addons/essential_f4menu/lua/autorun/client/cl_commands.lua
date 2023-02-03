@@ -299,7 +299,7 @@ local function openCommands()
 		mainArgsPanel.btnMinim:Hide()
 
 		function mainArgsPanel.btnClose:Paint(w, h)
-			surface.SetDrawColor(Color(0, 0, 0))
+			surface.SetDrawColor(0, 0, 0)
 			surface.DrawOutlinedRect(0, 0, w, h)
 
 			if self:IsHovered() then

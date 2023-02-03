@@ -48,7 +48,7 @@ else
       draw.NoTexture()
       surface.DrawPoly( tri )
 
-      draw.SimpleText("Craftingtable","DermaLarge",0,-40,Color(255,255,255,255) , 1 , 1)
+      draw.SimpleText("Craftingtable","DermaLarge",0,-40,color_white , 1 , 1)
     cam.End3D2D()
   end
 end

@@ -240,14 +240,14 @@ function lucidlog_createLogWindow()
     lucidlog_clientRequest()
   end
   function lucidlog.LeftButton:Paint(w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
+    draw.RoundedBox(0,0,0,w,h,color_white)
 		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
   end
   function lucidlog.LeftButton:Think()
     if self:IsHovered() then
       self:SetTextColor(Color(0, 195, 165))
     else
-      self:SetTextColor(Color(255,255,255))
+      self:SetTextColor(color_white)
     end
   end
   
@@ -267,14 +267,14 @@ function lucidlog_createLogWindow()
     lucidlog_clientRequest()
   end
   function lucidlog.RightButton:Paint(w,h)
-    draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
+    draw.RoundedBox(0,0,0,w,h,color_white)
 		draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
   end
   function lucidlog.RightButton:Think()
     if self:IsHovered() then
       self:SetTextColor(Color(0, 195, 165))
     else
-      self:SetTextColor(Color(255,255,255))
+      self:SetTextColor(color_white)
     end
   end
   
@@ -296,7 +296,7 @@ function lucidlog_createLogWindow()
     if self:IsHovered() then
       self:SetTextColor(Color(0, 195, 165))
     else
-      self:SetTextColor(Color(255,255,255))
+      self:SetTextColor(color_white)
     end
   end
 
@@ -400,7 +400,7 @@ function lucidLogCreateButton(name,filter,category,categoryList)
     if self:IsHovered() then
       self:SetTextColor(Color(0, 195, 165))
     else
-      self:SetTextColor(Color(255,255,255))
+      self:SetTextColor(color_white)
     end
   end
 end

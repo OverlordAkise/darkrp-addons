@@ -209,7 +209,7 @@ local function drawMainFrameHeader()
     mainFrameHeader:DockMargin(0, 5, 0, 5)
     mainFrameHeader:SetTall(55)
     function mainFrameHeader:Paint()
-        surface.SetDrawColor(Color(0,0,0,255))
+        surface.SetDrawColor(color_black)
         surface.DrawRect(0, 0, 55, 55)
     end
 
