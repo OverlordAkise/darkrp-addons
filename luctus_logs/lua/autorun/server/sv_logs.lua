@@ -479,7 +479,10 @@ hook.Add("EntityTakeDamage","lucid_log_EntityTakeDamage",function(target, dmg)
     if target:IsPlayer() then
       name = target:Nick()
     end
-    local weapon = dmg:GetInflictor():GetClass()
+    local weapon = "UNKNOWN"
+    if IsValid(dmg:GetInflictor()) then
+      weapon = dmg:GetInflictor():GetClass()
+    end
     if IsValid(dmg:GetAttacker():GetActiveWeapon()) then
       weapon = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
