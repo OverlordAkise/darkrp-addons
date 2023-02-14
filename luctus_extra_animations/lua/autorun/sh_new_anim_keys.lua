@@ -5,6 +5,15 @@
 --Config start
 
 NewPrebuiltAnimations = {
+    --[ACT_GMOD_GESTURE_BOW] = "Bow",
+    --[ACT_GMOD_TAUNT_MUSCLE] = "Sexy Dance",
+    --[ACT_GMOD_GESTURE_BECON] = "Follow Me",
+    --[ACT_GMOD_TAUNT_LAUGH] = "Laugh",
+    --[ACT_GMOD_TAUNT_PERSISTENCE] = "Lion Pose",
+    --[ACT_GMOD_GESTURE_DISAGREE] = "No",
+    --[ACT_GMOD_GESTURE_AGREE] = "Thumbs Up",
+    --[ACT_GMOD_GESTURE_WAVE] = "Wave",
+    --[ACT_GMOD_TAUNT_DANCE] = "Dance",
     [ACT_SIGNAL_FORWARD] =  "Vorraus",
     [ACT_SIGNAL_GROUP] = "Sammeln",
     [ACT_SIGNAL_HALT] = "Stop",
