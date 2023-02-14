@@ -159,7 +159,7 @@ else
   end)
     
   hook.Add("PlayerInitialSpawn", "luctus_animations_setdefault", function(ply)
-    ply:SetNWString("la_animation", "salute")
+    ply:SetNWString("la_animation", "<unknown>")
   end)
 
   function ToggleEmoteStatus(ply, crossing)
