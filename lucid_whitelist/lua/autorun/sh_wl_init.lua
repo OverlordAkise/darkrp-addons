@@ -2,9 +2,9 @@
 --Made by OverlordAkise
 
 hook.Add("postLoadCustomDarkRPItems", "lucid_whitelist", function()
-    print("[lwhitelist] Adding whitelist check to jobs customCheck")
+    print("[luctus_whitelist] Adding whitelist check to jobs customCheck")
     for job_index,job in pairs(RPExtraTeams) do
-        if (job.lucid_customCheck == nil) then
+        if job.lucid_customCheck == nil then
             job.lucid_customCheck = job.customCheck or false
         end
         job.customCheck = function(ply)
@@ -16,7 +16,7 @@ hook.Add("postLoadCustomDarkRPItems", "lucid_whitelist", function()
             return GetGlobalBool(job.name,false) or ply:GetNWBool(job.name,false)
         end
     end
-    print("[lwhitelist] Finished adding whitelist checks to jobs")
+    print("[luctus_whitelist] Finished adding whitelist checks to jobs")
 end)
 
-print("[lwhitelist] Lucid Whitelist shared loaded!")
+print("[luctus_whitelist] Lucid Whitelist shared loaded!")

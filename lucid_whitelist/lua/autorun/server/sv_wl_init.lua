@@ -5,9 +5,9 @@ util.AddNetworkString("lucid_whitelist_get")
 util.AddNetworkString("lucid_whitelist_set")
 
 hook.Add("PlayerInitialSpawn", "lucid_whitelist", function(ply)
-    local sqlData = sql.QueryRow("SELECT * FROM lucid_whitelist WHERE steamid = "..sql.SQLStr(ply:SteamID()))
-    if sqlData then
-        local jsonData = util.JSONToTable(sqlData.jsonlist)
+    local jsonlist = sql.QueryValue("SELECT jsonlist FROM lucid_whitelist WHERE steamid = "..sql.SQLStr(ply:SteamID()))
+    if jsonlist then
+        local jsonData = util.JSONToTable(jsonlist)
         for k,v in pairs(jsonData) do
             ply:SetNWBool(k,v)
         end
@@ -16,12 +16,10 @@ end)
 
 hook.Add("InitPostEntity","lucid_whitelist",function()
     sql.Query("CREATE TABLE IF NOT EXISTS lucid_whitelist( steamid TEXT, jsonlist TEXT )")
-    local sqlData = sql.QueryRow("SELECT * FROM lucid_whitelist WHERE steamid = 'everyone'")
-    print("DEBUG sqlData:",sqlData)
-    if sqlData then
-        local jsonData = util.JSONToTable(sqlData.jsonlist)
+    local jsonlist = sql.QueryValue("SELECT jsonlist FROM lucid_whitelist WHERE steamid = 'everyone'")
+    if jsonlist then
+        local jsonData = util.JSONToTable(jsonlist)
         for k,v in pairs(jsonData) do
-            print("DEBUG adding global everyone:",k,"->",v)
             SetGlobalBool(k,v)
         end
     end
@@ -42,22 +40,21 @@ net.Receive("lucid_whitelist_set", function(len,ply)
     local jtext = util.Decompress(data)
     local jsondata = util.JSONToTable(jtext)
     local res = sql.Query("DELETE FROM lucid_whitelist WHERE steamid = "..sql.SQLStr(steamid))
-    if(res == false)then
-        print("[lwhitelist] ERROR DURING SQL SET DELETE!")
+    if res == false then
+        print("[luctus_whitelist] ERROR DURING SQL SET DELETE!")
     else
-        print("[lwhitelist] Successfully deleted old whitelist for user "..steamid)
+        print("[luctus_whitelist] Successfully deleted old whitelist for user "..steamid)
     end
     res = sql.Query("INSERT INTO lucid_whitelist(steamid,jsonlist) VALUES("..sql.SQLStr(steamid)..", "..sql.SQLStr(jtext)..")")
-    if(res == false)then
-        print("[lwhitelist] ERROR DURING SQL SET INSERT!")
+    if res == false then
+        print("[luctus_whitelist] ERROR DURING SQL SET INSERT!")
     else
-        print("[lwhitelist] Successfully inserted new whitelist for user "..steamid)
-        print("DEBUG Data: "..steamid.." Whitelist: "..jtext)
+        print("[luctus_whitelist] Successfully inserted new whitelist for user "..steamid)
     end
   
     if steamid == "everyone" then
         for job_index,job in pairs(RPExtraTeams) do
-            if(jsondata[job.name])then
+            if jsondata[job.name] then
                 SetGlobalBool(job.name,true)
             else
                 SetGlobalBool(job.name,false)
@@ -67,7 +64,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
         for k,v in pairs(player.GetAll()) do
             if v:SteamID() == steamid then
                 for job_index,job in pairs(RPExtraTeams) do
-                    if(jsondata[job.name])then
+                    if jsondata[job.name] then
                         v:SetNWBool(job.name,true)
                     else
                         v:SetNWBool(job.name,false)
@@ -104,4 +101,4 @@ net.Receive("lucid_whitelist_get", function(len,ply)
     net.Send(ply)
 end)
 
-print("[lwhitelist] Lucid Whitelist server loaded!")
+print("[luctus_whitelist] Lucid Whitelist server loaded!")

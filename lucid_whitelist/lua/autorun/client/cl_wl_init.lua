@@ -161,7 +161,6 @@ net.Receive("lucid_whitelist_get", function()
     SaveButton:DockMargin(10,10,10,10)
     SaveButton:SetTextColor(color_white)
     SaveButton.DoClick = function()
-        --print("[lwhitelist] Saving new whitelist")
         local newtab = {}
         for k,v in pairs(DScrollPanel:GetChildren()[1]:GetChildren())do
             if(v:GetChecked())then
@@ -189,4 +188,4 @@ end)
 
 concommand.Add("lwhitelist", openLucidWhitelistWindow)
 
-print("[lwhitelist] Lucid Whitelist client loaded!")
+print("[luctus_whitelist] Lucid Whitelist client loaded!")
