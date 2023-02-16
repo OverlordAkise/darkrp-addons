@@ -37,7 +37,10 @@ end
 
 local function log_push(cat,text)
   print("[luctus_logs] "..sql.SQLStr(text))
-  sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
+  local res = sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
+  if res == false then
+    error(sql.LastError())
+  end
   local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
   local value = {}
   value.date = datetime
