@@ -82,9 +82,8 @@ hook.Add("OnPlayerChangedTeam", "JobUpdatenLuctusChar", function(ply, oldjob, ne
   if(not ply.IsChoosingChar) then
     local jobcmd = LuctusGetCommandFromJob(newjob)
     local res = sql.Query("UPDATE luctus_char SET job = "..sql.SQLStr(jobcmd).." WHERE steamid = '"..ply:SteamID().."' and slot = "..ply.charCurSlot)
-    if(res == false)then
-      print("[luctus_char] ERROR DURING SQL UPDATE!")
-      print(sql.LastError())
+    if res == false then
+      error(sql.LastError())
     end
   end
 end)
@@ -98,9 +97,8 @@ net.Receive("LuctusCharPlayProfile", function(len,ply)
   local Slot = net.ReadUInt(8)
   Slot = math.Clamp(Slot,1,3)
   local ProfileTable = sql.Query("SELECT * FROM luctus_char WHERE steamid = "..sql.SQLStr(ply:SteamID()).." and slot = "..Slot)
-  if(ProfileTable == false) then
-    print("[luctus_char] ERROR DURING SQL SELECT IN PLAYPROFILE!")
-    print(sql.LastError())
+  if ProfileTable == false then
+    error(sql.LastError())
   end
   if(not ProfileTable) then
     return
@@ -137,10 +135,8 @@ net.Receive("LuctusCharCreateProfile", function(len,ply)
     end
     local jobcmd = LuctusGetCommandFromJob(LuctusChar.Config.DefaultTeam)
     local res = sql.Query("INSERT INTO luctus_char (steamid, slot, name, money, job) VALUES ("..sql.SQLStr(ply:SteamID())..", "..SlotNumber..", "..sql.SQLStr(name)..", "..LuctusChar.Config.DefaultMoney..", "..sql.SQLStr(jobcmd)..")")
-    if (res == false) then
-      print("[luctus_char] ERROR DURING SQL INSERT IN CREATEPROFILE")
-      print(sql.LastError())
-      return
+    if res == false then
+      error(sql.LastError())
     end
     DarkRP.notify(ply,0,5,"Character successfully created!")
   else
@@ -162,10 +158,8 @@ net.Receive("LuctusCharDeleteProfile", function(len,ply)
   end
   
   local res = sql.Query("DELETE FROM luctus_char WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND slot = "..DeletedSlot)
-  if (res == false) then
-    print("[luctus_char] ERROR DURING SQL DELETE IN DELETEPROFILE")
-    print(sql.LastError())
-    return
+  if res == false then
+    error(sql.LastError())
   end
   DarkRP.notify(ply,0,4,"Character successfully deleted!")
 

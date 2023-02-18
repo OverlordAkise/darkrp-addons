@@ -19,7 +19,7 @@ net.Receive("AdminMenuUpdateChar", function(len, ply)
   money = tonumber(money)
   
   local ChangedPlayer = player.GetBySteamID(steamid)
-  if(IsValid(ChangedPlayer) and ChangedPlayer.charCurSlot == slot) then
+  if IsValid(ChangedPlayer) and ChangedPlayer.charCurSlot == slot then
     DarkRP.notify(ply,0,5, "Can't update a character that is currently being played!")
     return
   end
@@ -27,18 +27,14 @@ net.Receive("AdminMenuUpdateChar", function(len, ply)
   local charExists = sql.Query("SELECT * FROM luctus_char WHERE steamid = "..sql.SQLStr(steamid).." AND slot = "..slot)
   if(charExists) then
     local res = sql.Query("UPDATE luctus_char SET job = "..sql.SQLStr(job)..", name = "..sql.SQLStr(name)..", money = "..money.." WHERE steamid = "..sql.SQLStr(steamid).." AND slot = "..slot)
-    if(res == false)then
-      print("[luctus_char] ERROR DURING SQL INSERT IN ADMINUPDATECHAR!")
-      print(sql.LastError())
-      return
+    if res == false then
+      error(sql.LastError())
     end
     DarkRP.notify(ply,0,5,"Successfully updated character!")
   else
     local res = sql.Query("INSERT INTO luctus_char(steamid,slot,job,name,money) VALUES("..sql.SQLStr(steamid)..", "..slot..", "..sql.SQLStr(job)..", "..sql.SQLStr(name)..", "..sql.SQLStr(money)..")")
-    if(res == false)then
-      print("[luctus_char] ERROR DURING SQL INSERT IN ADMINUPDATECHAR!")
-      print(sql.LastError())
-      return
+    if res == false then
+      error(sql.LastError())
     end
     DarkRP.notify(ply,0,5,"Successfully inserted new character!")
   end
@@ -58,10 +54,8 @@ net.Receive("AdminMenuDeleteChar", function(len,ply)
     return
   end
   local res = sql.Query("DELETE FROM luctus_char WHERE steamid = "..sql.SQLStr(steamid).." AND slot = "..SlotID)
-  if(res == false)then
-    print("[luctus_char] ERROR DURING SQL DELETE IN ADMINDELETECHAR!")
-    print(sql.LastError())
-    return
+  if res == false then
+    error(sql.LastError())
   end
   DarkRP.notify(ply,0,5,"Successfully deleted that character!")
 end)

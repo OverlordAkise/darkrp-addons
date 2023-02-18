@@ -77,18 +77,14 @@ function luctusRankup(ply,teamcmd,executor)
   local newId = 0
   local res = sql.Query("SELECT * FROM luctus_jobranks WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
   if res == false then
-    print("[luctus_jobranks] ERROR DURING SQL SELECT RANKUP!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   if res and res[1] then
     newId = math.min(tonumber(res[1].rankid) + 1,#luctus_jobranks[ply:Team()])
     --print(newId)
     local ires = sql.Query("UPDATE luctus_jobranks SET rankid = "..(newId).." WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
     if ires == false then
-      print("[luctus_jobranks] ERROR DURING SQL UPDATE RANKUP!")
-      print(sql.LastError())
-      return
+      error(sql.LastError())
     end
     DarkRP.notify(ply,0,5,"Du wurdest befördert!")
     ply:PrintMessage(HUD_PRINTTALK, "Du wurdest befördert!")
@@ -110,17 +106,13 @@ function luctusRankdown(ply,teamcmd,executor)
   local newId = 0
   local res = sql.Query("SELECT * FROM luctus_jobranks WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
   if res == false then
-    print("[luctus_jobranks] ERROR DURING SQL SELECT RANKDOWN!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   if res and res[1] then
     newId = math.max(tonumber(res[1].rankid) - 1,1)
     local ires = sql.Query("UPDATE luctus_jobranks SET rankid = "..(newId).." WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
     if ires == false then
-      print("[luctus_jobranks] ERROR DURING SQL UPDATE RANKDOWN!")
-      print(sql.LastError())
-      return
+      error(sql.LastError())
     end
     DarkRP.notify(ply,0,5,"Du wurdest degradiert!")
     ply:PrintMessage(HUD_PRINTTALK, "Du wurdest degradiert!")
@@ -254,9 +246,7 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
   if luctus_jobranks[afterNum] then
     local res = sql.Query("SELECT * FROM luctus_jobranks WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(RPExtraTeams[afterNum].command))
     if res == false then
-      print("[luctus_jobranks] ERROR DURING SQL SELECT JOBRANKS!")
-      print(sql.LastError())
-      return
+      error(sql.LastError())
     end
     if res and res[1] then
       local rankid = res[1].rankid
@@ -275,9 +265,7 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
     else
       local inres = sql.Query("INSERT INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(RPExtraTeams[afterNum].command)..",1)")
       if inres == false then
-        print("[luctus_jobranks] ERROR DURING SQL INSERT NEW JOBRANKS!")
-        print(sql.LastError())
-        return
+        error(sql.LastError())
       end
       if inres == nil then
         print("[luctus_jobranks] New player successfully inserted!")

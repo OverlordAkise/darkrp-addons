@@ -40,9 +40,7 @@ function luctusRetrieveGangMoney(ply,stramount)
   if gangname == "" then return end
   local res = sql.QueryRow("SELECT * FROM luctus_gangs WHERE name = "..sql.SQLStr(gangname))
   if res == false then
-    print("[luctus_gangs] ERROR DURING RETRIEVEGANGMONEY SQL 1/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   local availableMoney = tonumber(res.money)
   if not availableMoney or availableMoney == 0 then return end
@@ -50,10 +48,8 @@ function luctusRetrieveGangMoney(ply,stramount)
   ply:addMoney(amount)
   res = sql.Query("UPDATE luctus_gangs SET money = "..(availableMoney-amount).." WHERE name = "..sql.SQLStr(gangname))
   if res == false then
-    print("[luctus_gangs] ERROR DURING RETRIEVEGANGMONEY SQL 2/2!")
-    print("[luctus_gangs] WARNING: WHILE THIS PERSISTS PLAYERS CAN GET INFINITE MONEY!")
-    print(sql.LastError())
-    return
+    print("[luctus_gangs] ERROR; WARNING: WHILE THIS PERSISTS PLAYERS CAN GET INFINITE MONEY!:")
+    error(sql.LastError())
   end
   DarkRP.notify(ply,0,5,"You retrieved "..amount.."$ from your gang!")
 end
@@ -73,9 +69,7 @@ function luctusDepositGangMoney(ply,stramount)
   ply:addMoney(-1 * amount)
   res = sql.Query("UPDATE luctus_gangs SET money = money + "..amount.." WHERE name = "..sql.SQLStr(gangname))
   if res == false then
-    print("[luctus_gangs] ERROR DURING DEPOSITGANGMONEY SQL 2/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   DarkRP.notify(ply,0,5,"You deposit "..amount.."$ to your gang!")
 end
@@ -83,15 +77,11 @@ end
 function luctusCreateGang(ply,name)
   local res = sql.Query("INSERT INTO luctus_gangs(createtime,creator,name,motd,money,xp,level) VALUES(datetime('now', 'localtime'), "..sql.SQLStr(ply:SteamID())..", "..sql.SQLStr(name)..",'NONE',0,0,1)")
   if res == false then
-    print("[luctus_gangs] ERROR DURING CREATEGANG SQL 1/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ress = sql.Query("INSERT INTO luctus_gangmember(gangname, steamid, jointime, plyname, rank) VALUES("..sql.SQLStr(name)..", "..sql.SQLStr(ply:SteamID())..", datetime('now', 'localtime'), "..sql.SQLStr(ply:Nick())..", 1)")
   if ress == false then
-    print("[luctus_gangs] ERROR DURING CREATEGANG SQL 2/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ply:SetNWInt("gangrank",1)
   ply:SetNWString("gang",name)
@@ -103,15 +93,11 @@ function luctusDeleteGang(ply)
   if gangname == "" then return end
   local res = sql.Query("DELETE FROM luctus_gangs WHERE name = "..sql.SQLStr(gangname))
   if res == false then
-    print("[luctus_gangs] ERROR DURING DELETEGANG SQL 1/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   res = sql.Query("DELETE FROM luctus_gangmember WHERE gangname = "..sql.SQLStr(gangname))
   if res == false then
-    print("[luctus_gangs] ERROR DURING DELETEGANG SQL 2/2!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   --Delete current members live on server
   for k,v in pairs(player.GetAll()) do
@@ -126,9 +112,7 @@ function luctusGetGangInfo(name)
   if name == "" then return {} end
   local res = sql.QueryRow("SELECT * FROM luctus_gangs WHERE name = "..sql.SQLStr(name))
   if res == false or not res then
-    print("[luctus_gangs] ERROR DURING GETGANGINFO SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   return res
 end
@@ -136,9 +120,7 @@ end
 function luctusLeaveGang(ply)
   local res = sql.Query("DELETE FROM luctus_gangmember WHERE steamid = "..sql.SQLStr(ply:SteamID()))
   if res == false then
-    print("[luctus_gangs] ERROR DURING LEAVEGANG SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ply:SetNWString("gang","")
   ply:SetNWInt("gangrank",0)
@@ -183,9 +165,7 @@ function luctusJoinGang(ply,gangname)
   ply:SetNWInt("gangrank",1)
   local res = sql.Query("INSERT INTO luctus_gangmember(gangname, steamid, jointime, plyname, rank) VALUES("..sql.SQLStr(gangname)..", "..sql.SQLStr(ply:SteamID())..", datetime('now', 'localtime'), "..sql.SQLStr(ply:Nick())..", 1)")
   if res == false or not res then
-    print("[luctus_gangs] ERROR DURING JOINGANG SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ply:PrintMessage(HUD_PRINTTALK, "Successfully joined the gang "..gangname.."!")
   DarkRP.notify(ply,0,5,"Successfully joined the gang "..gangname.."!")
@@ -209,9 +189,7 @@ function luctusKickGang(kicker,steamid)
   end
   local res = sql.Query("REMOVE FROM luctus_gangmember WHERE steamid = "..sql.SQLStr(steamid))
   if res == false or not res then
-    print("[luctus_gangs] ERROR DURING KICKGANG SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   DarkRP.notify(kicker,0,5,"Successfully kicked player! Please refresh the list!")
 end
@@ -221,9 +199,7 @@ function luctusGetGangMembers(ply)
   if gangname == "" then return end
   local res = sql.Query("SELECT * FROM luctus_gangmember WHERE gangname = "..sql.SQLStr(gangname))
   if res == false or not res then
-    print("[luctus_gangs] ERROR DURING GETMEMBERS SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   net.Start("luctus_gang_members")
     net.WriteTable(res)
@@ -241,8 +217,7 @@ net.Receive("luctus_gang_motd",function(len,ply)
   end
   local res = sql.Query("UPDATE luctus_gangs SET motd = "..sql.SQLStr(newMotd).." WHERE name = "..sql.SQLStr(org))
   if res == false then
-    print("[luctus_gangs] ERROR DURING SQL UPDATE MOTD!")
-    print(sql.LastError())
+    error(sql.LastError())
   end
 end)
 
@@ -294,9 +269,7 @@ end)
 hook.Add("PlayerInitialSpawn", "luctus_gangs_plyinit", function(ply)
   local res = sql.QueryRow("SELECT * FROM luctus_gangmember WHERE steamid = "..sql.SQLStr(ply:SteamID()))
   if res == false then
-    print("[luctus_gangs] ERROR DURING PLYINIT SQL!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   if res then
     ply:SetNWInt("gangrank",tonumber(res["rank"]))

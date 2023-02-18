@@ -19,17 +19,13 @@ end)
 function LuctusSafezoneHandleSpawns()
   local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_safezones(pos_one VARCHAR(200), pos_two VARCHAR(200))")
   if res == false then 
-    print("[luctus_safezones] ERROR DURING TABLE CREATION!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   if res == nil then print("[luctus_safezones] PreInit Done!") end
   
   res = sql.Query("SELECT *,rowid FROM luctus_safezones")
   if res == false then
-    print("[luctus_safezones] ERROR DURING SAFEZONE LOADING FROM DB!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   
   if res and #res > 0 then
@@ -68,9 +64,7 @@ end
 function luctusSaveSafezone(posone, postwo)
   local res = sql.Query("INSERT INTO luctus_safezones VALUES("..sql.SQLStr(posone)..", "..sql.SQLStr(postwo)..")")
   if res == false then 
-    print("[luctus_safezones] ERROR DURING SAVING SAFEZONE!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   if res == nil then print("[luctus_safezones] Safezone saved successfully!") end
   
@@ -82,9 +76,7 @@ function luctusSaveSafezone(posone, postwo)
   
   res = sql.QueryRow("SELECT rowid FROM luctus_safezones ORDER BY rowid DESC limit 1")
   if res == false then 
-    print("[luctus_safezones] ERROR DURING SETTING SAFEZONE ID!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ent:SetID(tonumber(res["rowid"]))
 end
@@ -95,9 +87,7 @@ net.Receive("luctus_safezone_delete", function(len, ply)
   if not tonumber(rowid) then return end
   res = sql.QueryRow("DELETE FROM luctus_safezones WHERE rowid = "..rowid)
   if res == false then 
-    print("[luctus_safezones] ERROR DURING SETTING SAFEZONE ID!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   print("[luctus_safezones] DB Successfully deleted safezone!")
   

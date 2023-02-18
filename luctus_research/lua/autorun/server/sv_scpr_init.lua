@@ -29,8 +29,7 @@ local function luctusGetPaper(_rowid)
   if not rowid then return {} end
   local ret = sql.Query("SELECT rowid,* FROM luctus_research WHERE rowid = "..rowid)
   if ret == false then
-    print("[luctus_research] SQL ERROR DURING GETPAPER!")
-    print(sql.LastError())
+    ErrorNoHaltWithStack(sql.LastError())
     return {}
   end
   if ret and ret[1] then
@@ -58,8 +57,7 @@ local function luctusGetPapers(_page,_category,_filter)
   page = page * 24
   local ret = sql.Query("SELECT rowid,date,researcher,summary FROM luctus_research WHERE "..category.." LIKE "..sql.SQLStr(filter).." AND active = 1 ORDER BY date DESC limit 24 offset "..page)
   if(ret==false)then
-    print("[luctus_research] SQL ERROR DURING GETPAPERS!")
-    print(sql.LastError())
+    ErrorNoHaltWithStack(sql.LastError())
     return {}
   end
   if ret and ret ~= nil then
@@ -71,8 +69,7 @@ end
 local function luctusSavePaper(researcher,summary,fulltext)
   local res = sql.Query("INSERT INTO luctus_research VALUES( datetime('now') , "..SQLStr(researcher)..", "..SQLStr(summary)..", "..SQLStr(fulltext)..",1)")
   if res == false then
-    print("[luctus_research] SQL ERROR DURING SAVEPAPER!")
-    print(sql.LastError())
+    ErrorNoHaltWithStack(sql.LastError())
     return "ERROR SAVING PAPER!"
   end
   return "Successfully saved the paper!"
@@ -84,8 +81,7 @@ local function luctusEditPaper(_rowid,researcher,summary,fulltext)
   
   local res = sql.Query("UPDATE luctus_research SET date = datetime('now'), researcher = "..SQLStr(researcher)..", summary = "..SQLStr(summary)..", fulltext = "..SQLStr(fulltext)..", active = 1 WHERE rowid = "..rowid)
   if res == false then
-    print("[luctus_research] SQL ERROR DURING EDITPAPER!")
-    print(sql.LastError())
+    ErrorNoHaltWithStack(sql.LastError())
     return "ERROR EDITING PAPER!"
   end
   return "Successfully edited the paper!"
@@ -168,9 +164,7 @@ net.Receive("luctus_research_deleteid",function(len,ply)
   if rowid < 1 then return end
   local res = sql.Query("UPDATE luctus_research SET active = 0 WHERE rowid = "..rowid)
   if res == false then
-    print("[luctus_research] SQL ERROR DURING DELETEPAPER!")
-    print(sql.LastError())
-    return
+    error(sql.LastError())
   end
   ply:PrintMessage(HUD_PRINTTALK, "Successfully deleted paper!")
 end)

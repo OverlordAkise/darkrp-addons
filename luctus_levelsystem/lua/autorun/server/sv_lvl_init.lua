@@ -12,8 +12,7 @@ LUCTUS_XP_KILL = 5 --how many XP per player kill
 hook.Add("PostGamemodeLoaded","luctus_scpnames",function()
     local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_levelsystem( steamid TEXT, exp INT, lvl INT )")
     if res == false then
-        print("[luctus_levelsystem] SQL ERROR DURING TABLE CREATION!")
-        print(sql.LastError())
+        error(sql.LastError())
     end
 end)
 
@@ -48,8 +47,7 @@ plymeta.AddXP = plymeta.addXP
 function Luctus_savexp(ply)
     local res = sql.Query("UPDATE luctus_levelsystem SET exp = "..ply:getXP()..", lvl = "..ply:getLevel().." WHERE steamid = "..sql.SQLStr(ply:SteamID()))
     if res == false then
-        print("[luctus_levelsystem] ERROR DURING SQL UPDATE!")
-        print(sql.LastError())
+        ErrorNoHaltWithStack(sql.LastError())
     end
 end
 
@@ -58,9 +56,7 @@ function Luctus_loadxp(ply)
     ply:setXP(0)
     local res = sql.QueryRow("SELECT * FROM luctus_levelsystem WHERE steamid = "..sql.SQLStr(ply:SteamID()))
     if res == false then
-        print("[luctus_levelsystem] ERROR DURING SQL UPDATE!")
-        print(sql.LastError())
-        return
+        error(sql.LastError())
     end
     if res then
         ply:setLevel(tonumber(res.lvl))
@@ -69,9 +65,7 @@ function Luctus_loadxp(ply)
     else
         local res = sql.Query("INSERT INTO luctus_levelsystem(steamid,exp,lvl) VALUES("..sql.SQLStr(ply:SteamID())..",0,1)")
         if res == false then
-            print("[luctus_levelsystem] ERROR DURING SQL INSERT!")
-            print(sql.LastError())
-            return
+            error(sql.LastError())
         end
         print("[luctus_levelsystem] New user successfully inserted!")
     end

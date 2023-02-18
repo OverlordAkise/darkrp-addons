@@ -37,10 +37,12 @@ hook.Add("OnPlayerChangedTeam","luctus_statistics",function(ply, before, after)
     local afterName = team.GetName(after)
     local res = sql.Query("UPDATE luctus_stat_jobs SET changedToAmount = changedToAmount + 1 WHERE jobname = "..sql.SQLStr(afterName))
     if res == false then
-        print("[luctus_statistics] ERROR DURING JOBCHANGE changedToAmount UPDATE!")
-        print(sql.LastError())
+        ErrorNoHaltWithStack(sql.LastError())
     end
     res = sql.Query("UPDATE luctus_stat_jobs SET playtime = playtime + "..math.Round(CurTime()-ply.switchJob).." WHERE jobname = "..sql.SQLStr(beforeName))
+    if res == false then
+        ErrorNoHaltWithStack(sql.LastError())
+    end
     ply.switchJob = CurTime()
 end)
 
