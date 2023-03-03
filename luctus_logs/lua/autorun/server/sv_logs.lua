@@ -7,11 +7,11 @@
 lucidLogChatCommand = "!logs"
 --Ranks that are allowed to browse logs
 lucidLogAllowedRanks = {
-  ["superadmin"] = true,
-  ["owner"] = true,
-  ["admin"] = true,
-  ["operator"] = true,
-  ["moderator"] = true,
+    ["superadmin"] = true,
+    ["owner"] = true,
+    ["admin"] = true,
+    ["operator"] = true,
+    ["moderator"] = true,
 }
 --How many days to keep logs for
 lucidLogRetainLogs = 3
@@ -23,8 +23,8 @@ lucidLogRetainLogs = 3
 util.AddNetworkString("lucid_log")
 
 hook.Add("PostGamemodeLoaded","lucid_log",function()
-  sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, cat TEXT, msg TEXT )")
-  print("[luctus_logs] Database initialized!")
+    sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, cat TEXT, msg TEXT )")
+    print("[luctus_logs] Database initialized!")
 end)
 
 
@@ -36,54 +36,54 @@ function LuctusLog(cat,text)
 end
 
 local function log_push(cat,text)
-  print("[luctus_logs] "..sql.SQLStr(text))
-  local res = sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
-  if res == false then
-    ErrorNoHaltWithStack(sql.LastError())
-    return
-  end
-  local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
-  local value = {}
-  value.date = datetime
-  value.msg = text
-  value.cat = cat
-  table.insert(lucid_log,value)
-  if #lucid_log > 20 then
-    table.remove(lucid_log,1)
-  end
+    print("[luctus_logs] "..sql.SQLStr(text))
+    local res = sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
+    if res == false then
+        ErrorNoHaltWithStack(sql.LastError())
+        return
+    end
+    local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
+    local value = {}
+    value.date = datetime
+    value.msg = text
+    value.cat = cat
+    table.insert(lucid_log,value)
+    if #lucid_log > 20 then
+        table.remove(lucid_log,1)
+    end
 end
 
 
 local function log_get(_filter,_page,_date_a,_date_z,_cat)
-  local page = tonumber(_page)
-  if not page then return nil end
-  local filter = _filter
-  if filter != "" then
-    if string.find( filter, '[\'\\/%*%?"<>|=]' ) ~= nil then
-      return nil
+    local page = tonumber(_page)
+    if not page then return nil end
+    local filter = _filter
+    if filter != "" then
+        if string.find( filter, '[\'\\/%*%?"<>|=]' ) ~= nil then
+            return nil
+        end
     end
-  end
-  local cat = ""
-  if _cat != "" then
-    if string.find( _cat, '[\'\\%*%?"<>|=]' ) ~= nil then
-      return nil
+    local cat = ""
+    if _cat != "" then
+        if string.find( _cat, '[\'\\%*%?"<>|=]' ) ~= nil then
+            return nil
+        end
+        cat = " AND cat = "..sql.SQLStr(_cat)
     end
-    cat = " AND cat = "..sql.SQLStr(_cat)
-  end
-  page = page * 24
-  local ret = {}
-  if _date_z != "" then
-    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY rowid DESC limit 24 offset "..page)
+    page = page * 24
+    local ret = {}
+    if _date_z != "" then
+        ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY rowid DESC limit 24 offset "..page)
     
-    if(ret==false)then
-      print("[luctus_logs] SQL ERROR DURING DATE FILTER!")
-      ErrorNoHaltWithStack(sql.LastError())
-      return nil
+        if(ret==false)then
+            print("[luctus_logs] SQL ERROR DURING DATE FILTER!")
+            ErrorNoHaltWithStack(sql.LastError())
+            return nil
+        end
+    else
+        ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." ORDER BY rowid DESC limit 24 offset "..page)
     end
-  else
-    ret = sql.Query("SELECT * FROM lucid_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." ORDER BY rowid DESC limit 24 offset "..page)
-  end
-  return ret
+    return ret
 end
 
 
@@ -95,31 +95,31 @@ GAS = {}
 GAS.Logging = {}
 
 function GAS.Logging:FormatPlayer(ply)
-  return ply:Nick().."("..ply:SteamID()..")"
+    return ply:Nick().."("..ply:SteamID()..")"
 end
 
 function GAS.Logging:AddModule(MODULE)
-  print("[luctus_logs] Added module "..MODULE.Name)
+    print("[luctus_logs] Added module "..MODULE.Name)
 end
 
 function GAS.Logging:MODULE()
-  local mod = {}
-  mod.cName = "GAS"
-  function mod:Hook(name,id,func)
-    hook.Add(name,id.."_luctus_log",func)
-    self.cName = name
-  end
-  function mod:Log(text)
-    log_push(self.cName,text)
-  end
-  return mod
+    local mod = {}
+    mod.cName = "GAS"
+    function mod:Hook(name,id,func)
+        hook.Add(name,id.."_luctus_log",func)
+        self.cName = name
+    end
+    function mod:Log(text)
+        log_push(self.cName,text)
+    end
+    return mod
 end
 
 local logFiles = file.Find("gmodadminsuite/modules/logging/modules/addons/*.lua", "LUA")
 PrintTable(logFiles)
 for k,v in pairs(logFiles) do
-  include("gmodadminsuite/modules/logging/modules/addons/"..v)
-  AddCSLuaFile("gmodadminsuite/modules/logging/modules/addons/"..v)
+    include("gmodadminsuite/modules/logging/modules/addons/"..v)
+    AddCSLuaFile("gmodadminsuite/modules/logging/modules/addons/"..v)
 end
 
 
@@ -406,7 +406,7 @@ hook.Add("PlayerSpawnEffect","lucid_log_PlayerSpawnEffect",function(ply, model)
 end,-2)
 hook.Add("WeaponEquip", "lucid_log_PlayerGiveSWEP", function(wep, owner)
     if not IsValid(wep) or not IsValid(owner) then return end
-		log_push("Weapons",owner:Nick().."("..owner:SteamID()..") picked up weapon "..wep:GetClass())
+    log_push("Weapons",owner:Nick().."("..owner:SteamID()..") picked up weapon "..wep:GetClass())
 end,-2)
 --[[Covered by all the other PlayerSpawn things
 hook.Add("PlayerSpawnObject","lucid_log_PlayerSpawnObject",function(ply, model, skinNum)
@@ -448,8 +448,8 @@ hook.Add("PlayerSpawn","lucid_log_PlayerSpawn",function(ply, transition)
     log_push("PlayerSpawn",ply:Nick().."("..ply:SteamID()..") spawned")
 end,-2)
 hook.Add("PlayerSay","lucid_log_PlayerSpawn",function(ply, text, team)
-  if not IsValid(ply) then return end
-  log_push("PlayerSay",ply:Nick().."("..ply:SteamID()..") said "..text..""..(team and " in Teamchat" or ""))
+    if not IsValid(ply) then return end
+    log_push("PlayerSay",ply:Nick().."("..ply:SteamID()..") said "..text..""..(team and " in Teamchat" or ""))
 end,-2)
 hook.Add("PlayerDeath", "lucid_log_PlayerDeath", function(victim, inflictor, attacker)
     if not IsValid(victim) or not IsValid(inflictor) or not IsValid(attacker) then return end
@@ -465,7 +465,7 @@ hook.Add("PlayerSilentDeath", "lucid_log_PlayerDeath", function(ply)
     if not IsValid(ply) then return end
     log_push("PlayerDeath",ply:Nick().."("..ply:SteamID()..") was killed silently")
 end,-2)
-hook.Add("PlayerConnect", "lucid_log_PlayerDisconnected", function(name, ip)
+hook.Add("PlayerConnect", "lucid_log_PlayerConnected", function(name, ip)
     log_push("PlayerConnect",name.." is connecting (ip: "..ip..")")
 end,-2)
 hook.Add("PlayerInitialSpawn","lucid_log_PlayerInitialSpawn",function(ply, transition)
@@ -481,14 +481,14 @@ hook.Add("EntityTakeDamage","lucid_log_EntityTakeDamage",function(target, dmg)
     if not dmg:GetAttacker():IsPlayer() then return end
     local name = target:GetClass()
     if target:IsPlayer() then
-      name = target:Nick()
+        name = target:Nick()
     end
     local weapon = "UNKNOWN"
     if IsValid(dmg:GetInflictor()) then
-      weapon = dmg:GetInflictor():GetClass()
+        weapon = dmg:GetInflictor():GetClass()
     end
     if IsValid(dmg:GetAttacker():GetActiveWeapon()) then
-      weapon = dmg:GetAttacker():GetActiveWeapon():GetClass()
+        weapon = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
     log_push("Damage",dmg:GetAttacker():Nick().." damaged "..name.." for "..math.Round(dmg:GetDamage(),2).." with "..weapon)
 end,-2)
@@ -580,67 +580,67 @@ end,-2)
 
 
 local ulx_noLogCommands = {
-  --["ulx noclip"] = true,
-  --["ulx luarun"] = true,
-  --["ulx rcon"] = true,
-  ["ulx menu"] = true,
-  ["ulx votebanMinvotes"] = true,
-  ["ulx votebanSuccessratio"] = true,
-  ["ulx votekickMinvotes"] = true,
-  ["ulx votekickSuccessratio"] = true,
-  ["ulx votemap2Minvotes"] = true,
-  ["ulx votemap2Successratio"] = true,
-  ["ulx voteEcho"] = true,
-  ["ulx votemapMapmode"] = true,
-  ["ulx votemapVetotime"] = true,
-  ["ulx votemapMinvotes"] = true,
-  ["ulx votemapWaittime"] = true,
-  ["ulx votemapMintime"] = true,
-  ["ulx votemapEnabled"] = true,
-  ["ulx rslotsVisible"] = true,
-  ["ulx rslots"] = true,
-  ["ulx rslotsMode"] = true,
-  ["ulx logEchoColorMisc"] = true,
-  ["ulx logEchoColorPlayer"] = true,
-  ["ulx logEchoColorPlayerAsGroup"] = true,
-  ["ulx logEchoColorEveryone"] = true,
-  ["ulx logEchoColorSelf"] = true,
-  ["ulx logEchoColorConsole"] = true,
-  ["ulx logEchoColorDefault"] = true,
-  ["ulx logEchoColors"] = true,
-  ["ulx logEcho"] = true,
-  ["ulx logDir"] = true,
-  ["ulx logJoinLeaveEcho"] = true,
-  ["ulx logSpawnsEcho"] = true,
-  ["ulx votemapSuccessratio"] = true,
-  ["ulx logSpawns"] = true,
-  ["ulx logChat"] = true,
-  ["ulx logEvents"] = true,
-  ["ulx logFile"] = true,
-  ["ulx welcomemessage"] = true,
-  ["ulx meChatEnabled"] = true,
-  ["ulx chattime"] = true,
-  ["ulx motdurl"] = true,
-  ["ulx motdfile"] = true,
-  ["ulx showMotd"] = true,
+    --["ulx noclip"] = true,
+    --["ulx luarun"] = true,
+    --["ulx rcon"] = true,
+    ["ulx menu"] = true,
+    ["ulx votebanMinvotes"] = true,
+    ["ulx votebanSuccessratio"] = true,
+    ["ulx votekickMinvotes"] = true,
+    ["ulx votekickSuccessratio"] = true,
+    ["ulx votemap2Minvotes"] = true,
+    ["ulx votemap2Successratio"] = true,
+    ["ulx voteEcho"] = true,
+    ["ulx votemapMapmode"] = true,
+    ["ulx votemapVetotime"] = true,
+    ["ulx votemapMinvotes"] = true,
+    ["ulx votemapWaittime"] = true,
+    ["ulx votemapMintime"] = true,
+    ["ulx votemapEnabled"] = true,
+    ["ulx rslotsVisible"] = true,
+    ["ulx rslots"] = true,
+    ["ulx rslotsMode"] = true,
+    ["ulx logEchoColorMisc"] = true,
+    ["ulx logEchoColorPlayer"] = true,
+    ["ulx logEchoColorPlayerAsGroup"] = true,
+    ["ulx logEchoColorEveryone"] = true,
+    ["ulx logEchoColorSelf"] = true,
+    ["ulx logEchoColorConsole"] = true,
+    ["ulx logEchoColorDefault"] = true,
+    ["ulx logEchoColors"] = true,
+    ["ulx logEcho"] = true,
+    ["ulx logDir"] = true,
+    ["ulx logJoinLeaveEcho"] = true,
+    ["ulx logSpawnsEcho"] = true,
+    ["ulx votemapSuccessratio"] = true,
+    ["ulx logSpawns"] = true,
+    ["ulx logChat"] = true,
+    ["ulx logEvents"] = true,
+    ["ulx logFile"] = true,
+    ["ulx welcomemessage"] = true,
+    ["ulx meChatEnabled"] = true,
+    ["ulx chattime"] = true,
+    ["ulx motdurl"] = true,
+    ["ulx motdfile"] = true,
+    ["ulx showMotd"] = true,
 }
 
 if ulx then
-  hook.Add(ULib.HOOK_COMMAND_CALLED or "ULibCommandCalled", "lucid_log", function(_ply,cmd,_args)
-    if (not _args) then return end
-    if ((#_args > 0 and ulx_noLogCommands[cmd .. " " .. _args[1]]) or ulx_noLogCommands[cmd]) then return end
-    local ply = ""
-    if (not IsValid(_ply)) then
-      ply = "console"
+    hook.Add(ULib.HOOK_COMMAND_CALLED or "ULibCommandCalled", "lucid_log", function(_ply,cmd,_args)
+        if (not _args) then return end
+        if ((#_args > 0 and ulx_noLogCommands[cmd .. " " .. _args[1]]) or ulx_noLogCommands[cmd]) then return end
+        local ply = ""
+        if (not IsValid(_ply)) then
+            ply = "console"
         else
             ply = _ply:Nick()
         end
-    local argss = ""
-    if (#_args > 0) then
-      argss = " " .. table.concat(_args, " ")
-    end
-    log_push("ulx",ply.." used ulx command "..cmd..argss)
-  end)
+        local argss = ""
+        if (#_args > 0) then
+            argss = " " .. table.concat(_args, " ")
+        end
+        log_push("ulx",ply.." used ulx command "..cmd..argss)
+    end)
 end
 
 
@@ -656,44 +656,43 @@ hook.Add("PlayerSay","lucid_log_display",function(ply,text,team)
 end)
 
 net.Receive("lucid_log",function(len,ply)
-  if not lucidLogAllowedRanks[ply:GetUserGroup()] then return end
-  local aa = net.ReadString()
-  local bb = net.ReadString()
-  local ta = net.ReadString()
-  local tz = net.ReadString()
-  local cat = net.ReadString()
-  local logs = log_get(aa,bb,ta,tz,cat)
-  if not logs then logs = {} end
-  net.Start("lucid_log")
-  local t = util.TableToJSON(logs)
-  local a = util.Compress(t)
-  --print("Size: "..#a)
-  net.WriteInt(#a,17)
-  net.WriteData(a,#a)
-  net.Send(ply)
+    if not lucidLogAllowedRanks[ply:GetUserGroup()] then return end
+    local aa = net.ReadString()
+    local bb = net.ReadString()
+    local ta = net.ReadString()
+    local tz = net.ReadString()
+    local cat = net.ReadString()
+    local logs = log_get(aa,bb,ta,tz,cat)
+    if not logs then logs = {} end
+    net.Start("lucid_log")
+    local t = util.TableToJSON(logs)
+    local a = util.Compress(t)
+    net.WriteInt(#a,17)
+    net.WriteData(a,#a)
+    net.Send(ply)
 end)
 
 hook.Add("PlayerInitialSpawn","lucid_log_delete_old",function(ply)
-  sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, cat TEXT, msg TEXT )")
-  print("[luctus_logs] Database (backup) initialized!")
-  
-  local deleteTable = sql.Query("SELECT rowid FROM lucid_log WHERE datetime(date) < datetime('now','-"..lucidLogRetainLogs.." days');")
-  if deleteTable == false then
-    print("[luctus_logs] ERROR DURING OLD LOG DELETION!")
-    error(sql.LastError())
-  end
-  if not deleteTable then return end
-  if #deleteTable > 0 then
-    print("[luctus_logs] Deleting "..(#deleteTable).." logs that are over "..lucidLogRetainLogs.." days old!")
-    sql.Begin()
-    for k,v in pairs(deleteTable) do
-      if not tonumber(v.rowid) then continue end
-      sql.Query("DELETE FROM lucid_log WHERE rowid = "..v.rowid)
+    sql.Query("CREATE TABLE IF NOT EXISTS lucid_log( date DATETIME, cat TEXT, msg TEXT )")
+    print("[luctus_logs] Database (backup) initialized!")
+
+    local deleteTable = sql.Query("SELECT rowid FROM lucid_log WHERE datetime(date) < datetime('now','-"..lucidLogRetainLogs.." days');")
+    if deleteTable == false then
+        print("[luctus_logs] ERROR DURING OLD LOG DELETION!")
+        error(sql.LastError())
     end
-    sql.Commit()
-    print("[luctus_logs] Deleted old logs!")
-  end
-  hook.Remove("PlayerInitialSpawn","lucid_log_delete_old")
+    if not deleteTable then return end
+    if #deleteTable > 0 then
+        print("[luctus_logs] Deleting "..(#deleteTable).." logs that are over "..lucidLogRetainLogs.." days old!")
+        sql.Begin()
+        for k,v in pairs(deleteTable) do
+            if not tonumber(v.rowid) then continue end
+            sql.Query("DELETE FROM lucid_log WHERE rowid = "..v.rowid)
+        end
+        sql.Commit()
+        print("[luctus_logs] Deleted old logs!")
+    end
+    hook.Remove("PlayerInitialSpawn","lucid_log_delete_old")
 end)
 
 print("[luctus_logs] Loaded SV file!")
