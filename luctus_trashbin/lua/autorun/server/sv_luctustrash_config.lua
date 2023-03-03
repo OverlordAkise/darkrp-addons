@@ -9,6 +9,7 @@ LUCTUS_TRASHBIN_WHITELIST = false
 --Classname of entities
 --right click and "copy to clipboard" in the spawnmenu to get those
 LUCTUS_TRASHBIN_LIST = {
+  ["prop_ragdoll"] = true, --dont remove this one
   ["m9k_m3"] = true,
 }
 
