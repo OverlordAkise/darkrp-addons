@@ -502,7 +502,7 @@ hook.Add("MedicSys_PlayerDeath", "lucid_log_MedicSys_PlayerDeath", function(ply,
     local aname = "<N/A>"
     local asteamid = "<N/A>"
     local awep = "<N/A>"
-    if IsValid(dmg) and dmg.GetAttacker and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
+    if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
         aname = dmg:GetAttacker():Nick()
         asteamid = dmg:GetAttacker():SteamID()
         awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
@@ -512,7 +512,7 @@ hook.Add("MedicSys_PlayerDeath", "lucid_log_MedicSys_PlayerDeath", function(ply,
 end,-2)
 hook.Add("MedicSys_Stabilized", "lucid_log_MedicSys_Stabilized", function(medicPly,downPly)
     if not IsValid(medicPly) or not IsValid(downPly) then return end
-    log_push("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly.."("..medicPly:SteamID()..")")
+    log_push("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
 end,-2)
 hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(ply,dmg)
     if not IsValid(ply) then return end
@@ -521,7 +521,7 @@ hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(
     local aname = "<N/A>"
     local asteamid = "<N/A>"
     local awep = "<N/A>"
-    if IsValid(dmg) and dmg.GetAttacker and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
+    if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
         aname = dmg:GetAttacker():Nick()
         asteamid = dmg:GetAttacker():SteamID()
         awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
@@ -530,7 +530,7 @@ hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(
 end,-2)
 hook.Add("MedicSys_RevivePlayer", "lucid_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
     if not IsValid(medicPly) or not IsValid(deadPly) then return end
-    log_push("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly.."("..medicPly:SteamID()..")")
+    log_push("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
 end,-2)
 --cuffs
 hook.Add("OnHandcuffed", "lucid_log_OnHandcuffed", function(ply,targetPly)
