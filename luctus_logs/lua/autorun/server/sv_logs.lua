@@ -170,6 +170,10 @@ hook.Add("playerPickedUpCheque","lucid_log_playerPickedUpCheque",function(plyPic
         log_push("Cheques",mText)
     end
 end,-2)
+hook.Add("playerWalletChanged","lucid_log_playerwalletchanged",function(ply,amount,wallet)
+    if not IsValid(ply) then return end
+    log_push("Money",ply:Nick().."("..ply:SteamID()..") gained "..amount.."$ money")
+end,-2)
 hook.Add("playerToreUpCheque","lucid_log_playerToreUpCheque",function(plyTore, plyReceiver, amount, ent)
     if not IsValid(plyTore) then return end
     log_push("Cheques",plyTore:Nick().."("..plyTore:SteamID()..") tore up a "..amount.."$ cheque.")
