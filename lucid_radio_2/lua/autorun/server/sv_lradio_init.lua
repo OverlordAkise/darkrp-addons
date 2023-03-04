@@ -201,6 +201,12 @@ function lucidAddRadioReceiver(ply,bol)
   end
 end
 
+function LucidResetRadio(ply)
+  ply.lradioOn = false
+end
+hook.Add("PostPlayerDeath","lucid_radio_reset",LucidResetRadio)
+hook.Add("PlayerSpawn","lucid_radio_reset",LucidResetRadio)
+
 function LucidAddRadioTeam(name, ...)
   lucid_radio_teams[name] = {}
   for k,v in pairs({...}) do
