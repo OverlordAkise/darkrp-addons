@@ -9,6 +9,10 @@ lresearch_page = 0
 lresearch_searchid = 0
 lresearch_searchtext = ""
 
+hook.Add("LuctusLogAddCategory","luctus_research",function()
+    table.insert(lucid_log_quickfilters,"Research")
+end)
+
 net.Receive("luctus_research_getall",function()
   local lenge = net.ReadInt(17)
   local data = net.ReadData(lenge)

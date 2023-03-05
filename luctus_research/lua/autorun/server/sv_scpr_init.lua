@@ -19,6 +19,8 @@ util.AddNetworkString("luctus_research_save")
 util.AddNetworkString("luctus_research_editid")
 util.AddNetworkString("luctus_research_deleteid")
 
+LuctusLog = LuctusLog or function()end
+
 hook.Add("PostGamemodeLoaded","lucid_log",function()
   sql.Query("CREATE TABLE IF NOT EXISTS luctus_research(date DATETIME, researcher TEXT, summary TEXT, fulltext TEXT, active INT)")
 end)
@@ -115,6 +117,7 @@ net.Receive("luctus_research_getall",function(len,ply)
     net.WriteInt(#a,17)
     net.WriteData(a,#a)
   net.Send(ply)
+  LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") requested all papers")
 end)
 
 net.Receive("luctus_research_getid",function(len,ply)
@@ -129,6 +132,7 @@ net.Receive("luctus_research_getid",function(len,ply)
     net.WriteInt(#a,17)
     net.WriteData(a,#a)
   net.Send(ply)
+  LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") requested paper #"..rid)
 end)
 
 net.Receive("luctus_research_save",function(len,ply)
@@ -140,6 +144,7 @@ net.Receive("luctus_research_save",function(len,ply)
   local fulltext = util.Decompress(data)
   local ret = luctusSavePaper(researcher,summary,fulltext)
   ply:PrintMessage(HUD_PRINTTALK, ret)
+  LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") created new paper")
 end)
 
 net.Receive("luctus_research_editid",function(len,ply)
@@ -153,6 +158,7 @@ net.Receive("luctus_research_editid",function(len,ply)
   local fulltext = util.Decompress(data)
   local ret = luctusEditPaper(rowid,researcher,summary,fulltext)
   ply:PrintMessage(HUD_PRINTTALK, ret)
+  LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") edited paper #"..rowid)
 end)
 
 net.Receive("luctus_research_deleteid",function(len,ply)
@@ -167,6 +173,7 @@ net.Receive("luctus_research_deleteid",function(len,ply)
     error(sql.LastError())
   end
   ply:PrintMessage(HUD_PRINTTALK, "Successfully deleted paper!")
+  LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") deleted paper #"..rowid)
 end)
 
 print("[luctus_research] Loaded SV!")
