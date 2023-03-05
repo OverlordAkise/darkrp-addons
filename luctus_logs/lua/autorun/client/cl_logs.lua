@@ -30,6 +30,16 @@ lucid_log_quickfilters = {
     "Hitman"
 }
 
+lucid_log_ulxs = {
+    ["copy name"] = function(ply) SetClipboardText(ply:Nick()) end,
+    ["copy steam name"] = function(ply) SetClipboardText(ply:SteamName()) end,
+    ["bring"] = function(ply) RunConsoleCommand("ulx","bring",ply:Nick()) end,
+    ["return"] = function(ply) RunConsoleCommand("ulx","return",ply:Nick()) end,
+    ["goto"] = function(ply) RunConsoleCommand("ulx","goto",ply:Nick()) end,
+    ["slay"] = function(ply) RunConsoleCommand("ulx","slay",ply:Nick()) end,
+    ["forcerespawn"] = function(ply) RunConsoleCommand("ulx","forcerespawn",ply:Nick()) end,
+}
+
 --Support for adding custom categories
 hook.Add("InitPostEntity","luctus_log_categories",function()
     hook.Run("LuctusLogAddCategory")
@@ -310,37 +320,44 @@ function lucidlog_createLogWindow()
     lucidlog.list:SetPos( 112, 52 )
     lucidlog.list:SetSize( 840-112-1, 448-1 )
     lucidlog.list:SetMultiSelect( false )
-    lucidlog.list:AddColumn( "Date" ):SetWidth(120)
-    lucidlog.list:AddColumn( "Message" ):SetWidth(607)
+    lucidlog.list:AddColumn("Date"):SetWidth(120)
+    lucidlog.list:AddColumn("Message"):SetWidth(607)
     function lucidlog.list:OnRowRightClick(lineID, line)
         local Menu = DermaMenu()
         local activeB = Menu:AddOption("Copy line to clipboard")
         activeB:SetIcon( "icon16/add.png" )
-        if string.match(line:GetColumnText(2),"STEAM_%d:%d:[%d]+") ~= nil then
-            local inactiveB = Menu:AddOption("Copy SteamID of user")
-            inactiveB:SetIcon( "icon16/attach.png" )
-            local deleteB = Menu:AddOption("Filter for user")
-            deleteB:SetIcon( "icon16/magnifier_zoom_in.png" )
+        local players = {}
+        for s in string.gmatch(line:GetColumnText(2),"STEAM_%d:%d:[%d]+") do
+            table.insert(players,s)
+        end
+        for i=1,#players do
+            local plysubmenu, parent = Menu:AddSubMenu(players[i])
+            parent:SetIcon("icon16/user_go.png")
+            plysubmenu.steamid = players[i]
+            plysubmenu:AddOption("Copy SteamID of user"):SetIcon("icon16/attach.png")
+            plysubmenu:AddSpacer()
+            plysubmenu.ply = player.GetBySteamID(players[i])
+            if plysubmenu.ply then
+                for k,v in pairs(lucid_log_ulxs) do
+                    plysubmenu:AddOption(k):SetIcon("icon16/bullet_go.png")
+                end
+            else
+                plysubmenu:AddOption("User is offline"):SetIcon("icon16/world_go.png")
+            end
+            function plysubmenu:OptionSelected(selPanel,text)
+                if text == "Copy SteamID of user" then
+                    SetClipboardText(self.steamid)
+                    return
+                end
+                if lucid_log_ulxs[text] then
+                    lucid_log_ulxs[text](self.ply)
+                end
+            end
         end
         function Menu:OptionSelected(selPanel, panelText)
             if panelText == "Copy line to clipboard" then 
                 SetClipboardText("["..line:GetColumnText(1).."] "..line:GetColumnText(2))
                 return 
-            end
-            if string.match(line:GetColumnText(2),"STEAM_%d:%d:[%d]+") ~= nil then
-                if panelText == "Copy SteamID of user" then 
-                    SetClipboardText(string.match(line:GetColumnText(2),"STEAM_%d:%d:[%d]+"))
-                    return 
-                end
-                if panelText == "Filter for user" then 
-                    lucidlog.filter:SetValue(string.match(line:GetColumnText(2),"STEAM_%d:%d:[%d]+"))
-                    lucidlog.filter_should:SetValue(true)
-                    lucidlog.category = ""
-                    lucidlog.page = 0
-                    lucidlog.PageNumber:SetText(lucidlog.page)
-                    lucidlog_clientRequest()
-                    return 
-                end
             end
         end
         Menu:Open()
