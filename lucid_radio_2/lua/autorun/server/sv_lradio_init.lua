@@ -7,6 +7,8 @@ resource.AddWorkshop("635535045")
 
 lucid_radio_teams = {}
 
+LuctusLog = LuctusLog or function()end
+
 hook.Add("postLoadCustomDarkRPItems", "lucid_radio_detouring",function()
   
   -- IsInRoom function to see if the player is in the same room.
@@ -231,4 +233,5 @@ net.Receive("lucid_radio_frequency", function(len,ply)
   end
   ply.lradioFrequency = tonumber(freq)
   DarkRP.notify(ply,0,5,"Frequency updated to "..freq)
+  LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..ply.lradioFrequency)
 end)
