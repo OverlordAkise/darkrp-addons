@@ -539,7 +539,7 @@ end,-2)
 --cuffs
 hook.Add("OnHandcuffed", "lucid_log_OnHandcuffed", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffBreak", "lucid_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
     if not IsValid(handcuffedPly) then return end
@@ -551,35 +551,35 @@ hook.Add("OnHandcuffBreak", "lucid_log_OnHandcuffBreak", function(handcuffedPly,
 end,-2)
 hook.Add("OnHandcuffGag", "lucid_log_OnHandcuffGag", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffUnGag", "lucid_log_OnHandcuffUnGag", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffBlindfold", "lucid_log_OnHandcuffBlindfold", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffUnBlindfold", "lucid_log_OnHandcuffUnBlindfold", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffStartDragging", "lucid_log_OnHandcuffStartDragging", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffStopDragging", "lucid_log_OnHandcuffStopDragging", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffTied", "lucid_log_OnHandcuffTied", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 hook.Add("OnHandcuffUnTied", "lucid_log_OnHandcuffUnTied", function(ply,targetPly)
     if not IsValid(ply) or not IsValid(targetPly) then return end
-    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly.."("..targetPly:SteamID()..")")
+    log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
 end,-2)
 
 
