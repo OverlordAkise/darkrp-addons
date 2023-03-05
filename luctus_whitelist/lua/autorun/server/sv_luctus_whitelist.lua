@@ -4,6 +4,8 @@
 util.AddNetworkString("lucid_whitelist_get")
 util.AddNetworkString("lucid_whitelist_set")
 
+LuctusLog = LuctusLog or function()end
+
 hook.Add("PlayerInitialSpawn", "lucid_whitelist", function(ply)
     local jsonlist = sql.QueryValue("SELECT jsonlist FROM lucid_whitelist WHERE steamid = "..sql.SQLStr(ply:SteamID()))
     if jsonlist then
@@ -74,6 +76,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
             end
         end
     end
+    LuctusLog("Whitelist",ply:Nick().."("..ply:SteamID()..") changed the whitelist for "..steamid)
 end)
 
 net.Receive("lucid_whitelist_get", function(len,ply)
