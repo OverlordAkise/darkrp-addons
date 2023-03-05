@@ -41,6 +41,8 @@ hook.Add("postLoadCustomDarkRPItems", "luctus_jobranks_init", function()
   sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT )") --Safety
 end)
 
+LuctusLog = LuctusLog or function()end
+
 hook.Add("PostGamemodeLoaded","luctus_jobranks_dbinit",function()
   sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT )")
 end)
@@ -95,9 +97,11 @@ function luctusRankup(ply,teamcmd,executor)
       ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[ply:Team()][newId][5])
     end
     ply.lrankID = newId
+    LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just promoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[ply:Team()][newId][2])
   else
     print("[luctus_jobranks] ERROR DURING SQL SELECT RANKUP!")
   end
+  
 end
 
 
@@ -123,6 +127,7 @@ function luctusRankdown(ply,teamcmd,executor)
       ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[ply:Team()][newId][5])
     end
     ply.lrankID = newId
+    LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just demoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[ply:Team()][newId][2])
   end
 end
 
@@ -143,7 +148,7 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text,team)
       end
       local tRankID = luctusGetRankID(tPly:Team(),tPly:GetNWString("l_nametag",""))
       if tRankID and rankID > tRankID+1 then
-        luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,executor)
+        luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
       else
         ply:PrintMessage(HUD_PRINTTALK, "Du kannst nicht auf deinen Rang hochpromoten!")
       end
@@ -166,7 +171,7 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text,team)
       end
       local tRankID = luctusGetRankID(tPly:Team(),tPly:GetNWString("l_nametag",""))
       if tRankID and rankID > tRankID then
-        luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,executor)
+        luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,ply)
       else
         ply:PrintMessage(HUD_PRINTTALK, "Du kannst diesen Spieler nicht demoten!")
       end
@@ -182,7 +187,7 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text,team)
         ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
         return ""
       end
-      luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,executor)
+      luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
       return ""
     else
       ply:PrintMessage(HUD_PRINTTALK, "Du hast keinen Zugang zu diesem Befehl!")
@@ -195,7 +200,7 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text,team)
         ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
         return ""
       end
-      luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,executor)
+      luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,ply)
       return ""
     else
       ply:PrintMessage(HUD_PRINTTALK, "Du hast keinen Zugang zu diesem Befehl!")
@@ -215,9 +220,7 @@ hook.Add("PlayerSpawn", "luctus_nametags", function(ply)
 end)
 
 
-
 hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afterNum)
-
   --switch from X
   if beforeNum == TEAM_DKLASSE then
     ply:SetNWString("l_nametag","")
@@ -285,3 +288,5 @@ hook.Add("playerGetSalary", "luctus_jobranks_salary", function(Player, Amount)
   --Fix salary? For whatever reason DarkRP is ignoring ply:getDarkRPVar("salary")
   return false, "Payday! You received $" .. Player:getDarkRPVar("salary") .. "!", Player:getDarkRPVar("salary")
 end)
+
+print("[luctus_jobranks] sv loaded!")

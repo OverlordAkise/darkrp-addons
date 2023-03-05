@@ -17,3 +17,11 @@ hook.Add("loadCustomDarkRPItems", "luctus_dklassen_o5rat", function()
 	PLAYER.GetName = PLAYER.Name
 	PLAYER.Nick = PLAYER.Name
 end)
+
+if CLIENT then
+    hook.Add("LuctusLogAddCategory","luctus_jobranks",function()
+        table.insert(lucid_log_quickfilters,"Jobranks")
+    end)
+end
+
+print("[luctus_jobranks] sh loaded!")
