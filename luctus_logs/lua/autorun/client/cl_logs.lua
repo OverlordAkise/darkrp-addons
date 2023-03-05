@@ -30,6 +30,11 @@ lucid_log_quickfilters = {
     "Hitman"
 }
 
+--Support for adding custom categories
+hook.Add("InitPostEntity","luctus_log_categories",function()
+    hook.Run("LuctusLogAddCategory")
+end)
+
 --custom addon support
 --gDeathSystem
 if MedConfig then

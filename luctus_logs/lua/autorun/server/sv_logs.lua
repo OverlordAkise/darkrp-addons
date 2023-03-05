@@ -18,8 +18,6 @@ lucidLogRetainLogs = 3
 
 --CONFIG END
 
-
-
 util.AddNetworkString("lucid_log")
 
 hook.Add("PostGamemodeLoaded","lucid_log",function()
@@ -29,11 +27,6 @@ end)
 
 
 lucid_log = {}
-
---public function
-function LuctusLog(cat,text)
-    log_push(cat,text)
-end
 
 local function log_push(cat,text)
     print("[luctus_logs] "..sql.SQLStr(text))
@@ -53,6 +46,10 @@ local function log_push(cat,text)
     end
 end
 
+--public function
+function LuctusLog(cat,text)
+    log_push(cat,text)
+end
 
 local function log_get(_filter,_page,_date_a,_date_z,_cat)
     local page = tonumber(_page)
