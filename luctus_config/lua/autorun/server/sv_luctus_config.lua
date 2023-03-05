@@ -3,6 +3,8 @@
 
 util.AddNetworkString("luctus_ingame_config")
 
+LuctusLog = LuctusLog or function()end
+
 hook.Add("PlayerSay","luctus_ingame_config",function(ply,text,team)
     if ply:IsAdmin() and text == "!luctusconfig" then
         net.Start("luctus_ingame_config")
@@ -33,6 +35,7 @@ net.Receive("luctus_ingame_config",function(len,ply)
     ply:PrintMessage(HUD_PRINTTALK, "[luctus_config] Set successfully!")
     LuctusIngameConfigSave(variable,typedValue,category)
     ply:PrintMessage(HUD_PRINTTALK, "[luctus_config] Saved successfully!")
+    LuctusLog("Config",ply:Nick().."("..ply:SteamID()..") set config var '"..variable.."' to '"..typedValue.."'")
 end)
 
 function LuctusIngameConfigSet(var,val,cat)

@@ -65,4 +65,8 @@ function LuctusOpenIngameConfig(configTable)
     end
 end
 
+hook.Add("LuctusLogAddCategory","luctus_config",function()
+    table.insert(lucid_log_quickfilters,"Config")
+end)
+
 print("[luctus_config] CL loaded!")
