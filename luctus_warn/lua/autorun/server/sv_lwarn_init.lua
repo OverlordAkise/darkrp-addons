@@ -7,6 +7,8 @@ util.AddNetworkString("lw_updatewarn")
 util.AddNetworkString("lw_deletewarn")
 util.AddNetworkString("lw_requestwarns_user")--new
 
+LuctusLog = LuctusLog or function()end
+
 function lwCheckPunishment(steamid)
     local activeWarns = sql.Query("SELECT SUM(active) FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
     if activeWarns==false then
@@ -18,11 +20,13 @@ function lwCheckPunishment(steamid)
     local user = sql.SQLStr(steamid)
     if number and number >= lwconfig.warnsToKick then
         if not ply or ply==false then return end --Cant kick an offline player
+        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has been kicked for having "..number.." warns.")
         ply:Kick("[lwarn] You have been kicked for having too many warns!")
         sql.Query('INSERT INTO lwarn_logs(time, log) VALUES(datetime(), "'..user..' has been kicked for having '..number..' warns!") ')
     end
-    if lwconfig.warnsToBan[number] ~= nil then
+    if number and lwconfig.warnsToBan[number] ~= nil then
         local minutes = lwconfig.warnsToBan[number]
+        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has been banned for "..minutes.." minutes for having "..number.." warns.")
         lwPunish(ply, minutes, "[lwarn] You have been banned for "..minutes.." minutes for having too many warns!")
         sql.Query('INSERT INTO lwarn_logs(time, log) VALUES(datetime(), "'..user..' has been banned for '..minutes..' minutes for having '..number..' warns!") ')
     end
@@ -58,6 +62,13 @@ net.Receive("lw_warnplayer", function(len,ply)
         PrintMessage(HUD_PRINTTALK, "[lwarn] "..ply:Nick().." warned "..target.." for '"..reason.."'.")
     end
     print("[lwarn] "..ply:Nick().." warned "..target.." for '"..reason.."'.")
+    
+    local tply = player.GetBySteamID(target)
+    local name = "<offline>"
+    if tply and IsValid(tply) then
+        name = tply:Nick()
+    end
+    LuctusLog("Warn",name.."("..target..") has been warned by "..ply:Nick().."("..ply:SteamID()..") for '"..reason.."'.")
 end)
 
 net.Receive("lw_requestwarns", function(len, ply)
@@ -113,6 +124,13 @@ net.Receive("lw_updatewarn", function(len, ply)
     end
     print("[lwarn] "..ply:Nick().." "..(shouldRemove and "removed" or "reactivated").." a warn from "..target..".") 
     sql.Query('INSERT INTO lwarn_logs(time, log) VALUES(datetime(), "'..sql.SQLStr(ply:SteamID()).." has updated warn #"..rowid.." from "..sql.SQLStr(target)..'") ')
+    
+    local tply = player.GetBySteamID(target)
+    local name = "<offline>"
+    if tply and IsValid(tply) then
+        name = tply:Nick()
+    end
+    LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has "..(shouldRemove and "removed" or "reactivated").." a warn of "..name.."("..target..")")
 end)
 
 net.Receive("lw_deletewarn", function(len, ply)
@@ -132,6 +150,13 @@ net.Receive("lw_deletewarn", function(len, ply)
     end
     print("[lwarn] "..ply:Nick().." deleted a warn from "..target..".")
     sql.Query('INSERT INTO lwarn_logs(time, log) VALUES(datetime(), "'..sql.SQLStr(ply:SteamID()).." deleted warn #"..rowid.." from "..sql.SQLStr(target)..'") ')
+    
+    local tply = player.GetBySteamID(target)
+    local name = "<offline>"
+    if tply and IsValid(tply) then
+        name = tply:Nick()
+    end
+    LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has deleted a warn of "..name.."("..target..")")
 end)
 
 --Check for expired warns every 2 hours
