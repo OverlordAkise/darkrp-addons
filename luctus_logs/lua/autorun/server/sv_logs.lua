@@ -504,9 +504,12 @@ hook.Add("MedicSys_PlayerDeath", "lucid_log_MedicSys_PlayerDeath", function(ply,
     local asteamid = "<N/A>"
     local awep = "<N/A>"
     if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-        aname = dmg:GetAttacker():Nick()
-        asteamid = dmg:GetAttacker():SteamID()
-        awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
+        aname = dmg:GetAttacker():GetClass()
+        if dmg:GetAttacker():IsPlayer() then
+            aname = dmg:GetAttacker():Nick()
+            asteamid = dmg:GetAttacker():SteamID()
+            awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
+        end
     end
     log_push("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
     log_push("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
@@ -523,9 +526,12 @@ hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(
     local asteamid = "<N/A>"
     local awep = "<N/A>"
     if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-        aname = dmg:GetAttacker():Nick()
-        asteamid = dmg:GetAttacker():SteamID()
-        awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
+        aname = dmg:GetAttacker():GetClass()
+        if dmg:GetAttacker():IsPlayer() then
+            aname = dmg:GetAttacker():Nick()
+            asteamid = dmg:GetAttacker():SteamID()
+            awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
+        end
     end
     log_push("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
 end,-2)
