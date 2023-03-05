@@ -504,12 +504,9 @@ hook.Add("MedicSys_PlayerDeath", "lucid_log_MedicSys_PlayerDeath", function(ply,
     local asteamid = "<N/A>"
     local awep = "<N/A>"
     if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-        aname = dmg:GetAttacker():GetClass()
-        if dmg:GetAttacker():IsPlayer() then
-            aname = dmg:GetAttacker():Nick()
-            asteamid = dmg:GetAttacker():SteamID()
-            awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
-        end
+        aname = dmg:GetAttacker():Nick()
+        asteamid = dmg:GetAttacker():SteamID()
+        awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
     log_push("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
     log_push("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
@@ -526,12 +523,9 @@ hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(
     local asteamid = "<N/A>"
     local awep = "<N/A>"
     if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-        aname = dmg:GetAttacker():GetClass()
-        if dmg:GetAttacker():IsPlayer() then
-            aname = dmg:GetAttacker():Nick()
-            asteamid = dmg:GetAttacker():SteamID()
-            awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
-        end
+        aname = dmg:GetAttacker():Nick()
+        asteamid = dmg:GetAttacker():SteamID()
+        awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
     log_push("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
 end,-2)
@@ -637,16 +631,19 @@ if ulx then
         if (not _args) then return end
         if ((#_args > 0 and ulx_noLogCommands[cmd .. " " .. _args[1]]) or ulx_noLogCommands[cmd]) then return end
         local ply = ""
+        local steamid = ""
         if (not IsValid(_ply)) then
             ply = "console"
+            steamid = "console"
         else
             ply = _ply:Nick()
+            steamid = _ply:SteamID()
         end
         local argss = ""
         if (#_args > 0) then
             argss = " " .. table.concat(_args, " ")
         end
-        log_push("ulx",ply.." used ulx command "..cmd..argss)
+        log_push("ulx",ply.."("..steamid..") used ulx command '"..cmd..argss.."'")
     end)
 end
 
