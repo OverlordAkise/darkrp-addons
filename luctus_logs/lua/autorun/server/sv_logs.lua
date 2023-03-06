@@ -491,7 +491,7 @@ hook.Add("EntityTakeDamage","lucid_log_EntityTakeDamage",function(target, dmg)
     if IsValid(dmg:GetAttacker():GetActiveWeapon()) then
         weapon = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
-    log_push("Damage",dmg:GetAttacker():Nick().." damaged "..name.." for "..math.Round(dmg:GetDamage(),2).." with "..weapon)
+    log_push("Damage",dmg:GetAttacker():Nick().."("..dmg:GetAttacker():SteamID()..") damaged "..name.." for "..math.Round(dmg:GetDamage(),2).." with "..weapon)
 end,-2)
 
 --Custom addon support
