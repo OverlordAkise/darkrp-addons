@@ -95,6 +95,7 @@ hook.Add("InitPostEntity","luctus_ingame_config_load",function()
     if configs == nil then return end
     for k,row in pairs(configs) do
         local typedValue = LuctusGetValue(row.value)
+        if not LUCTUS_INGAME_CONFIG[row.confcategory] or not LUCTUS_INGAME_CONFIG[row.confcategory][row.name] then return end
         LUCTUS_INGAME_CONFIG[row.confcategory][row.name] = typedValue
         LuctusIngameConfigSet(row.name,typedValue,row.confcategory)
     end
