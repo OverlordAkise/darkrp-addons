@@ -183,7 +183,7 @@ net.Receive("luctus_mine_craft",function(len,ply)
 end)
 
 hook.Add("EntityTakeDamage", "luctus_mineshaft_quick", function(target, dmginfo)
-	if (target and target:GetClass() == "func_breakable" and dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_crowbar") then
+	if (target and target:GetClass() == "func_breakable" and dmginfo:GetAttacker() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_crowbar") then
 		dmginfo:ScaleDamage(15)
 	end
 end)
