@@ -39,7 +39,7 @@ net.Receive("luctusac_change",function(len,ply)
     local conname = net.ReadString()
     local convalue = net.ReadString()
     if convalue != GetConVar(conname):GetString() then
-        print("[luctus_ac] [luctusac_change] Received net msg",ply:Nick,ply:SteamID(),"->",conname,":",convalue)
+        print("[luctus_ac] [luctusac_change] Received net msg",ply:Nick(),ply:SteamID(),"->",conname,":",convalue)
         LuctusAC_Punish(ply,0,"changing convars")
     end
 end)
