@@ -15,6 +15,12 @@ lucidLogAllowedRanks = {
 }
 --How many days to keep logs for
 lucidLogRetainLogs = 3
+--Should logs be sent to a webserver?
+lucidLogSendLogsToWeb = false
+--URL for the web logs
+lucidLogWebUrl = "https://example.com/logapi.php"
+--How many loglines until we send to webserver
+lucidLogWebSendAmount = 100
 
 --CONFIG END
 
@@ -26,8 +32,7 @@ hook.Add("PostGamemodeLoaded","lucid_log",function()
 end)
 
 
-lucid_log = {}
-
+lucid_weblogcache = {}
 local function log_push(cat,text)
     print("[luctus_logs] "..sql.SQLStr(text))
     local res = sql.Query("INSERT INTO lucid_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
@@ -35,15 +40,37 @@ local function log_push(cat,text)
         ErrorNoHaltWithStack(sql.LastError())
         return
     end
+    
+    if not lucidLogSendLogsToWeb then return end
     local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
     local value = {}
     value.date = datetime
     value.msg = text
     value.cat = cat
-    table.insert(lucid_log,value)
-    if #lucid_log > 20 then
-        table.remove(lucid_log,1)
+    
+    table.insert(lucid_weblogcache,value)
+    if #lucid_weblogcache >= lucidLogWebSendAmount then
+        local didsend = HTTP({
+            failed = function(failMessage)
+                print("[luctus_logs] ERRROR ; FAILED TO POST STATS!")
+                print("[luctus_logs]",os.date("%H:%M:%S - %d/%m/%Y",os.time()))
+                ErrorNoHaltWithStack(failMessage)
+            end,
+            success = function(httpcode,body,headers)
+                print("[luctus_logs] Websync successfull!")
+                --print(httpcode)
+                --print(body)
+                --print(headers)
+            end, 
+            method = "POST",
+            url = lucidLogWebUrl,
+            body = util.TableToJSON(lucid_weblogcache),
+            type = "application/json; charset=utf-8",
+            timeout = 10,
+        })
+        lucid_weblogcache = {}
     end
+    --]]
 end
 
 --public function
@@ -650,8 +677,10 @@ end
 
 hook.Add("PlayerSay","lucid_log_display",function(ply,text,team)
     if text == lucidLogChatCommand and lucidLogAllowedRanks[ply:GetUserGroup()] then
+        local logs = log_get("",0,"","","")
+        if not logs then logs = {} end
         net.Start("lucid_log")
-        local t = util.TableToJSON(table.Reverse(lucid_log))
+        local t = util.TableToJSON(logs)
         local a = util.Compress(t)
         net.WriteInt(#a,17)
         net.WriteData(a,#a)
