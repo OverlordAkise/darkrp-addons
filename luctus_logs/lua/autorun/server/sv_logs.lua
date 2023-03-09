@@ -18,9 +18,9 @@ lucidLogRetainLogs = 3
 --Should logs be sent to a webserver?
 lucidLogSendLogsToWeb = false
 --URL for the web logs
-lucidLogWebUrl = "https://example.com/logapi.php"
+lucidLogWebUrl = "https://example.com/logs"
 --How many loglines until we send to webserver
-lucidLogWebSendAmount = 100
+lucidLogWebSendAmount = 10
 
 --CONFIG END
 
@@ -31,7 +31,11 @@ hook.Add("PostGamemodeLoaded","lucid_log",function()
     print("[luctus_logs] Database initialized!")
 end)
 
-
+LUCTUS_MONITOR_SERVER_ID = LUCTUS_MONITOR_SERVER_ID or ""
+if LUCTUS_MONITOR_SERVER_ID == "" and file.Exists("data/luctus_monitor.txt","GAME") then
+    print("[luctus_logs] Found server ID, loading...")
+    LUCTUS_MONITOR_SERVER_ID = file.Read("data/luctus_monitor.txt","GAME")
+end
 lucid_weblogcache = {}
 local function log_push(cat,text)
     print("[luctus_logs] "..sql.SQLStr(text))
@@ -64,13 +68,12 @@ local function log_push(cat,text)
             end, 
             method = "POST",
             url = lucidLogWebUrl,
-            body = util.TableToJSON(lucid_weblogcache),
+            body = util.TableToJSON({logs=lucid_weblogcache,serverid=LUCTUS_MONITOR_SERVER_ID}),
             type = "application/json; charset=utf-8",
             timeout = 10,
         })
         lucid_weblogcache = {}
     end
-    --]]
 end
 
 --public function
