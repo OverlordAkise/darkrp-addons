@@ -27,14 +27,10 @@ LUCTUS_SERVERCHECKS = {
         function()
             local all = 100
             local count = 1
-            print("[DEBUG]","FPS calc:")
-            PrintTable(LuctusPlayerStats)
-            
             for k,v in pairs(LuctusPlayerStats) do
                 all = all + v.fps
                 count = count + 1
             end
-            print("[DEBUG]",all,"/",count,"=",math.Round(all/count))
             local avg = math.Round(all/count)
             if avg == 0 then
                 return true, "Average N/A ( >= 100)"

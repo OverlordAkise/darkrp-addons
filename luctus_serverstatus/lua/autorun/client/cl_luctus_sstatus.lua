@@ -78,7 +78,6 @@ net.Receive("luctus_serverstatus",function()
     local data = net.ReadData(lenge)
     local jtext = util.Decompress(data)
     local tab = util.JSONToTable(jtext)
-    --PrintTable(tab)
     
     LuctusServerStatus = "OK"
     LuctusServerStatusColor = green
@@ -89,7 +88,6 @@ net.Receive("luctus_serverstatus",function()
             LuctusServerStatusColor = red
         end
         if LucStatList and IsValid(LucStatList) then
-            
             LucStatList:AddLine(k,v[1] and "OK" or "WARNING",v[2])
         end
     end
