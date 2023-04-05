@@ -18,9 +18,11 @@ lucidLogRetainLogs = 3
 --Should logs be sent to a webserver?
 lucidLogSendLogsToWeb = false
 --URL for the web logs
-lucidLogWebUrl = "https://example.com/logs"
+lucidLogWebUrl = "http://example.com:3100/loki/api/v1/push"
 --How many loglines until we send to webserver
-lucidLogWebSendAmount = 10
+lucidLogWebSendAmount = 100
+--Send logs in format for Grafana Loki , tested with loki-2.8.0
+lucidLogLokiFormat = false
 
 --CONFIG END
 
@@ -46,14 +48,26 @@ local function log_push(cat,text)
     end
     
     if not lucidLogSendLogsToWeb then return end
-    local datetime = sql.Query("SELECT datetime()")[1]["datetime()"]
-    local value = {}
-    value.date = datetime
-    value.msg = text
-    value.cat = cat
     
-    table.insert(lucid_weblogcache,value)
+    if lucidLogLokiFormat then
+        table.insert(lucid_weblogcache,{os.time().."000000000", text})
+    else
+        local value = {}
+        value.date = sql.Query("SELECT datetime()")[1]["datetime()"]
+        value.msg = text
+        value.cat = cat
+        table.insert(lucid_weblogcache,value)
+    end
+    
     if #lucid_weblogcache >= lucidLogWebSendAmount then
+        local data = ""
+        if lucidLogLokiFormat then
+            local tab = {["streams"] = {}}
+            table.insert(tab["streams"],{["stream"] = {["serverid"] = LUCTUS_MONITOR_SERVER_ID}, ["values"] = lucid_weblogcache})
+            data = util.TableToJSON(tab)
+        else
+            data = util.TableToJSON({logs=lucid_weblogcache,serverid=LUCTUS_MONITOR_SERVER_ID})
+        end
         local didsend = HTTP({
             failed = function(failMessage)
                 print("[luctus_logs] ERRROR ; FAILED TO POST STATS!")
@@ -68,8 +82,8 @@ local function log_push(cat,text)
             end, 
             method = "POST",
             url = lucidLogWebUrl,
-            body = util.TableToJSON({logs=lucid_weblogcache,serverid=LUCTUS_MONITOR_SERVER_ID}),
-            type = "application/json; charset=utf-8",
+            body = data,
+            type = "application/json",
             timeout = 10,
         })
         lucid_weblogcache = {}
