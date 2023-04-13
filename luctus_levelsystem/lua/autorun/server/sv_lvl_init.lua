@@ -71,11 +71,11 @@ function Luctus_loadxp(ply)
     end
 end
 
-hook.Add('PlayerDisconnected', 'LVL_SaveOnDisconnect', function(ply)
+hook.Add("PlayerDisconnected", "LVL_SaveOnDisconnect", function(ply)
     Luctus_savexp(ply)
 end)
  
-hook.Add('ShutDown', 'LVL_SaveOnShutdown', function()
+hook.Add("ShutDown", "LVL_SaveOnShutdown", function()
     for k,v in pairs(player.GetAll()) do
         Luctus_savexp(v)
     end
