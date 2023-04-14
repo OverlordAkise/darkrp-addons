@@ -36,7 +36,7 @@ end)
 net.Receive("luctus_dayward",function(len,ply)
     --print("[DEBUG]","Received daily reward sv")
     if os.date("%Y%m%d",ply.lastDailyReward) != os.date("%Y%m%d") then
-        print("[DEBUG]","Date different, giving reward")
+        print("[dailyreward] Date different, giving reward to",ply)
         LuctusDailyRewardReward(ply)
     end
 end)

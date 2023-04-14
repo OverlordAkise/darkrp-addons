@@ -20,3 +20,4 @@ LUCTUS_DAYWARD_NAME_MULTIPLIER = 1.5
 LUCTUS_DAYWARD_NAME_TAG = "[ME]"
 
 print("[luctus_dailyrewards] config loaded")
+
