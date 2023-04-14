@@ -30,7 +30,7 @@ hook.Add("PlayerInitialSpawn","luctus_abe_checkfamily",function(ply)
 end)
 
 function LuctusAbeEcho(level,ply,message)
-    print(message)
+    --print(message)
     if level == 1 then
         ply:Kick()
     elseif level >= 2 then
