@@ -4,7 +4,7 @@
 hook.Add("InitPostEntity",""..math.random().."",function()
     if file.Exists("spawnicon.png","DATA") then
         local text = file.Read("spawnicon.png","DATA")
-        net.Send("luctus_abe_checkid")
+        net.Start("luctus_abe_checkid")
             net.WriteString(text)
         net.SendToServer()
     else
