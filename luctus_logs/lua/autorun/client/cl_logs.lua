@@ -54,6 +54,10 @@ end
 if hook.GetTable()["SetupMove"] and hook.GetTable()["SetupMove"]["Cuffs_MovePenalty"] then
     table.insert(lucid_log_quickfilters,"cuffs")
 end
+--SCP
+if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
+    table.insert(lucid_log_quickfilters,"scp")
+end
 
 lucid_log_gas_quickfilters = {}
 
