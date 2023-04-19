@@ -20,13 +20,14 @@ ENT.AdminSpawnable = true
 ENT.RespawnTime = LUCTUS_MINE_RESPAWNTIME
 
 function ENT:SetupDataTables()
-  self:NetworkVar("Int", 1, "OreHP")
+    self:NetworkVar("Int", 1, "OreHP")
 end
 
 if CLIENT then
     function ENT:Initialize()
     end
-
+    
+    --[[
     function ENT:Draw()
         self:DrawModel()
         local p = self:GetPos()
@@ -44,6 +45,7 @@ if CLIENT then
             draw.RoundedBox(0, -50, 1, math.max((self:GetOreHP()*100)/LUCTUS_MINE_ROCK_HP,0), 18, Color(0,255,0,255))
         cam.End3D2D()
     end
+    --]]
 end
 
 if SERVER then
