@@ -112,16 +112,14 @@ net.Receive("luctus_mine_craft",function()
         label:Dock(LEFT)
         label:SetSize(200,25)
         label:DockMargin(20,0,0,0)
-        label:SetText(LuctusMinerGetName(v["Entity"]))
+        label:SetText(LuctusMinerGetName(k))
 
         local rLabel = vgui.Create("DLabel",row)
         rLabel:Dock(LEFT)
         rLabel:SetSize(200,25)
         local rText = ""
         for kk,vv in pairs(v) do
-            if kk ~= "Entity" then
-                rText = rText .. " " .. kk .. " " .. vv .. " ,"
-            end
+            rText = rText .. " " .. kk .. " " .. vv .. " ,"
         end
         rText = string.sub(rText,1,#rText-1)
         rLabel:SetText(rText)
@@ -133,7 +131,7 @@ net.Receive("luctus_mine_craft",function()
         button:DockMargin(10,0,20,0)
         button.DoClick = function()
             net.Start("luctus_mine_craft")
-                net.WriteString(v["Entity"])
+                net.WriteString(k)
             net.SendToServer()
         end
         BeautifyButton(button)

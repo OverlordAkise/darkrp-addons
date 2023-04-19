@@ -29,11 +29,11 @@ luctus.mine.ores = {
 
 --Crafting config
 luctus.mine.craftables = {
-    {Entity = "m9k_knife", Coal=50, Bronze=50,Silver=5},
-    {Entity = "guthscp_keycard_lvl_1", Coal=10, Silver=20},
-    {Entity = "guthscp_keycard_lvl_2", Coal=10, Gold=20},
-    {Entity = "guthscp_keycard_lvl_3", Coal=10, Diamond=10},
-    {Entity = "guthscp_keycard_lvl_4", Coal=10, Ruby=10},
+    ["m9k_knife"] = {Coal=50, Bronze=50,Silver=5},
+    ["guthscp_keycard_lvl_1"] = {Coal=10, Silver=20},
+    ["guthscp_keycard_lvl_2"] = {Coal=10, Gold=20},
+    ["guthscp_keycard_lvl_3"] = {Coal=10, Diamond=10},
+    ["guthscp_keycard_lvl_4"] = {Coal=10, Ruby=10},
 } 
 
 print("[luctus_mine] SH config file loaded!")

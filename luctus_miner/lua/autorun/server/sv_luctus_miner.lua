@@ -155,16 +155,9 @@ net.Receive("luctus_mine_craft",function(len,ply)
         DarkRP.notify(ply,1,5,"Error: Please make room in your pocket!")
         return 
     end
-    local item = {}
-    for k,v in pairs(luctus.mine.craftables) do
-        if v["Entity"] == sitem then
-            item = v
-            break
-        end
-    end
-    if item == {} then return end
+    if not luctus.mine.craftables[sitem] then return end
+    local item = luctus.mine.craftables[sitem]
     for k,v in pairs(item) do
-        if k=="Entity" then continue end
         --Why in the fuck is GetNWInt a string?
         if tonumber(ply:GetNWInt("ore_"..k,-1)) < tonumber(v) then
             DarkRP.notify(ply,1,5,"Error: You don't have enough resources for that!")
@@ -172,13 +165,12 @@ net.Receive("luctus_mine_craft",function(len,ply)
         end
     end
     --Create entity first and check if it exists
-    local ent = ents.Create( item["Entity"] )
+    local ent = ents.Create(sitem)
     if not ent then return end
     if not IsValid(ent) then return end
 
     --Now that everything is ok we remove the ore and give the item
     for k,v in pairs(item) do
-        if k=="Entity" then continue end
         ply:SetNWInt("ore_"..k,ply:GetNWInt("ore_"..k,-1)-v)
     end
     --ply:Give(item["Entity"])
@@ -188,7 +180,7 @@ net.Receive("luctus_mine_craft",function(len,ply)
     ent:Spawn()
     ply:addPocketItem(ent)
     ply:SendLua("surface.PlaySound('ambient/levels/labs/coinslot1.wav')")
-    DarkRP.notify(ply,3,5,"[mine] Successfully crafted '"..item["Entity"].."' !")
+    DarkRP.notify(ply,3,5,"[mine] Successfully crafted '"..sitem.."' !")
     luctusMineSavePlayer(ply)
 end)
 
