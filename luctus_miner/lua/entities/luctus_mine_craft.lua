@@ -31,6 +31,7 @@ if SERVER then
     function ENT:Use(activator, caller)
         if activator:IsPlayer() then
             net.Start("luctus_mine_craft")
+                net.WriteEntity(self)
             net.Send(activator)
         end
     end

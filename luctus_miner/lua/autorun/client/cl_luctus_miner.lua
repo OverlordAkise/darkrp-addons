@@ -94,6 +94,7 @@ end
 
 net.Receive("luctus_mine_craft",function()
     if IsValid(MineCraftPanel) then return end
+    local npc = net.ReadEntity()
     MineCraftPanel = CreateFrame("Luctus Miner | Crafting Table")
 
     local DScrollPanel = vgui.Create( "DScrollPanel", MineCraftPanel )
@@ -132,6 +133,7 @@ net.Receive("luctus_mine_craft",function()
         button.DoClick = function()
             net.Start("luctus_mine_craft")
                 net.WriteString(k)
+                net.WriteEntity(npc)
             net.SendToServer()
         end
         BeautifyButton(button)

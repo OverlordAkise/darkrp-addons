@@ -6,6 +6,9 @@ luctus.mine = {}
 
 --CONFIG START
 
+--Should crafted things be put into your DarkRP "pocket"
+LUCTUS_MINE_USE_POCKET = false
+
 -- Which job can get a pickaxe from the NPC
 LUCTUS_MINE_JOBNAME = "Miner"
 --Which weapon should be able to "mine" rocks?

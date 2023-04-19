@@ -122,7 +122,7 @@ function luctusMineGiveOre(ply)
         local name = randomOre["Name"]
         ply.luctusOres[name] = ply.luctusOres[name] + 1
         ply:SetNWInt("ore_"..name,ply:GetNWInt("ore_"..name)+1)
-        DarkRP.notify(ply,2,5,"+"..name)
+        DarkRP.notify(ply,2,5,"[Miner] +"..name)
     end
 end
 
@@ -138,7 +138,7 @@ net.Receive("luctus_mine_npc",function(len,ply)
     ply:addMoney(npc:GetNWInt("sOre_"..ore,100)*num)
     ply:SetNWInt("ore_"..ore,ply:GetNWInt("ore_"..ore,0)-num)
     ply:SendLua("surface.PlaySound('ambient/levels/labs/coinslot1.wav')")
-    DarkRP.notify(ply,3,5,"You sold your ore for "..(npc:GetNWInt("sOre_"..ore,100)*num).."$!")
+    DarkRP.notify(ply,3,5,"[Miner] You sold your ore for "..(npc:GetNWInt("sOre_"..ore,100)*num).."$!")
     --PrintMessage(HUD_PRINTTALK, ore.." / "..num)
     luctusMineSavePlayer(ply)
 end)
@@ -148,11 +148,19 @@ net.Receive("luctus_get_pickaxe", function(len,ply)
     ply:Give("weapon_crowbar")
 end)
 
+local function IsWeapon(class)
+    local swep = weapons.Get(class)
+    if swep and swep.PrintName then return true end
+    return false
+end
+
 net.Receive("luctus_mine_craft",function(len,ply)
     local sitem = net.ReadString()
+    local tableEnt = net.ReadEntity()
     if not sitem or sitem == "" then return end
-    if (#ply:getPocketItems() >= GAMEMODE.Config.pocketitems) then
-        DarkRP.notify(ply,1,5,"Error: Please make room in your pocket!")
+    if not tableEnt or not IsValid(tableEnt) then return end
+    if LUCTUS_MINE_USE_POCKET and (#ply:getPocketItems() >= GAMEMODE.Config.pocketitems) then
+        DarkRP.notify(ply,1,5,"[Miner] Please make room in your pocket!")
         return 
     end
     if not luctus.mine.craftables[sitem] then return end
@@ -160,27 +168,28 @@ net.Receive("luctus_mine_craft",function(len,ply)
     for k,v in pairs(item) do
         --Why in the fuck is GetNWInt a string?
         if tonumber(ply:GetNWInt("ore_"..k,-1)) < tonumber(v) then
-            DarkRP.notify(ply,1,5,"Error: You don't have enough resources for that!")
+            DarkRP.notify(ply,1,5,"[Miner] You don't have enough resources for that!")
             return
         end
     end
-    --Create entity first and check if it exists
-    local ent = ents.Create(sitem)
-    if not ent then return end
-    if not IsValid(ent) then return end
+    if IsWeapon(sitem) and not LUCTUS_MINE_USE_POCKET then
+        ply:Give(sitem)
+    else
+        local ent = ents.Create(sitem)
+        if not ent then return end
+        if not IsValid(ent) then return end
 
-    --Now that everything is ok we remove the ore and give the item
-    for k,v in pairs(item) do
-        ply:SetNWInt("ore_"..k,ply:GetNWInt("ore_"..k,-1)-v)
+        for k,v in pairs(item) do
+            ply:SetNWInt("ore_"..k,ply:GetNWInt("ore_"..k,-1)-v)
+        end
+        ent:SetPos(tableEnt:GetPos()+Vector(0,0,50))
+        ent:Spawn()
+        if LUCTUS_MINE_USE_POCKET then
+            ply:addPocketItem(ent)
+        end
     end
-    --ply:Give(item["Entity"])
-
-    --button:SetModel( "models/dav0r/buttons/button.mdl" )
-    ent:SetPos( ply:GetPos() )
-    ent:Spawn()
-    ply:addPocketItem(ent)
     ply:SendLua("surface.PlaySound('ambient/levels/labs/coinslot1.wav')")
-    DarkRP.notify(ply,3,5,"[mine] Successfully crafted '"..sitem.."' !")
+    DarkRP.notify(ply,3,5,"[Miner] Successfully crafted '"..sitem.."' !")
     luctusMineSavePlayer(ply)
 end)
 
