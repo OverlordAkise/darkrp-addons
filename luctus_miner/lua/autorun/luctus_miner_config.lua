@@ -3,14 +3,21 @@
 
 luctus = luctus or {}
 luctus.mine = {}
+
+--CONFIG START
+
 -- Which job can get a pickaxe from the NPC
--- The fancy name here:
-luctus.mine.jobName = "Miner"
-luctus.mine.orePercent = 33
-luctus.mine.minSpawnTime = 30
-luctus.mine.maxSpawnTime = 120
-luctus.mine.minSpawnHP = 150
-luctus.mine.maxSpawnHP = 400
+LUCTUS_MINE_JOBNAME = "Miner"
+--Which weapon should be able to "mine" rocks?
+LUCTUS_MINE_PICKAXE_CLASSNAME = "weapon_crowbar"
+--How long a rock takes to respawn, in seconds
+LUCTUS_MINE_RESPAWNTIME = 120
+--Every hit, how much percent to get ore
+LUCTUS_MINE_OREPERCENT = 33
+--HP that a rock has
+LUCTUS_MINE_ROCK_HP = 200
+
+--Ore config
 luctus.mine.ores = {
   {Name = "Coal", PriceMin = 25, PriceMax = 75, Color=Color(255,255,255,255), DropPercent = 50},
   {Name = "Bronze", PriceMin = 100, PriceMax = 200, Color=Color(139,69,19,255), DropPercent = 30},
@@ -20,6 +27,7 @@ luctus.mine.ores = {
   {Name = "Ruby", PriceMin = 800, PriceMax = 1200, Color=Color(255,5,5,255), DropPercent = 2},
 }
 
+--Crafting config
 luctus.mine.craftables = {
   {Entity = "m9k_knife", Coal=50, Bronze=50,Silver=5},
   {Entity = "guthscp_keycard_lvl_1", Coal=10, Silver=20},
@@ -27,6 +35,8 @@ luctus.mine.craftables = {
   {Entity = "guthscp_keycard_lvl_3", Coal=10, Diamond=10},
   {Entity = "guthscp_keycard_lvl_4", Coal=10, Ruby=10},
 } 
+
+--CONFIG END
 
 function weightedRandom(oresTable)
    local poolsize = 0

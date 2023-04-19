@@ -15,18 +15,6 @@ function luctusMineHUD()
 end
 
 
-hook.Add("OnPlayerChangedTeam","luctus_mine_config",function(ply, numBefore, numAfter)
-  local nam = TEAM_DKLASSE or -1
-  if nam ~= -1 then
-    if numBefore == nam then
-      hook.Remove("HUDPaint","luctus_mine_hud")
-    end
-    if numAfter == nam then
-      hook.Add("HUDPaint","luctus_mine_hud",luctusMineHUD)
-    end
-  end
-end)
-
 hook.Add("OnContextMenuOpen","luctus_mine_hud_on",function()
   hook.Add("HUDPaint","luctus_mine_hud",luctusMineHUD)
 end)

@@ -24,28 +24,9 @@ end
 
 luctusMineCreateTable() --PostGamemodeLoaded
 
-
-hook.Add("OnPlayerChangedTeam","luctus_mine_config",function(ply, numBefore, numAfter)
-  local nam = TEAM_SIMPLEMINER or -1
-  if nam ~= -1 then
-    if numAfter == nam then
-      if not ply.luctusOres then luctusMineLoadPlayer(ply) end
-    end
-    if numBefore == nam then
-      luctusMineSavePlayer(ply)
-    end
-  end
-end)
-
 hook.Add("PlayerInitialSpawn","luctus_mine_loadPlayer",function(ply,transition)
   luctusMineLoadPlayer(ply)
 end)
-
-function luctusRandomNPCPrice(ent)
-  for k,v in pairs(luctus.mine.ores) do
-    ent:SetNWInt("sOre_"..v["Name"],math.random(v["PriceMin"],v["PriceMax"]))
-  end
-end
 
 function luctusMineLoadPlayer(ply)
   ply.luctusOres = {}
@@ -89,25 +70,30 @@ end
 
 timer.Create("luctus_mine_savePlayerData",120,0,function()
   for k,v in pairs(player.GetAll()) do
-    if v:Team() == TEAM_DKLASSE then
+    if v.lmine_needstosave then
       luctusMineSavePlayer(v)
+      v.lmine_needstosave = false
     end
   end
-  print("[luctus_minesystem] Player Data saved successfully by timer!")
+  --print("[luctus_minesystem] Player Data saved successfully by timer!")
 end)
 
-timer.Create("luctus_mine_randomNPCPrices",60,0,function()
+function luctusRandomNPCPrice(ent)
+  for k,v in pairs(luctus.mine.ores) do
+    ent:SetNWInt("sOre_"..v["Name"],math.random(v["PriceMin"],v["PriceMax"]))
+  end
+end
+
+timer.Create("luctus_mine_randomNPCPrices",300,0,function()
   for k,v in pairs(ents.GetAll()) do
     if v:GetClass() == "luctus_mine_npc" then
-      for a,b in pairs(luctus.mine.ores) do
-        v:SetNWInt("sOre_"..b["Name"],math.random(b["PriceMin"],b["PriceMax"]))
-      end
+      luctusRandomNPCPrice(v)
     end
   end
-  
 end)
 
 function luctusMineGiveOre(ply)
+  ply.lmine_needstosave = true
   local randomOre = weightedRandom(luctus.mine.ores)
   if randomOre and randomOre.Name then 
     local name = randomOre["Name"]
@@ -135,7 +121,7 @@ net.Receive("luctus_mine_npc",function(len,ply)
 end)
 
 net.Receive("luctus_get_pickaxe", function(len,ply)
-  if not ply:getJobTable().name == luctus.mine.jobName then return end
+  if ply:getJobTable().name == LUCTUS_MINE_JOBNAME then return end
   ply:Give("weapon_crowbar")
 end)
 
@@ -180,12 +166,7 @@ net.Receive("luctus_mine_craft",function(len,ply)
   ply:addPocketItem(ent)
   ply:SendLua("surface.PlaySound('ambient/levels/labs/coinslot1.wav')")
   DarkRP.notify(ply,3,5,"[mine] Successfully crafted '"..item["Entity"].."' !")
-end)
-
-hook.Add("EntityTakeDamage", "luctus_mineshaft_quick", function(target, dmginfo)
-	if (target and target:GetClass() == "func_breakable" and dmginfo:GetAttacker() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_crowbar") then
-		dmginfo:ScaleDamage(15)
-	end
+  luctusMineSavePlayer(ply)
 end)
 
 print("[luctus_minesystem] SV file loaded!")

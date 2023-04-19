@@ -2,7 +2,7 @@
 --Made by OverlordAkise
 
 AddCSLuaFile()
-ENT.Type = 'anim'
+ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
 ENT.Name = "Miner Rock"
@@ -17,13 +17,7 @@ ENT.Freeze = true
 
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
-
-if luctus and luctus.miner_respawn_time then
-  ENT.RespawnTime = luctus.miner_respawn_time
-else
-  ENT.RespawnTime = 120
-end
-ENT.HP = 200
+ENT.RespawnTime = LUCTUS_MINE_RESPAWNTIME
 
 function ENT:SetupDataTables()
   self:NetworkVar("Int", 1, "OreHP")
@@ -47,7 +41,7 @@ if CLIENT then
     
     cam.Start3D2D(p, Angle(0, LocalPlayer():EyeAngles().y - 90, 90), 0.4)
       draw.RoundedBox(0, -51, 0, 102, 20, Color(255,255,255,255))
-      draw.RoundedBox(0, -50, 1, math.max((self:GetOreHP()*100)/self.HP,0), 18, Color(0,255,0,255))
+      draw.RoundedBox(0, -50, 1, math.max((self:GetOreHP()*100)/LUCTUS_MINE_ROCK_HP,0), 18, Color(0,255,0,255))
     cam.End3D2D()
   end
 end
@@ -62,7 +56,7 @@ if SERVER then
     if (phys:IsValid()) then
       phys:Wake()
     end
-    self:SetOreHP(self.HP)
+    self:SetOreHP(LUCTUS_MINE_ROCK_HP)
   end
    
   function ENT:Use( activator, caller )
@@ -74,17 +68,18 @@ if SERVER then
   
   function ENT:OnTakeDamage(damage)
     if IsValid(damage:GetAttacker()) and damage:GetAttacker():IsPlayer() then
+      if damage:GetAttacker():GetActiveWeapon():GetClass() != LUCTUS_MINE_PICKAXE_CLASSNAME then return end
       self:SetOreHP(self:GetOreHP() - 10)
-      if math.random(1,100) < luctus.mine.orePercent then return end
+      if math.random(1,100) < LUCTUS_MINE_OREPERCENT then return end
       luctusMineGiveOre(damage:GetAttacker())
       --PrintMessage(HUD_PRINTTALK, randomOre["Name"])
       if self:GetOreHP() <= 0 then
         self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
         self:SetNoDraw(true)
-        timer.Simple(60,function()
+        timer.Simple(LUCTUS_MINE_RESPAWNTIME,function()
           if not IsValid(self) then return end
           self:SetNoDraw(false)
-          self:SetOreHP(self.HP)
+          self:SetOreHP(LUCTUS_MINE_ROCK_HP)
           self:SetCollisionGroup(COLLISION_GROUP_NONE)
         end)
       end
