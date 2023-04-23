@@ -38,6 +38,7 @@ function openWarnMenu()
     WarningList = vgui.Create("DListView", Frame)
     WarningList:Dock(FILL)
     WarningList:AddColumn("ID"):SetFixedWidth(25)
+    WarningList:AddColumn("Time"):SetFixedWidth(125)
     WarningList:AddColumn("Active"):SetFixedWidth(30)
     WarningList:AddColumn("WarneeID"):SetFixedWidth(125)
     WarningList:AddColumn("PlayerID"):SetFixedWidth(125)
@@ -215,7 +216,7 @@ net.Receive("lw_requestwarns",function()
     local activeWarns = 0
     local allWarns = 0
     for k,v in pairs(tab) do
-        WarningList:AddLine(v["rowid"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
+        WarningList:AddLine(v["rowid"],v["time"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
         if v["active"] == 1 then
             activeWarns = activeWarns + 1
         end
@@ -268,6 +269,7 @@ net.Receive("lw_requestwarns_user",function()
     WarningList = vgui.Create("DListView", Frame)
     WarningList:Dock(FILL)
     WarningList:AddColumn("ID"):SetFixedWidth(25)
+    WarningList:AddColumn("Time"):SetFixedWidth(125)
     WarningList:AddColumn("Active"):SetFixedWidth(30)
     WarningList:AddColumn("WarneeID"):SetFixedWidth(125)
     WarningList:AddColumn("PlayerID"):SetFixedWidth(125)
@@ -292,7 +294,7 @@ net.Receive("lw_requestwarns_user",function()
     local activeWarns = 0
     local allWarns = 0
     for k,v in pairs(tab) do
-        WarningList:AddLine(v["rowid"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
+        WarningList:AddLine(v["rowid"],v["time"],v["active"],v["warneeid"],v["targetid"],v["warntext"])
         if(v["active"] == 1)then
             activeWarns = activeWarns + 1
         end
@@ -312,6 +314,8 @@ concommand.Add("warnmenu", function(ply, cmd, args)
         return
     end
     openWarnMenu()
+    net.Start("lw_requestwarns")
+    net.SendToServer()
 end)
 
 hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
@@ -322,6 +326,8 @@ hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead)
             return
         end
         openWarnMenu()
+        net.Start("lw_requestwarns")
+        net.SendToServer()
     end
 end)
 

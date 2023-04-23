@@ -2,10 +2,10 @@
 --Made by OverlordAkise
 
 util.AddNetworkString("lw_requestwarns")
+util.AddNetworkString("lw_requestwarns_user")
 util.AddNetworkString("lw_warnplayer")
 util.AddNetworkString("lw_updatewarn")
 util.AddNetworkString("lw_deletewarn")
-util.AddNetworkString("lw_requestwarns_user")--new
 
 LuctusLog = LuctusLog or function()end
 
@@ -74,7 +74,12 @@ end)
 net.Receive("lw_requestwarns", function(len, ply)
     if lwconfig.allowedGroups[ply:GetUserGroup()] ~= true then return end
     local steamid = net.ReadString()
-    local data = sql.Query("SELECT rowid,* FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
+    local data = ""
+    if steamid != "" then
+        data = sql.Query("SELECT rowid,* FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
+    else
+        data = sql.Query("SELECT rowid,* FROM lwarn_warns ORDER BY rowid DESC LIMIT 20")
+    end
     net.Start("lw_requestwarns")
     if data then
         local t = util.TableToJSON(data)
