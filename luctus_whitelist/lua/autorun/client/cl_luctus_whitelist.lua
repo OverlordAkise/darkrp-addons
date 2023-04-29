@@ -1,8 +1,6 @@
 --Lucid Whitelist
 --Made by OverlordAkise
 
-LUCTUS_WHITELIST_CHATCMD = "!whitelist"
-
 hook.Add("OnPlayerChat", "lucid_whitelist", function(ply,text,team,dead)
     if ply == LocalPlayer() then
         if string.lower(text) == LUCTUS_WHITELIST_CHATCMD then
@@ -12,6 +10,10 @@ hook.Add("OnPlayerChat", "lucid_whitelist", function(ply,text,team,dead)
 end)
 
 function openLucidWhitelistWindow()
+    if not LUCTUS_WHITELIST_ALLOWED_RANKS[LocalPlayer():GetUserGroup()] then
+        notification.AddLegacy("You aren't allowed to open the whitelist!",1,5)
+        return
+    end
     local frame = vgui.Create("DFrame")
     frame:SetSize(600, 400)
     frame:ShowCloseButton(false)

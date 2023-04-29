@@ -29,7 +29,7 @@ end)
 
 
 net.Receive("lucid_whitelist_set", function(len,ply)
-    if not ply:IsAdmin() then return end
+    if not LUCTUS_WHITELIST_ALLOWED_RANKS[ply:GetUserGroup()] then return end
     local steamid = net.ReadString()
 
     if not (steamid:find("^STEAM_%d:%d:%d+$") or steamid == "everyone") then
@@ -80,7 +80,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
 end)
 
 net.Receive("lucid_whitelist_get", function(len,ply)
-    if not ply:IsAdmin() then return end
+    if not LUCTUS_WHITELIST_ALLOWED_RANKS[ply:GetUserGroup()] then return end
     local steamid = net.ReadString()
 
     if not (steamid:find("^STEAM_%d:%d:%d+$") or steamid == "everyone") then
