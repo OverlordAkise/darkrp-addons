@@ -6,7 +6,7 @@ util.AddNetworkString("lucid_whitelist_set")
 
 LuctusLog = LuctusLog or function()end
 
-hook.Add("playerCanChangeTeam","luctus_scp_mgmt_job_restrict",function(ply,newTeam,force)
+hook.Add("playerCanChangeTeam","luctus_whitelist",function(ply,newTeam,force)
     if force then return true, "Job change was forced!" end
     local jobname = team.GetName(newTeam)
     local canChange = GetGlobalBool(jobname,false) or ply:GetNWBool(jobname,false)
