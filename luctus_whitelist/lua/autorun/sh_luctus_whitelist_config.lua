@@ -10,5 +10,7 @@ LUCTUS_WHITELIST_ALLOWED_RANKS = {
     ["operator"] = true,
     ["moderator"] = true,
 }
+--Message if you are not on the whitelist
+LUCTUS_WHITELIST_ERRMESSAGE = "This job is whitelist only!"
 
 print("[luctus_whitelist] Lucid Whitelist config loaded!")
