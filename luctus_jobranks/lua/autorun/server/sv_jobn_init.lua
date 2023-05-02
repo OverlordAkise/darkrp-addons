@@ -184,42 +184,47 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
 
     --Jobranks
     if luctus_jobranks[jobname] then
-        local res = sql.Query("SELECT * FROM luctus_jobranks WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(RPExtraTeams[afterNum].command))
-        if res == false then
-            error(sql.LastError())
-        end
-        if res and res[1] then
-            local rankid = res[1].rankid
-            if not tonumber(rankid) then
-                print("[luctus_jobranks] ERROR SELECT RANKID WAS NOT A NUMBER!")
-                return
-            end
-            rankid = tonumber(rankid)
-            ply:SetNWString("l_nametag",luctus_jobranks[jobname][rankid][1])
-            ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[jobname][rankid][2]..")")
-            ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary)
-            if luctus_jobranks[jobname][rankid][5] then
-                ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary + luctus_jobranks[jobname][rankid][5])
-            end
-            ply.lrankID = rankid
-        else
-            local inres = sql.Query("INSERT INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(RPExtraTeams[afterNum].command)..",1)")
-            if inres == false then
-                error(sql.LastError())
-            end
-            if inres == nil then
-                print("[luctus_jobranks] New player successfully inserted!")
-            end
-            ply:SetNWString("l_nametag", luctus_jobranks[jobname][1][1])
-            ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[jobname][1][2]..")")
-            ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary)
-            if luctus_jobranks[jobname][1][5] then
-                ply:setDarkRPVar("salary", RPExtraTeams[afterNum].salary + luctus_jobranks[jobname][1][5])
-            end
-            ply.lrankID = 1
-        end
+        LuctusJobranksLoadPlayer(ply,afterNum)
     end
 end)
+
+function LuctusJobranksLoadPlayer(ply,curTeam)
+    local jobname = team.GetName(curTeam)
+    local res = sql.Query("SELECT * FROM luctus_jobranks WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(RPExtraTeams[curTeam].command))
+    if res == false then
+        error(sql.LastError())
+    end
+    if res and res[1] then
+        local rankid = res[1].rankid
+        if not tonumber(rankid) then
+            print("[luctus_jobranks] ERROR SELECT RANKID WAS NOT A NUMBER!")
+            return
+        end
+        rankid = tonumber(rankid)
+        ply:SetNWString("l_nametag",luctus_jobranks[jobname][rankid][1])
+        ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[jobname][rankid][2]..")")
+        ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary)
+        if luctus_jobranks[jobname][rankid][5] then
+            ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary + luctus_jobranks[jobname][rankid][5])
+        end
+        ply.lrankID = rankid
+    else
+        local inres = sql.Query("INSERT INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(RPExtraTeams[curTeam].command)..",1)")
+        if inres == false then
+            error(sql.LastError())
+        end
+        if inres == nil then
+            print("[luctus_jobranks] New player successfully inserted!")
+        end
+        ply:SetNWString("l_nametag", luctus_jobranks[jobname][1][1])
+        ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[jobname][1][2]..")")
+        ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary)
+        if luctus_jobranks[jobname][1][5] then
+            ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary + luctus_jobranks[jobname][1][5])
+        end
+        ply.lrankID = 1
+    end
+end
 
 hook.Add("playerGetSalary", "luctus_jobranks_salary", function(player, amount)
     --Fix salary? For whatever reason DarkRP is ignoring ply:getDarkRPVar("salary")
