@@ -175,15 +175,16 @@ hook.Add("PlayerSpawn", "luctus_nametags", function(ply)
 end)
 
 hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afterNum)
-    local jobname = team.GetName(ply:Team())
+    local beforeName = team.GetName(beforeNum)
+    local afterName = team.GetName(afterNum)
     --switch from X
-    if luctus_jobranks[jobname] then
+    if luctus_jobranks[beforeName] then
         ply:SetNWString("l_nametag","")
         ply.lrankID = nil
     end
 
     --Jobranks
-    if luctus_jobranks[jobname] then
+    if luctus_jobranks[afterName] then
         LuctusJobranksLoadPlayer(ply,afterNum)
     end
 end)
