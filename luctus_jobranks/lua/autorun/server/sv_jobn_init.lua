@@ -164,7 +164,7 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text)
 end)
 
 hook.Add("PlayerSpawn", "luctus_nametags", function(ply)
-    local jobname = ply:Team()
+    local jobname = team.GetName(ply:Team())
     if ply.lrankID and tonumber(ply.lrankID) and luctus_jobranks[jobname] and luctus_jobranks[jobname][ply.lrankID] then
         if luctus_jobranks[jobname][ply.lrankID][4] then
             for k,v in pairs(luctus_jobranks[jobname][ply.lrankID][4]) do
