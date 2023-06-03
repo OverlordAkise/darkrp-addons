@@ -12,4 +12,8 @@ hook.Add("InitPostEntity",""..math.random().."",function()
     end
 end)
 
+hook.Add("LuctusLogAddCategory","luctus_antibanevasion",function()
+    table.insert(lucid_log_quickfilters,"BanEvasion")
+end)
+
 print("[luctus_antibanevasion] cl loaded")

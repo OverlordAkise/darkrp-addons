@@ -5,6 +5,12 @@ util.AddNetworkString("luctus_abe_checkid")
 
 LUCTUS_ABE_IP_LIST = {}
 LUCTUS_ABE_IP_PROXYS = {}
+LuctusLog = LuctusLog or function()end
+
+local function Log(text)
+    print("[banevasion]",text)
+    LuctusLog("BanEvasion",text)
+end
 
 net.Receive("luctus_abe_checkid",function(len,ply)
     local sentSteamID = net.ReadString()
@@ -30,7 +36,7 @@ hook.Add("PlayerInitialSpawn","luctus_abe_checkfamily",function(ply)
 end)
 
 function LuctusAbeEcho(level,ply,message)
-    --print(message)
+    Log(message)
     if level == 1 then
         ply:Kick()
     elseif level >= 2 then
@@ -82,11 +88,12 @@ end
 
 function LuctusAbeCheckCountry(ply)
     local ip = string.Explode(":",ply:IPAddress())[1]
-    if ip == "loopback" then return end --local game
+    if ip == "loopback" or ip == "Error!" then return end --local game or bot
     http.Fetch("http://ip-api.com/json/"..ip,function(body)
         data = util.JSONToTable(body)
         if data.status == "fail" then
             ErrorNoHaltWithStack("IP API failed!")
+            return
         end
         if not LUCTUS_ABE_IP_OK_COUNTRIES[data.country] then
             if not IsValid(ply) then return end --already kicked
