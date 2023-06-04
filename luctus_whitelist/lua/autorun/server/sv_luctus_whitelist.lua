@@ -52,13 +52,13 @@ net.Receive("lucid_whitelist_set", function(len,ply)
     local jsondata = util.JSONToTable(jtext)
     local res = sql.Query("DELETE FROM lucid_whitelist WHERE steamid = "..sql.SQLStr(steamid))
     if res == false then
-        print("[luctus_whitelist] ERROR DURING SQL SET DELETE!")
+        ErrorNoHaltWithStack(sql.LastError())
     else
         print("[luctus_whitelist] Successfully deleted old whitelist for user "..steamid)
     end
     res = sql.Query("INSERT INTO lucid_whitelist(steamid,jsonlist) VALUES("..sql.SQLStr(steamid)..", "..sql.SQLStr(jtext)..")")
     if res == false then
-        print("[luctus_whitelist] ERROR DURING SQL SET INSERT!")
+        ErrorNoHaltWithStack(sql.LastError())
     else
         print("[luctus_whitelist] Successfully inserted new whitelist for user "..steamid)
     end
@@ -111,6 +111,9 @@ net.Receive("lucid_whitelist_get", function(len,ply)
     net.WriteInt(#a,17)
     net.WriteData(a,#a)
     net.Send(ply)
+    if sqlData==false then
+        error(sql.LastError())
+    end
 end)
 
 print("[luctus_whitelist] Lucid Whitelist server loaded!")
