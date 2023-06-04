@@ -67,6 +67,7 @@ net.Receive("lw_warnplayer", function(len,ply)
         name = tply:Nick()
     end
     LuctusLog("Warn",name.."("..target..") has been warned by "..ply:Nick().."("..ply:SteamID()..") for '"..reason.."'.")
+    hook.Run("LuctusWarnCreate",ply,name,target,reason) --warneePly, targetName, targetSteamID, reason
 end)
 
 net.Receive("lw_requestwarns", function(len, ply)
@@ -139,6 +140,7 @@ net.Receive("lw_updatewarn", function(len, ply)
         name = tply:Nick()
     end
     LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has "..(shouldRemove and "removed" or "reactivated").." a warn of "..name.."("..target..")")
+    hook.Run("LuctusWarnUpdate",ply,name,target,shouldRemove) --warneePly, targetName, targetSteamID, shouldRemove
 end)
 
 net.Receive("lw_deletewarn", function(len, ply)
@@ -164,6 +166,7 @@ net.Receive("lw_deletewarn", function(len, ply)
         name = tply:Nick()
     end
     LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has deleted a warn of "..name.."("..targetSID..")")
+    hook.Run("LuctusWarnDelete",ply,name,targetSID) --warneePly, targetName, targetSteamID, shouldRemove
 end)
 
 --Check for expired warns every 2 hours
