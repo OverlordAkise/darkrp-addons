@@ -58,6 +58,7 @@ function luctusRankup(ply,teamcmd,executor)
         end
         ply.lrankID = newId
         LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just promoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2])
+        hook.Run("LuctusJobranks",executor,ply,luctus_jobranks[jobname][newId][2],true) --uprankPly,targetPly,newJobName,isUpRank)
     end
 end
 
@@ -84,6 +85,7 @@ function luctusRankdown(ply,teamcmd,executor)
         end
         ply.lrankID = newId
         LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just demoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2])
+        hook.Run("LuctusJobranks",executor,ply,luctus_jobranks[jobname][newId][2],false) --uprankPly,targetPly,newJobName,isUpRank)
     end
 end
 
