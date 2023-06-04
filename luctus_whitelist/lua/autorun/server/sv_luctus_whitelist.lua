@@ -86,6 +86,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
         end
     end
     LuctusLog("Whitelist",ply:Nick().."("..ply:SteamID()..") changed the whitelist for "..steamid)
+    hook.Run("LuctusWhitelistUpdate",ply,steamid,jtext)
 end)
 
 net.Receive("lucid_whitelist_get", function(len,ply)
