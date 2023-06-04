@@ -1,7 +1,7 @@
 --Luctus Warn
 --Made by OverlordAkise
 
-function openWarnMenu()
+function LuctusWarnOpenMenu()
     local Frame = vgui.Create("DFrame")
     Frame:SetPos(5, 5)
     Frame:SetSize(ScrW()/1.5, ScrH()/1.5)
@@ -308,24 +308,24 @@ end)
 -- Chat and Console Command for opening
 -- If not allowed to manage warns opens the user-view instead
 concommand.Add("warnmenu", function(ply, cmd, args)
-    if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+    if LUCTUS_WARN_ADMINGROUPS[LocalPlayer():GetUserGroup()] ~= true then 
         net.Start("lw_requestwarns_user")
         net.SendToServer()
         return
     end
-    openWarnMenu()
+    LuctusWarnOpenMenu()
     net.Start("lw_requestwarns")
     net.SendToServer()
 end)
 
 hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead) 
-    if (ply == LocalPlayer() and string.lower(text) == lwconfig.chatCommand) then
-        if lwconfig.allowedGroups[LocalPlayer():GetUserGroup()] ~= true then 
+    if (ply == LocalPlayer() and string.lower(text) == LUCTUS_WARN_CHAT_COMMAND) then
+        if LUCTUS_WARN_ADMINGROUPS[LocalPlayer():GetUserGroup()] ~= true then 
             net.Start("lw_requestwarns_user")
             net.SendToServer()
             return
         end
-        openWarnMenu()
+        LuctusWarnOpenMenu()
         net.Start("lw_requestwarns")
         net.SendToServer()
     end

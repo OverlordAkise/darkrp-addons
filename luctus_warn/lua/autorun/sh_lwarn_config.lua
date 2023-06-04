@@ -1,26 +1,24 @@
 --Luctus Warn
 --Made by OverlordAkise
 
-lwconfig = {}
-
 --What groups have access to the warn admin system
-lwconfig.allowedGroups = {
+LUCTUS_WARN_ADMINGROUPS = {
     ["superadmin"] = true,
     ["admin"] = true,
     ["moderator"] = true,
     ["supporter"] = true,
 }
 --How many active warns until you get kicked for new warns
-lwconfig.warnsToKick = 3
+LUCTUS_WARNS_TILL_KICK = 3
 --How many days till warns become inactive
-lwconfig.daysToExpire = 14
+LUCTUS_WARN_DAYS_TILL_EXPIRE = 14
 --If warns get echoed in chat
-lwconfig.chatWarns = true
+LUCTUS_WARN_SHOULD_ECHO_IN_CHAT = true
 --What command opens the warn menu
-lwconfig.chatCommand = "!warn"
+LUCTUS_WARN_CHAT_COMMAND = "!warn"
 
 
-lwconfig.warnsToBan = {
+LUCTUS_WARN_BAN_CONFIG = {
   --[warnsNeeded] = bantime in minutes,
     [5] = 1440, --after 5 active warns 24h ban
     [10] = 44640, --10 warns = 1 month ban
