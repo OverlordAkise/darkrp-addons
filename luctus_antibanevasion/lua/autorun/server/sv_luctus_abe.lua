@@ -47,6 +47,7 @@ function LuctusAbeEcho(level,ply,message)
             v:PrintMessage(3,"[banevasion] "..message)
         end
     end
+    hook.Run("LuctusAbe",ply,message)
 end
 
 function LuctusAbeCheckFamilySharing(ply)
