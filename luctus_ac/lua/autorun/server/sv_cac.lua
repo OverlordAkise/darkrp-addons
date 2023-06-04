@@ -33,6 +33,7 @@ function LuctusAC_Punish(ply, length, pMessage)
     end
     print("[luctus_ac] [punish] Ban done.")
     PrintMessage(HUD_PRINTTALK,"[luctus_ac] "..ply:Nick().." was banned for '"..pMessage.."'!")
+    hook.Run("LuctusAC",ply:Nick(),ply:SteamID(),length,pMessage)
 end
 
 net.Receive("luctusac_change",function(len,ply)
