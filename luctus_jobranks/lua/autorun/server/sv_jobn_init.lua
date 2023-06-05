@@ -12,6 +12,7 @@ end)
 
 local function luctusGetPlayer(name)
     local ret = nil
+    if not name or name == "" then return ret end
     for k,v in pairs(player.GetAll()) do
         if string.find( string.lower(v:Nick()), string.lower(name) ) then
             if ret ~= nil then
