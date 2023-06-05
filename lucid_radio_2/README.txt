@@ -1,5 +1,10 @@
-Lucid's Radio v2
+Luctus Radio
 Made by OverlordAkise
+
+For this addon to work correctly the server and players need to have the following workshop addon:
+
+https://steamcommunity.com/sharedfiles/filedetails/?id=635535045
+
 
 Credits:
 
