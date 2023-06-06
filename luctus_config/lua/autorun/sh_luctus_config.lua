@@ -1,16 +1,21 @@
 --Luctus Ingame Config
 --Made by OverlordAkise
 
---Key = Category, Value = Variable Name
 LUCTUS_INGAME_CONFIG = {}
 
---Example
+--Key = Category, Value = Variable Name
+--Example:
 LUCTUS_INGAME_CONFIG["DarkRP"] = {
-    ["GAMEMODE.Config.adminnpcs"] = 3,
+    "GAMEMODE.Config.adminnpcs",
+    "nonExistinga",
 }
-LUCTUS_INGAME_CONFIG["Logs"] = {
-    ["lucidLogChatCommand"] = "!logs",
+LUCTUS_INGAME_CONFIG["Addons"] = {
+    "LUCTUS_DISCORD_ENABLED",
+    "LUCTUS_WHITELIST_ACTIVE",
+    "LUCTUS_BREACH_NEEDS_APPROVAL",
+}
+LUCTUS_INGAME_CONFIG["Debug"] = {
+    "LUCTUS_MONITOR_DEBUG",
 }
 
-print("[luctus_config] SH loaded!")
-
+print("[luctus_config] sh loaded!")

@@ -8,10 +8,21 @@ LuctusLog = LuctusLog or function()end
 hook.Add("PlayerSay","luctus_ingame_config",function(ply,text,team)
     if ply:IsAdmin() and text == "!luctusconfig" then
         net.Start("luctus_ingame_config")
-            net.WriteTable(LUCTUS_INGAME_CONFIG)
+            net.WriteTable(LuctusIngameConfigGetAll())
         net.Send(ply)
     end
 end)
+
+function LuctusIngameConfigGetAll()
+    local tab = {}
+    for cat,values in pairs(LUCTUS_INGAME_CONFIG) do
+        if not tab[cat] then tab[cat] = {} end
+        for k,var in pairs(values) do
+            tab[cat][var] = LuctusIngameConfigGet(var)
+        end
+    end
+    return tab
+end
 
 net.Receive("luctus_ingame_config",function(len,ply)
     if not ply:IsAdmin() then return end
@@ -20,8 +31,9 @@ net.Receive("luctus_ingame_config",function(len,ply)
     local typedValue = LuctusGetValue(value)
     local isInTable = false
     local category = nil
+    
     for k,v in pairs(LUCTUS_INGAME_CONFIG) do
-        if v[variable] then
+        if table.HasValue(v,variable) then
             isInTable = true
             category = k
         end
@@ -32,28 +44,36 @@ net.Receive("luctus_ingame_config",function(len,ply)
     end
     LuctusIngameConfigSet(variable,typedValue,category)
     _G[variable] = typedValue
-    ply:PrintMessage(HUD_PRINTTALK, "[luctus_config] Set successfully!")
     LuctusIngameConfigSave(variable,typedValue,category)
     ply:PrintMessage(HUD_PRINTTALK, "[luctus_config] Saved successfully!")
-    LuctusLog("Config",ply:Nick().."("..ply:SteamID()..") set config var '"..variable.."' to '"..typedValue.."'")
+    LuctusLog("Config",ply:Nick().."("..ply:SteamID()..") set config var '"..variable.."' to '"..tostring(typedValue).."'")
 end)
 
-function LuctusIngameConfigSet(var,val,cat)
-    --also set table:
-    LUCTUS_INGAME_CONFIG[cat][var] = val
-    
+--non-existing var will be nil
+function LuctusIngameConfigGet(var)
     local tables = string.Split(var,".")
     if #tables == 1 then
-        print("[quickset:]",var,val)
+        return _G[var]
+    end
+    local G = _G
+    for i=1,#tables-1 do
+        G = G[tables[i]]
+    end
+    return G[tables[#tables]]
+end
+
+function LuctusIngameConfigSet(var,val,cat)
+    local tables = string.Split(var,".")
+    if #tables == 1 then
+        print("[luctus_config] QSet",var,"to",val)
         _G[var] = val
         return
     end
     local G = _G
     for i=1,#tables-1 do
         G = G[tables[i]]
-        print("[loop_set]",i,tables[i])
     end
-    print("[setting:]",tables[#tables],val)
+    print("[luctus_config] Set",tables[#tables],"to",val)
     G[tables[#tables]] = val
 end
 
@@ -75,7 +95,7 @@ function LuctusGetValue(val)
 end
 
 function LuctusGetType(val)
-    if val == "true" or val == "false" then
+    if val=="true" or val=="false" or val==true or val==false then
         return "bool"
     end
     if tonumber(val) then
@@ -87,6 +107,7 @@ end
 
 --Load
 hook.Add("InitPostEntity","luctus_ingame_config_load",function()
+    print("[luctus_config] Loading config from database")
     sql.Query("CREATE TABLE IF NOT EXISTS luctus_config(name VARCHAR(255) UNIQUE,confcategory VARCHAR(255),value VARCHAR(255),valuetype VARCHAR(255))")
     local configs = sql.Query("SELECT * FROM luctus_config")
     if configs == false then
@@ -95,11 +116,10 @@ hook.Add("InitPostEntity","luctus_ingame_config_load",function()
     if configs == nil then return end
     for k,row in pairs(configs) do
         local typedValue = LuctusGetValue(row.value)
-        if not LUCTUS_INGAME_CONFIG[row.confcategory] or not LUCTUS_INGAME_CONFIG[row.confcategory][row.name] then return end
-        LUCTUS_INGAME_CONFIG[row.confcategory][row.name] = typedValue
+        if not LUCTUS_INGAME_CONFIG[row.confcategory] or not table.HasValue(LUCTUS_INGAME_CONFIG[row.confcategory],row.name) then continue end
         LuctusIngameConfigSet(row.name,typedValue,row.confcategory)
     end
     print("[luctus_config] Loaded config successfully!")
 end)
 
-print("[luctus_config] SV loaded!")
+print("[luctus_config] sv loaded!")
