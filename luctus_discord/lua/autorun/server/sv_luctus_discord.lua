@@ -19,7 +19,7 @@ timer.Create("luctus_discord_tickrate",1,0,function()
     if isCheckingTickrate then
         hook.Remove("Tick","luctus_discord")
         local tickrate = 1/engine.TickInterval()
-        if math.abs(tickrate-tickCount) > 2 and not LuctusDiscordIsLimited("tickrate",60) then
+        if tickCount > 0 and math.abs(tickrate-tickCount) > 2 and not LuctusDiscordIsLimited("tickrate",300) then
             LuctusDiscordSend("Lag detected (tickrate "..tickCount..")")
         end
         tickCount = 0
