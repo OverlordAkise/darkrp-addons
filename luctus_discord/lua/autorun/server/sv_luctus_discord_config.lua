@@ -1,6 +1,8 @@
 --Luctus Discord Notifications
 --Made by OverlordAkise
 
+--Is the discord echo enabled?
+LUCTUS_DISCORD_ENABLED = true
 --Endpoint for discord relay
 LUCTUS_DISCORD_ENDPOINT = "http://localhost:8080/discordrelay"
 --Discord webhook URL
@@ -12,6 +14,8 @@ LUCTUS_DISCORD_TAG = "istina"
 --Function on how to send the data to the endpoint
 --(Includes an anti-spam check)
 function LuctusDiscordSend(message)
+    print("[luctus_discord]",message)
+    if not LUCTUS_DISCORD_ENABLED then return end
     HTTP({
         failed = function(failMessage)
             print("[luctus_discord] FAILED TO SEND MESSAGE!")
