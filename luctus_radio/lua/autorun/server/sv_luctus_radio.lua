@@ -8,7 +8,7 @@ LuctusLog = LuctusLog or function()end
 
 lradioHear = {}
 
-timer.Simple(1,function()
+hook.Add("InitPostEntity","luctus_radio_init",function()
 
     timer.Create("luctus_radio_main", DarkRP.voiceCheckTimeDelay, 0, function()
         local players = player.GetHumans()
