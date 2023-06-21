@@ -1,13 +1,16 @@
 --Luctus Jobranks
 --Made by OverlordAkise
 
+--to dynamically disable the addon
+LUCTUS_JOBRANKS_IS_ACTIVE = true
+
 LuctusLog = LuctusLog or function()end
 
 hook.Add("PostGamemodeLoaded","luctus_jobranks_dbinit",function()
-    sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT )")
+    sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT, UNIQUE(steamid,jobcmd) )")
 end)
 hook.Add("postLoadCustomDarkRPItems", "luctus_jobranks_dbinit", function()
-    sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT )")
+    sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT, UNIQUE(steamid,jobcmd) )")
 end)
 
 local function luctusGetPlayer(name)
@@ -45,10 +48,8 @@ function luctusRankup(ply,teamcmd,executor)
     end
     if res and res[1] then
         newId = math.min(tonumber(res[1].rankid) + 1,#luctus_jobranks[jobname])
-        local ires = sql.Query("UPDATE luctus_jobranks SET rankid = "..(newId).." WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
-        if ires == false then
-            error(sql.LastError())
-        end
+        LuctusJobranksSet(ply:SteamID(),teamcmd,newId)
+        
         DarkRP.notify(ply,0,5,"Du wurdest befördert!")
         ply:PrintMessage(HUD_PRINTTALK, "Du wurdest befördert!")
         ply:SetNWString("l_nametag", luctus_jobranks[jobname][newId][1])
@@ -72,10 +73,8 @@ function luctusRankdown(ply,teamcmd,executor)
     end
     if res and res[1] then
         newId = math.max(tonumber(res[1].rankid) - 1,1)
-        local ires = sql.Query("UPDATE luctus_jobranks SET rankid = "..(newId).." WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND jobcmd = "..sql.SQLStr(teamcmd))
-        if ires == false then
-          error(sql.LastError())
-        end
+        LuctusJobranksSet(ply:SteamID(),teamcmd,newId)
+
         DarkRP.notify(ply,0,5,"Du wurdest degradiert!")
         ply:PrintMessage(HUD_PRINTTALK, "Du wurdest degradiert!")
         ply:SetNWString("l_nametag", luctus_jobranks[jobname][newId][1])
@@ -90,78 +89,45 @@ function luctusRankdown(ply,teamcmd,executor)
     end
 end
 
+function LuctusJobranksSet(steamid,jobcmd,rank)
+    local res = sql.Query("REPLACE INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(steamid)..","..sql.SQLStr(jobcmd)..","..rank..")")
+    if res == false then
+        error(sql.LastError())
+    end
+end
+
+function LuctusJobranksGet(steamid)
+    local res = sql.Query("SELECT * FROM luctus_jobrranks WHERE steamid="..sql.SQLStr(steamid))
+    if res==false then error(sql.LastError()) end
+    if not res or not res[1] then return {} end
+    return res
+end
+
 hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text)
     local jobname = team.GetName(ply:Team())
-    if string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKUP_CMD then
+    if string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKUP_CMD or
+       string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKDOWN_CMD then
+        local isRankup = string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKUP_CMD
         local rankID = luctusGetRankID(ply:Team(),ply:GetNWString("l_nametag",""))
         if rankID and luctus_jobranks[jobname][rankID][3] then
             local tPly = luctusGetPlayer(string.Split(text," ")[2])
             if not tPly then
-                ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
+                ply:PrintMessage(HUD_PRINTTALK, "ERROR: Target player not found!")
                 return
             end
             if ply:Team() ~= tPly:Team() then
-                ply:PrintMessage(HUD_PRINTTALK, "Du kannst keine anderen Jobs promoten!")
+                ply:PrintMessage(HUD_PRINTTALK, "ERROR: Target has different job than you!")
                 return
             end
             local tRankID = luctusGetRankID(tPly:Team(),tPly:GetNWString("l_nametag",""))
-            if tRankID and rankID > tRankID+1 then
+            if tRankID and rankID > (isRankup and tRankID+1 or tRankID) then --can max uprank to one rank below you
                 luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
             else
-                ply:PrintMessage(HUD_PRINTTALK, "Du kannst nicht auf deinen Rang hochpromoten!")
+                ply:PrintMessage(HUD_PRINTTALK, "ERROR: You can not change the rank of this player!")
             end
         else
-            ply:PrintMessage(HUD_PRINTTALK, "Du hast keine Berechtigung für !promote!")
+            ply:PrintMessage(HUD_PRINTTALK, "You don't have permission to pro-/demote!")
             return ""
-        end
-    end
-    if string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKDOWN_CMD then
-        local rankID = luctusGetRankID(ply:Team(),ply:GetNWString("l_nametag",""))
-        if rankID and luctus_jobranks[jobname][rankID][3] then
-            local tPly = luctusGetPlayer(string.Split(text," ")[2])
-            if not tPly then
-                ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
-                return
-            end
-            if ply:Team() ~= tPly:Team() then
-                ply:PrintMessage(HUD_PRINTTALK, "Du kannst keine anderen Jobs demoten!")
-                return
-            end
-            local tRankID = luctusGetRankID(tPly:Team(),tPly:GetNWString("l_nametag",""))
-            if tRankID and rankID > tRankID then
-                luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,ply)
-            else
-                ply:PrintMessage(HUD_PRINTTALK, "Du kannst diesen Spieler nicht demoten!")
-            end
-        else
-            ply:PrintMessage(HUD_PRINTTALK, "Du hast keine Berechtigung für !demote!")
-            return ""
-        end
-    end
-    if string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKUP_ADMIN_CMD then
-        if ply:IsAdmin() or ply:IsSuperAdmin() then
-            local tPly = luctusGetPlayer(string.Split(text," ")[2])
-            if not tPly then
-                ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
-                return ""
-            end
-            luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
-            return ""
-        else
-            ply:PrintMessage(HUD_PRINTTALK, "Du hast keinen Zugang zu diesem Befehl!")
-        end
-    end
-    if string.Split(text," ")[1] == LUCTUS_JOBRANKS_RANKDOWN_ADMIN_CMD then
-        if ply:IsAdmin() or ply:IsSuperAdmin() then
-            local tPly = luctusGetPlayer(string.Split(text," ")[2])
-            if not tPly then
-                ply:PrintMessage(HUD_PRINTTALK, "Ziel-Spieler nicht gefunden!")
-                return ""
-            end
-            luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,ply)
-            return ""
-        else
-            ply:PrintMessage(HUD_PRINTTALK, "Du hast keinen Zugang zu diesem Befehl!")
         end
     end
 end)
@@ -185,7 +151,7 @@ hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afte
         ply:SetNWString("l_nametag","")
         ply.lrankID = nil
     end
-
+    if not LUCTUS_JOBRANKS_IS_ACTIVE then return end
     --Jobranks
     if luctus_jobranks[afterName] then
         LuctusJobranksLoadPlayer(ply,afterNum)

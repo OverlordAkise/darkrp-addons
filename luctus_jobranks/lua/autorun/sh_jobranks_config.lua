@@ -7,9 +7,7 @@ luctus_jobranks = {}
 --Chat commands always work "<command> <name of target>"
 LUCTUS_JOBRANKS_RANKUP_CMD = "!promote"
 LUCTUS_JOBRANKS_RANKDOWN_CMD = "!demote"
---ADMIN commands allows admins to rankup others no matter their current job
-LUCTUS_JOBRANKS_RANKUP_ADMIN_CMD = "!apromote"
-LUCTUS_JOBRANKS_RANKDOWN_ADMIN_CMD = "!ademote"
+--ADMIN commands (!apromote, !ademote) are managed via ULX
 --
 
 --Explanation:
