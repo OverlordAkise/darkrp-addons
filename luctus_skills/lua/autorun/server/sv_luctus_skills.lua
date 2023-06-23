@@ -96,6 +96,7 @@ hook.Add("EntityTakeDamage","luctus_skills",function(ply,dmginfo)
         dmginfo:AddDamage(10)
     end
     --At the end
+    if not ply.lskills then return end
     if ply.lskills["Second Chance"] and ply:Health() == ply:GetMaxHealth() and dmginfo:GetDamage() >= ply:Health() then
         dmginfo:SetDamage(ply:Health()-1)
     end
