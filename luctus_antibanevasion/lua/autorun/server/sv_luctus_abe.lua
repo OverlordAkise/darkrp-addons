@@ -103,7 +103,7 @@ function LuctusAbeCheckCountry(ply)
     end)
 end
 
-hook.Add("InitPostEntity","luctus_abe_ip_load",function()
+hook.Add("Tick","luctus_abe_ip_load",function()
     local ss = SysTime()
     print("[luctus_abe] Starting to load proxy ip list...")
     http.Fetch("https://api-www.mullvad.net/www/relays/all/",function(b)
@@ -121,6 +121,7 @@ hook.Add("InitPostEntity","luctus_abe_ip_load",function()
     
     print("[luctus_abe] Finished loading proxy ip list.")
     print("[luctus_abe] Time taken: "..(SysTime()-ss))
+    hook.Remove("Tick","luctus_abe_ip_load")
 end)
 
 print("[luctus_antibanevasion] sv loaded")
