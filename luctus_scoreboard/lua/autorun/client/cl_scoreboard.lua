@@ -1,6 +1,12 @@
 --Luctus Scoreboard
 --Made by OverlordAkise
 
+local ScoreFrame = nil
+local Inspect = nil
+local IsClosing = nil
+
+--Config Start
+
 local LUCTUS_SCOREBOARD_NAME = "Luctus RP"
 local LUCTUS_SCOREBOARD_WEBSITE = "https://mistforums.com/"
 
@@ -25,13 +31,20 @@ local scoreboard_admin_options = {
     ["ulx jail"] = function(v) RunConsoleCommand("ulx", "jail", v:Nick()) end,
     ["ulx unjail"] = function(v) RunConsoleCommand("ulx", "unjail", v:Nick()) end,
     ["ulx spectate"] = function(v) RunConsoleCommand("ulx", "spectate", v:Nick()) end,
+    ["Set Job"] = function(ply)
+        if IsClosing then return end
+        Inspect = DermaMenu()
+        for k, v in SortedPairsByMemberValue(team.GetAllTeams(), "Name") do
+            local uid = ply:UserID()
+            Inspect:AddOption(v.Name, function() RunConsoleCommand("_FAdmin", "setteam", uid, k) end)
+        end
+        Inspect:Open()
+    end,
 }
 
 --------------------------
 -- End of configuration --
 --------------------------
-
-local ScoreFrame = nil
   
 
 surface.CreateFont( "LuctusScoreFontBig", { font = "Montserrat", size = 35, weight = 800, antialias = true, bold = true })
@@ -128,7 +141,7 @@ local function CreateScoreboard()
         end
         item.ply = v
         item.DoRightClick = function()
-            if IsValid( Inspect ) then
+            if IsValid(Inspect) then
                 Inspect:Remove()
             end
             Inspect = DermaMenu()
@@ -137,7 +150,9 @@ local function CreateScoreboard()
             end
             function Inspect:OptionSelected(option, optionText)
                 if scoreboard_admin_options[optionText] ~= nil then
-                    scoreboard_admin_options[optionText](v)
+                    timer.Simple(0.1,function()
+                        scoreboard_admin_options[optionText](v)
+                    end)
                 end
             end
             Inspect:Open()
@@ -165,17 +180,19 @@ end
 
 
 hook.Add("ScoreboardShow", "luctus_create_scoreboard", function()
+    IsClosing = false
     CreateScoreboard()
     return true
 end)
 
 hook.Add("ScoreboardHide", "luctus_hide_scoreboard", function()
-    if IsValid( ScoreFrame ) then 
+    IsClosing = true
+    if IsValid(ScoreFrame) then 
         --ScoreFrame:SetVisible(false)
         ScoreFrame:SlideUp(0.2) 
         gui.EnableScreenClicker(false)
     end
-    if IsValid( Inspect ) then Inspect:Remove() end
+    if IsValid(Inspect) then Inspect:Remove() end
     return true
 end)
 
