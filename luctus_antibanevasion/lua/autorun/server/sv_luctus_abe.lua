@@ -112,15 +112,14 @@ hook.Add("Tick","luctus_abe_ip_load",function()
             if v.ipv6_addr_in then LUCTUS_ABE_IP_PROXYS[v.ipv6_addr_in] = "mul" end
             if v.ipv4_v2ray then LUCTUS_ABE_IP_PROXYS[v.ipv4_v2ray] = "mul" end
         end
+        print("[luctus_abe] loaded mullvad proxy ip list!")
     end)
     http.Fetch("https://check.torproject.org/torbulkexitlist",function(b)
         for k,v in pairs(string.Explode("\n",b)) do
             LUCTUS_ABE_IP_PROXYS[v] = "tor"
         end
+        print("[luctus_abe] loaded tor proxy ip list!")
     end)
-    
-    print("[luctus_abe] Finished loading proxy ip list.")
-    print("[luctus_abe] Time taken: "..(SysTime()-ss))
     hook.Remove("Tick","luctus_abe_ip_load")
 end)
 
