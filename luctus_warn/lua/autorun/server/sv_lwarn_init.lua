@@ -9,6 +9,19 @@ util.AddNetworkString("lw_deletewarn")
 
 LuctusLog = LuctusLog or function()end
 
+function LuctusWarnGetCount(steamid)
+    local res = sql.QueryValue("SELECT SUM(active) FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid))
+    if res == false then
+        ErrorNoHaltWithStack(sql.LastError())
+        return 0
+    end
+    local num = tonumber(res)
+    if not num then
+        return 0
+    end
+    return num
+end
+
 function lwCheckPunishment(steamid)
     local activeWarns = sql.Query("SELECT SUM(active) FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid)..";")
     if activeWarns==false then
