@@ -10,6 +10,11 @@ function LuctusDiscordIsLimited(name,rate)
     return false
 end
 
+--Serverstart
+hook.Add("Tick","luctus_discord_start",function()
+    LuctusDiscordSend("Server started")
+    hook.Remove("Tick","luctus_discord_start")
+end)
 
 --Notify on lag (Tickrate)
 local isCheckingTickrate = false
