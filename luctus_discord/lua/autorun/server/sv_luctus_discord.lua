@@ -16,6 +16,15 @@ hook.Add("Tick","luctus_discord_start",function()
     hook.Remove("Tick","luctus_discord_start")
 end)
 
+
+--Lots of money moved
+hook.Add("playerWalletChanged","luctus_discord",function(ply,amount)
+    if amount > 10000000 then --get > 10mil = notify
+        LuctusDiscordSend(ply:Nick().."'s money changed too much ("..amount..") ("..ply:SteamID()..")")
+    end
+end)
+
+
 --Notify on lag (Tickrate)
 local isCheckingTickrate = false
 local tickCount = 0
