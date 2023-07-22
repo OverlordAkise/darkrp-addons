@@ -11,9 +11,17 @@ local star_icon = Material( "icon16/star.png" )
 local tick_icon = Material( "icon16/tick.png" )
 local cup_icon = Material( "icon16/cup.png" )
 
-hook.Add( 'HUDShouldDraw', 'ChefHideDefaultDarkRPHUD', function( vs )
-    if vs == "DarkRP_HUD" or vs == "CHudBattery" or vs == "CHudHealth" or vs == "DarkRP_Hungermod" then return false end
-    if vs == "CHudSecondaryAmmo" or vs == "CHudAmmo" then return false end
+local noDraw = {
+    ["DarkRP_HUD"] = true,
+    ["CHudBattery"] = true,
+    ["CHudHealth"] = true,
+    ["DarkRP_Hungermod"] = true,
+    ["CHudSecondaryAmmo"] = true,
+    ["CHudAmmo"] = true,
+}
+
+hook.Add("HUDShouldDraw", "luctus_hud_hide", function(vs)
+    if noDraw[vs] then return false end
 end)
 
 local function CreateImageIcon( icon, x, y, col, val )
