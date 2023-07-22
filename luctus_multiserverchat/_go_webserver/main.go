@@ -56,12 +56,12 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		//t, msg, err := conn.ReadMessage()
-        _, msg, err := conn.ReadMessage()
+		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
 		//conn.WriteMessage(t, msg)
-        sendMessageToAllPool(string(msg))
+		sendMessageToAllPool(string(msg))
 	}
 }
 

@@ -8,4 +8,4 @@ hook.Add("PlayerSay","luctus_multiserverchat",function(ply,text,team)
     end
 end)
 
-print("[LUCTUS_MSC] sv_luctus_msc_send.lua loaded")
+print("[luctus_msc] loaded sv send")

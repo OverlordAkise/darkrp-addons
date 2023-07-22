@@ -8,7 +8,7 @@ require("gwsockets")
 ggwsocket = GWSockets.createWebSocket("ws://localhost:9091/ws")
 
 function ggwsocket:onMessage(txt)
-    print("[LUCTUS_MSC] RECEIVING:",txt)
+    print("[luctus_msc] RECEIVING:",txt)
     local cmd = string.Split(txt," ")[1]
     if cmd == "RFUNK" then
         MSCSendMessage("[Langstreckenfunk]",string.Replace(txt,"RFUNK ",""))
@@ -29,16 +29,16 @@ function MSCSendMessage(tag,msg)
 end
 
 function ggwsocket:onError(txt)
-    print("[LUCTUS_SYNC] Error: ", txt)
+    print("[luctus_msc] Error: ", txt)
 end
 
 function ggwsocket:onConnected()
-    print("[LUCTUS_MSC] Connected to echo server")
+    print("[luctus_msc] Connected to echo server")
     ggwsocket_isconnected = true
 end
 
 function ggwsocket:onDisconnected()
-    print("[LUCTUS_MSC] WebSocket disconnected!! Will try to reconnect...")
+    print("[luctus_msc] WebSocket disconnected!! Will try to reconnect...")
     ggwsocket_isconnected = false
 end
 
@@ -46,9 +46,9 @@ ggwsocket:open()
 
 timer.Create("luctus_msc_autoreconnect",60,0,function()
     if not ggwsocket_isconnected then
-        print("[LUCTUS_MSC] WebSocket seems disconnected, trying to reconnect...")
+        print("[luctus_msc] WebSocket seems disconnected, trying to reconnect...")
         ggwsocket:open()
     end
 end)
 
-print("[LUCTUS_MSC] sv_luctus_msc_recv.lua loaded")
+print("[luctus_msc] loaded sv recv")
