@@ -113,7 +113,7 @@ function LuctusDaywardOpenMenu()
     liste:DockPadding(5,5,5,5)
     liste:Dock(FILL)
     LuctusPrettifyScrollbar(liste:GetVBar())
-    for k,v in pairs(LUCTUS_DAYWARD_AMOUNT) do
+    for k,v in ipairs(LUCTUS_DAYWARD_AMOUNT) do
         local panel = liste:Add("DPanel")
         --panel:SetSize(510,120)
         panel:Dock(TOP)
