@@ -170,7 +170,7 @@ hook.Add("HUDPaint", "luctus_devtools", function()
     
     draw.DrawText("NWVar:","Default",Lwidth,lineheight(10),Color(255,255,0))
     for k,v in pairs(ent:GetNWVarTable()) do
-        draw.DrawText(k.." -> "..(isbool(v) and (v and "true" or "false") or v),"Default",Lwidth,lineheight())
+        draw.DrawText(k.." -> "..tostring(v),"Default",Lwidth,lineheight())
     end
     
     draw.DrawText("NetworkVar:","Default",Lwidth,lineheight(10),Color(0,255,255))
