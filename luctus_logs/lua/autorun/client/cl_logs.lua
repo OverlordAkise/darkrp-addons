@@ -45,37 +45,8 @@ hook.Add("InitPostEntity","luctus_log_categories",function()
     hook.Run("LuctusLogAddCategory")
 end)
 
-
-lucid_log_gas_quickfilters = {}
-
-GAS = {}
-GAS.Logging = {}
-
-function GAS.Logging:FormatPlayer(ply)
-    return ""
-end
-
-function GAS.Logging:AddModule(MODULE)
-    print("[LucidLog] Added module "..MODULE.Name)
-end
-
-
-function GAS.Logging:MODULE()
-    local mod = {}
-    mod.catName = "GAS"
-    function mod:Hook(name,id,func)
-        self.catName = name
-        table.insert(lucid_log_gas_quickfilters,name)
-    end
-    function mod:Log(text)
-    end
-    return mod
-end
-
-local logFiles = file.Find("gmodadminsuite/modules/logging/modules/addons/*.lua", "LUA")
-PrintTable(logFiles)
-for k,v in pairs(logFiles) do
-    include("gmodadminsuite/modules/logging/modules/addons/"..v)
+function LuctusLogAddCategory(name)
+    table.insert(lucid_log_quickfilters,name)
 end
 
 
@@ -377,12 +348,6 @@ function lucidlog_createLogWindow()
     eventsCat = lucidlog.quicklist:Add("Events")
     for k,v in pairs(lucid_log_quickfilters) do
         lucidLogCreateButton(v,"",v,eventsCat)
-    end
-  
-    --Add GAS modules to quickfilters
-    gasEventsCat = lucidlog.quicklist:Add("GAS Events")
-    for k,v in pairs(lucid_log_gas_quickfilters) do
-        lucidLogCreateButton(v,"",v,gasEventsCat)
     end
   
 end
