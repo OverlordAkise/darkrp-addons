@@ -52,15 +52,58 @@ if CH_Mining then
     end
 end
 
---[[
+--GmodAdminSuite adminsits / billys admin sits
 if GAS and GAS.AdminSits then
     if SERVER then
-        hook.Add("GAS.AdminSits.SitCreated", Sit)
-        hook.Add("GAS.AdminSits.SitEnded", Sit)
-        --GAS.AdminSits:AddPlayerToSit(ply, Sit) --????
+        --i have to overwrite functions because there exists no hook for it
+        gasasapts = GAS.AdminSits.AddPlayerToSit
+        gasasrempfs = GAS.AdminSits.RemovePlayerFromSit
+        gasasretpfs = GAS.AdminSits.ReturnPlayerFromSit
+        gasasists = GAS.AdminSits.InviteStaffToSit
+        
+        function GAS.AdminSits:AddPlayerToSit(ply,Sit)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was added to Sit "..Sit.ID)
+            gasasapts(GAS.AdminSits,ply,Sit)
+        end
+        function GAS.AdminSits:RemovePlayerFromSit(ply, Sit)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was removed from Sit "..Sit.ID)
+            gasasrempfs(GAS.AdminSits,ply,Sit)
+        end
+        function GAS.AdminSits:ReturnPlayerFromSit(ply, Sit)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was returned from Sit "..Sit.ID)
+            gasasretpfs(GAS.AdminSits,ply,Sit)
+        end
+        function GAS.AdminSits:InviteStaffToSit(ply, Sit, inviter)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was invited to Sit "..Sit.ID.." by "..inviter:Nick().."("..inviter:SteamID()..")")
+            gasasists(GAS.AdminSits,ply,Sit,inviter)
+        end
+        
+        hook.Add("GAS.AdminSits.SitCreated","luctus_log",function(Sit)
+            LuctusLog("adminsit","Sit "..Sit.ID.." was created")
+        end)
+        hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
+            LuctusLog("adminsit","Sit "..Sit.ID.." ended")
+        end)
+    else
+        LuctusLogAddCategory("adminsit")
     end
 end
---]]
+
+
+--Military Rank System (MRS), similar to jobranksystem
+if MRS and MRS.Config then
+    if SERVER then
+        hook.Add("MRS.OnPromotion","luctus_log",function(targetPly, adminPly, rankGroup, newRankId, oldRankId, adminRankId, newRankName, oldRankName)
+            local rType = "up"
+            if newRankId < oldRankId then
+                rType = "down"
+            end
+            LuctusLog("mranks",targetPly:Nick().."("..targetPly:SteamID()..") got ranked "..rType.." to "..newRankName.." by "..adminPly:Nick().."("..adminPly:SteamID()..")")
+        end)
+    else
+        LuctusLogAddCategory("mranks")
+    end
+end
 
 --gDeathSystem
 if MedConfig then
@@ -80,12 +123,12 @@ if MedConfig then
                     awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
                 end
             end
-            log_push("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
-            log_push("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
+            LuctusLog("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
+            LuctusLog("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
         end,-2)
         hook.Add("MedicSys_Stabilized", "lucid_log_MedicSys_Stabilized", function(medicPly,downPly)
             if not IsValid(medicPly) or not IsValid(downPly) then return end
-            log_push("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
+            LuctusLog("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
         end,-2)
         hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(ply,dmg)
             if not IsValid(ply) then return end
@@ -102,11 +145,11 @@ if MedConfig then
                     awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
                 end
             end
-            log_push("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
+            LuctusLog("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
         end,-2)
         hook.Add("MedicSys_RevivePlayer", "lucid_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
             if not IsValid(medicPly) or not IsValid(deadPly) then return end
-            log_push("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
+            LuctusLog("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
         end,-2)
     else
         LuctusLogAddCategory("gDeathSystem")
@@ -119,47 +162,47 @@ if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterV
     if SERVER then
         hook.Add("OnHandcuffed", "lucid_log_OnHandcuffed", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffBreak", "lucid_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
             if not IsValid(handcuffedPly) then return end
             if IsValid(helperPly) then
-                log_push("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed by "..helperPly:Nick().."("..helperPly:SteamID()..")")
+                LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed by "..helperPly:Nick().."("..helperPly:SteamID()..")")
             else
-                log_push("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed themselves")
+                LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed themselves")
             end
         end,-2)
         hook.Add("OnHandcuffGag", "lucid_log_OnHandcuffGag", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffUnGag", "lucid_log_OnHandcuffUnGag", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffBlindfold", "lucid_log_OnHandcuffBlindfold", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffUnBlindfold", "lucid_log_OnHandcuffUnBlindfold", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffStartDragging", "lucid_log_OnHandcuffStartDragging", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffStopDragging", "lucid_log_OnHandcuffStopDragging", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffTied", "lucid_log_OnHandcuffTied", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
         hook.Add("OnHandcuffUnTied", "lucid_log_OnHandcuffUnTied", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
-            log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
+            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
     else
         LuctusLogAddCategory("cuffs")
