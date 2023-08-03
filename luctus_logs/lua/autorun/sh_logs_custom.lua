@@ -9,10 +9,10 @@
 hook.Add("InitPostEntity","luctus_log_custom",function()
 
 --AreaManager, create areas that players can enter
-if Areamanager then
+if AreaManager then
     if SERVER then
         hook.Add("PlayerChangedArea","luctus_log",function(ply, newArea)
-            LuctusLog("AreaManager",newArea.uniquename)
+            LuctusLog("AreaManager", ply:Nick().."("..ply:SteamID()..") changed area to "..newArea.uniquename)
         end,-2)
     else
         LuctusLogAddCategory("AreaManager")
