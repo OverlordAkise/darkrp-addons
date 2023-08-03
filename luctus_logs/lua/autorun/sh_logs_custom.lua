@@ -5,6 +5,18 @@
 --Which means not all of this will always be executed
 
 
+--billys job whitelist / gmodadminsuite jobwhitelist
+--helper function for stupid accountID
+local function NameForAccID(id)
+    if not id then return "<NO_PLY>" end
+    local name = id
+    local ply = player.GetByAccountID(id)
+    if ply and IsValid(ply) then
+        name = ply:Nick().."("..ply:SteamID()..")"
+    end
+    return name
+end
+
 --Wait for every addon to have loaded
 hook.Add("InitPostEntity","luctus_log_custom",function()
 
@@ -178,42 +190,84 @@ if CLIENT and string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
 end
 
 --GmodAdminSuite adminsits / billys admin sits
---GAS.AdminSits doesnt exist yet on clientside, so we hook differently
-if GAS and GAS.AdminSits then
-    if SERVER then
-        --i have to overwrite functions because there exists no hook for it
-        gasasapts = GAS.AdminSits.AddPlayerToSit
-        gasasrempfs = GAS.AdminSits.RemovePlayerFromSit
-        --gasasretpfs = GAS.AdminSits.ReturnPlayerFromSit
-        gasasists = GAS.AdminSits.InviteStaffToSit
-        
-        function GAS.AdminSits:AddPlayerToSit(ply,Sit)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was added to Sit "..Sit.ID)
-            gasasapts(GAS.AdminSits,ply,Sit)
-        end
-        function GAS.AdminSits:RemovePlayerFromSit(ply, Sit)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was removed from Sit "..Sit.ID)
-            gasasrempfs(GAS.AdminSits,ply,Sit)
-        end
-        --function GAS.AdminSits:ReturnPlayerFromSit(ply, Sit)
-            --LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was returned from Sit "..Sit.ID)
-            --gasasretpfs(GAS.AdminSits,ply,Sit)
-        --end
-        function GAS.AdminSits:InviteStaffToSit(ply, Sit, inviter)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was invited to Sit "..Sit.ID.." by "..inviter:Nick().."("..inviter:SteamID()..")")
-            gasasists(GAS.AdminSits,ply,Sit,inviter)
-        end
-        
-        hook.Add("GAS.AdminSits.SitCreated","luctus_log",function(Sit)
-            LuctusLog("adminsit","Sit "..Sit.ID.." was created")
-        end)
-        hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
-            LuctusLog("adminsit","Sit "..Sit.ID.." ended")
-        end)  
+--GAS.AdminSits doesnt exist yet on clientside, so we wait with overwrite
+if SERVER and GAS and GAS.AdminSits then
+    --i have to overwrite functions because there exists no hook for it
+    gasasapts = GAS.AdminSits.AddPlayerToSit
+    gasasrempfs = GAS.AdminSits.RemovePlayerFromSit
+    --gasasretpfs = GAS.AdminSits.ReturnPlayerFromSit
+    gasasists = GAS.AdminSits.InviteStaffToSit
+    
+    function GAS.AdminSits:AddPlayerToSit(ply,Sit)
+        LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was added to Sit "..Sit.ID)
+        gasasapts(GAS.AdminSits,ply,Sit)
     end
+    function GAS.AdminSits:RemovePlayerFromSit(ply, Sit)
+        LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was removed from Sit "..Sit.ID)
+        gasasrempfs(GAS.AdminSits,ply,Sit)
+    end
+    --function GAS.AdminSits:ReturnPlayerFromSit(ply, Sit)
+        --LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was returned from Sit "..Sit.ID)
+        --gasasretpfs(GAS.AdminSits,ply,Sit)
+    --end
+    function GAS.AdminSits:InviteStaffToSit(ply, Sit, inviter)
+        LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was invited to Sit "..Sit.ID.." by "..inviter:Nick().."("..inviter:SteamID()..")")
+        gasasists(GAS.AdminSits,ply,Sit,inviter)
+    end
+    
+    hook.Add("GAS.AdminSits.SitCreated","luctus_log",function(Sit)
+        LuctusLog("adminsit","Sit "..Sit.ID.." was created")
+    end)
+    hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
+        LuctusLog("adminsit","Sit "..Sit.ID.." ended")
+    end)
 end
 
+if SERVER and GAS and GAS.JobWhitelist then
+    hook.Add("bWhitelist:WhitelistEnabled","luctus_log",function(jobid, adminAccountID)
+        LuctusLog("bwhitelist",team.GetName(jobid).." whitelist was enabled by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:WhitelistDisabled","luctus_log",function(jobid, adminAccountID)
+        LuctusLog("bwhitelist",team.GetName(jobid).." whitelist was disabled by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:BlacklistEnabled","luctus_log",function(jobid, adminAccountID)
+        LuctusLog("bwhitelist",team.GetName(jobid).." blacklist was enabled by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:BlacklistDisabled","luctus_log",function(jobid, adminAccountID)
+        LuctusLog("bwhitelist",team.GetName(jobid).." blacklist was disabled by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:SteamIDAddedToWhitelist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",NameForAccID(value).." was added to whitelist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:UsergroupAddedToWhitelist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",value.." grp was added to whitelist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:SteamIDAddedToBlacklist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",NameForAccID(value).." was added to blacklist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:UsergroupAddedToBlacklist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",value.." grp was added to blacklist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:SteamIDRemovedFromWhitelist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",NameForAccID(value).." was removed from whitelist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:UsergroupRemovedFromWhitelist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",value.." grp was removed from whitelist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:SteamIDRemovedFromBlacklist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",NameForAccID(value).." was removed from blacklist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+    hook.Add("bWhitelist:UsergroupRemovedFromBlacklist","luctus_log",function(value, jobid, adminAccountID)
+        LuctusLog("bwhitelist",value.." grp was removed from blacklist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
+    end)
+end
+
+
 end,2)
+
+hook.Add("gmodadminsuite:LoadModule:jobwhitelist","luctus_log",function()
+    LuctusLogAddCategory("bwhitelist")
+end)
 
 hook.Add("gmodadminsuite:LoadModule:adminsits","luctus_log",function()
     LuctusLogAddCategory("adminsit")
