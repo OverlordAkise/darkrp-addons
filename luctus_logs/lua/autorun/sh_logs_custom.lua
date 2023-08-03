@@ -52,43 +52,6 @@ if CH_Mining then
     end
 end
 
---GmodAdminSuite adminsits / billys admin sits
-if GAS and GAS.AdminSits then
-    if SERVER then
-        --i have to overwrite functions because there exists no hook for it
-        gasasapts = GAS.AdminSits.AddPlayerToSit
-        gasasrempfs = GAS.AdminSits.RemovePlayerFromSit
-        gasasretpfs = GAS.AdminSits.ReturnPlayerFromSit
-        gasasists = GAS.AdminSits.InviteStaffToSit
-        
-        function GAS.AdminSits:AddPlayerToSit(ply,Sit)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was added to Sit "..Sit.ID)
-            gasasapts(GAS.AdminSits,ply,Sit)
-        end
-        function GAS.AdminSits:RemovePlayerFromSit(ply, Sit)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was removed from Sit "..Sit.ID)
-            gasasrempfs(GAS.AdminSits,ply,Sit)
-        end
-        function GAS.AdminSits:ReturnPlayerFromSit(ply, Sit)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was returned from Sit "..Sit.ID)
-            gasasretpfs(GAS.AdminSits,ply,Sit)
-        end
-        function GAS.AdminSits:InviteStaffToSit(ply, Sit, inviter)
-            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was invited to Sit "..Sit.ID.." by "..inviter:Nick().."("..inviter:SteamID()..")")
-            gasasists(GAS.AdminSits,ply,Sit,inviter)
-        end
-        
-        hook.Add("GAS.AdminSits.SitCreated","luctus_log",function(Sit)
-            LuctusLog("adminsit","Sit "..Sit.ID.." was created")
-        end)
-        hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
-            LuctusLog("adminsit","Sit "..Sit.ID.." ended")
-        end)
-    else
-        LuctusLogAddCategory("adminsit")
-    end
-end
-
 
 --Military Rank System (MRS), similar to jobranksystem
 if MRS and MRS.Config then
@@ -210,12 +173,50 @@ if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterV
 end
 
 --SCP, multiple jobs / things can log here
-if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
+if CLIENT and string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
     LuctusLogAddCategory("scp")
 end
 
-print("[luctus_logs] custom addon support loaded")
+--GmodAdminSuite adminsits / billys admin sits
+--GAS.AdminSits doesnt exist yet on clientside, so we hook differently
+if GAS and GAS.AdminSits then
+    if SERVER then
+        --i have to overwrite functions because there exists no hook for it
+        gasasapts = GAS.AdminSits.AddPlayerToSit
+        gasasrempfs = GAS.AdminSits.RemovePlayerFromSit
+        --gasasretpfs = GAS.AdminSits.ReturnPlayerFromSit
+        gasasists = GAS.AdminSits.InviteStaffToSit
+        
+        function GAS.AdminSits:AddPlayerToSit(ply,Sit)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was added to Sit "..Sit.ID)
+            gasasapts(GAS.AdminSits,ply,Sit)
+        end
+        function GAS.AdminSits:RemovePlayerFromSit(ply, Sit)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was removed from Sit "..Sit.ID)
+            gasasrempfs(GAS.AdminSits,ply,Sit)
+        end
+        --function GAS.AdminSits:ReturnPlayerFromSit(ply, Sit)
+            --LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was returned from Sit "..Sit.ID)
+            --gasasretpfs(GAS.AdminSits,ply,Sit)
+        --end
+        function GAS.AdminSits:InviteStaffToSit(ply, Sit, inviter)
+            LuctusLog("adminsit",ply:Nick().."("..ply:SteamID()..") was invited to Sit "..Sit.ID.." by "..inviter:Nick().."("..inviter:SteamID()..")")
+            gasasists(GAS.AdminSits,ply,Sit,inviter)
+        end
+        
+        hook.Add("GAS.AdminSits.SitCreated","luctus_log",function(Sit)
+            LuctusLog("adminsit","Sit "..Sit.ID.." was created")
+        end)
+        hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
+            LuctusLog("adminsit","Sit "..Sit.ID.." ended")
+        end)  
+    end
+end
 
+end,2)
+
+hook.Add("gmodadminsuite:LoadModule:adminsits","luctus_log",function()
+    LuctusLogAddCategory("adminsit")
 end)
 
 print("[luctus_logs] sh loaded")
