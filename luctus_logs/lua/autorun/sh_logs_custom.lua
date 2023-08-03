@@ -15,9 +15,7 @@ if Areamanager then
             LuctusLog("AreaManager",newArea.uniquename)
         end,-2)
     else
-        hook.Add("LuctusLogAddCategory","AreaManager",function()
-            table.insert(lucid_log_quickfilters,"AreaManager")
-        end)
+        LuctusLogAddCategory("AreaManager")
     end
 end
 
@@ -36,9 +34,7 @@ if AWarn then
             LuctusLog("awarn3", tostring("ID: " .. pID).." got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
         end,-2)
     else
-        hook.Add("LuctusLogAddCategory","AWarn3",function()
-            table.insert(lucid_log_quickfilters,"awarn3")
-        end)
+        LuctusLogAddCategory("awarn3")
     end
 end
 
@@ -52,11 +48,11 @@ if CH_Mining then
             LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") sold "..amount.."x "..mineral.."("..mineral_worth.."$ each)")
         end,-2)
     else
-        hook.Add("LuctusLogAddCategory","chmining",function()
-            table.insert(lucid_log_quickfilters,"chmining")
-        end)
+        LuctusLogAddCategory("chmining")
     end
 end
+
+--[[
 if GAS and GAS.AdminSits then
     if SERVER then
         hook.Add("GAS.AdminSits.SitCreated", Sit)
@@ -64,6 +60,7 @@ if GAS and GAS.AdminSits then
         --GAS.AdminSits:AddPlayerToSit(ply, Sit) --????
     end
 end
+--]]
 
 --gDeathSystem
 if MedConfig then
@@ -112,9 +109,7 @@ if MedConfig then
             log_push("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
         end,-2)
     else
-        hook.Add("LuctusLogAddCategory","gDeathSystem",function()
-            table.insert(lucid_log_quickfilters,"gDeathSystem")
-        end)
+        LuctusLogAddCategory("gDeathSystem")
     end
 end
 
@@ -167,15 +162,13 @@ if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterV
             log_push("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
     else
-        hook.Add("LuctusLogAddCategory","cuffs",function()
-            table.insert(lucid_log_quickfilters,"cuffs")
-        end)
+        LuctusLogAddCategory("cuffs")
     end
 end
 
 --SCP, multiple jobs / things can log here
 if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
-    table.insert(lucid_log_quickfilters,"scp")
+    LuctusLogAddCategory("scp")
 end
 
 print("[luctus_logs] custom addon support loaded")
