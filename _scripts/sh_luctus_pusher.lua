@@ -52,9 +52,9 @@ end)
 if CLIENT then
     hook.Add("HUDPaint","luctus_pusher",function()
         if not IsValid(LocalPlayer()) or not IsValid(LocalPlayer():GetActiveWeapon()) or LocalPlayer():GetActiveWeapon():GetClass() ~= LUCTUS_PUSH_WEAPON then return end
-        local ply = LocalPlayer():GetEyeTrace().Entity
-        if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() then return end
         if HasCD(LocalPlayer()) then return end
+        local ply = LocalPlayer():GetEyeTrace().Entity
+        if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() or ply:GetPos():Distance(LocalPlayer():GetPos()) > 100 then return end
         draw.SimpleTextOutlined("Press [E] to push","Trebuchet24",ScrW()/2,ScrH()*0.8, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,2,color_black)
     end)
 end
