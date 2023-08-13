@@ -1,9 +1,26 @@
 --Luctus Logs
 --Made by OverlordAkise
-
+if CLIENT then return end
 --This file contains support for logging other addons
 --Which means not all of this will always be executed
 
+util.AddNetworkString("luctus_log_cats")
+
+luctus_log_categories = luctus_log_categories or {}
+
+net.Receive("luctus_log_cats",function(len,ply)
+    if ply.luctusLogCats then return end
+    ply.luctusLogCats = true
+    net.Start("luctus_log_cats")
+        net.WriteTable(luctus_log_categories)
+    net.Send(ply)
+end)
+
+
+--Make it not error on serverside if used in shared:
+function LuctusLogAddCategory(name)
+    table.insert(luctus_log_categories,name)
+end
 
 --billys job whitelist / gmodadminsuite jobwhitelist
 --helper function for stupid accountID
@@ -22,271 +39,246 @@ hook.Add("InitPostEntity","luctus_log_custom",function()
 
 --Luctus AntiBanEvasion
 if LUCTUS_ABE_FAMILY_SHARING then
-    if SERVER then
-        hook.Add("LuctusAntiBanEvasionDetection","luctus_log",function(ply,level,message)
-            LuctusLog("BanEvasion",message)
-        end,-2)
-    else
-        LuctusLogAddCategory("BanEvasion")
-    end
+    hook.Add("LuctusAntiBanEvasionDetection","luctus_log",function(ply,level,message)
+        LuctusLog("BanEvasion",message)
+    end,-2)
+    LuctusLogAddCategory("BanEvasion")
 end
 
 --Luctus Config
 if LUCTUS_INGAME_CONFIG then
-    if SERVER then
-        hook.Add("LuctusConfigChanged","luctus_log",function(ply,variable,typedValue,message)
-            LuctusLog("Config",message)
-        end,-2)
-    else
-        LuctusLogAddCategory("Config")
-    end
+    hook.Add("LuctusConfigChanged","luctus_log",function(ply,variable,typedValue,message)
+        LuctusLog("Config",message)
+    end,-2)
+    LuctusLogAddCategory("Config")
+end
+
+--Luctus Breach
+if true then
+    hook.Add("LuctusBreachOpen","luctus_log",function(ply)
+        LuctusLog("Breach",ply:Nick().."("..ply:SteamID()..") just breached as "..team.GetName(ply:Team()))
+    end,-2)
+    hook.Add("LuctusBreachRequested","luctus_log",function(ply)
+        LuctusLog("Breach",ply:Nick().."("..ply:SteamID()..") requested to breach as "..team.GetName(ply:Team()))
+    end,-2)
+    hook.Add("LuctusBreachApproved","luctus_log",function(adminPly,ply)
+        LuctusLog("Breach",adminPly:Nick().."("..adminPly:SteamID()..") approved breach request of "..ply:Nick().."("..ply:SteamID()..") as "..team.GetName(ply:Team()))
+    end,-2)
+    LuctusLogAddCategory("Breach")
 end
 
 --Luctus Whitelist
 if LUCTUS_WHITELIST_CHATCMD then
-    if SERVER then
-        hook.Add("LuctusWhitelistUpdate","luctus_log",function(adminPly,ply,steamid,jtext)
-            local name = steamid
-            if ply then
-                name = ply:Nick().."("..ply:SteamID()..")"
-            end
-            LuctusLog("Whitelist",adminPly:Nick().."("..adminPly:SteamID()..") changed the whitelist of "..name)
-        end,-2)
-    else
-        LuctusLogAddCategory("Whitelist")
-    end
+    hook.Add("LuctusWhitelistUpdate","luctus_log",function(adminPly,ply,steamid,jtext)
+        local name = steamid
+        if ply then
+            name = ply:Nick().."("..ply:SteamID()..")"
+        end
+        LuctusLog("Whitelist",adminPly:Nick().."("..adminPly:SteamID()..") changed the whitelist of "..name)
+    end,-2)
+    LuctusLogAddCategory("Whitelist")
 end
 
 --Luctus Warn
 if LUCTUS_WARN_BAN_CONFIG then
-    if SERVER then
-        hook.Add("LuctusWarnCreate","luctus_log",function(adminPly,ply,steamid,reason,message)
-            LuctusLog("Warn",message)
-        end,-2)
-        hook.Add("LuctusWarnBanned","luctus_log",function(ply,warncount,minutes)
-            LuctusLog("Warn",ply:SteamID().." was banned for "..minutes.." minutes with "..warncount.." warns")
-        end,-2)
-        hook.Add("LuctusWarnKicked","luctus_log",function(ply,warncount)
-            LuctusLog("Warn",ply:SteamID().." was kicked for having "..warncount.." warns")
-        end,-2)
-    else
-        LuctusLogAddCategory("Warn")
-    end
+    hook.Add("LuctusWarnCreate","luctus_log",function(adminPly,ply,steamid,reason,message)
+        LuctusLog("Warn",message)
+    end,-2)
+    hook.Add("LuctusWarnBanned","luctus_log",function(ply,warncount,minutes)
+        LuctusLog("Warn",ply:SteamID().." was banned for "..minutes.." minutes with "..warncount.." warns")
+    end,-2)
+    hook.Add("LuctusWarnKicked","luctus_log",function(ply,warncount)
+        LuctusLog("Warn",ply:SteamID().." was kicked for having "..warncount.." warns")
+    end,-2)
+    LuctusLogAddCategory("Warn")
 end
 
 --Luctus Jobranks
 if LUCTUS_JOBRANKS_RANKUP_CMD then
-    if SERVER then
-        hook.Add("LuctusJobranksUprank","luctus_log",function(adminPly,ply,newJobName,message)
-            LuctusLog("Jobranks",message)
-        end,-2)
-        hook.Add("LuctusJobranksDownrank","luctus_log",function(adminPly,ply,newJobName,message)
-            LuctusLog("Jobranks",message)
-        end,-2)
-    else
-        LuctusLogAddCategory("Jobranks")
-    end
+    hook.Add("LuctusJobranksUprank","luctus_log",function(adminPly,ply,newJobName,message)
+        LuctusLog("Jobranks",message)
+    end,-2)
+    hook.Add("LuctusJobranksDownrank","luctus_log",function(adminPly,ply,newJobName,message)
+        LuctusLog("Jobranks",message)
+    end,-2)
+    LuctusLogAddCategory("Jobranks")
 end
 
 --Luctus Radio
 if LUCTUS_RADIO_EXISTS then
-    if SERVER then
-        hook.Add("LuctusRadioFreqChanged","luctus_log",function(ply,newFreq)
-            LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..newFreq)
-        end,-2)
-    else
-        LuctusLogAddCategory("Radio")
-    end
+    hook.Add("LuctusRadioFreqChanged","luctus_log",function(ply,newFreq)
+        LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..newFreq)
+    end,-2)
+    LuctusLogAddCategory("Radio")
 end
 
 --Luctus Jobbans
 if ulx and ulx.jobban then
-    if SERVER then
-        hook.Add("LuctusJobbanBan","luctus_log",function(steamid,jobname,newBanTime,ply)
-            local name = steamid
-            if IsValid(ply) then
-                name = ply:Nick().."("..steamid..")"
-            end
-            LuctusLog("Jobban",name.." was jobbanned from "..jobname.." until "..os.date("%H:%M:%S - %d.%m.%Y",newBanTime))
-        end,-2)
-        hook.Add("LuctusJobbanUnban","luctus_log",function(steamid,jobname,ply)
-            local name = steamid
-            if IsValid(ply) then
-                name = ply:Nick().."("..steamid..")"
-            end
-            LuctusLog("Jobban",name.." was jobunbanned from "..jobname)
-        end,-2)
-    else
-        LuctusLogAddCategory("Jobban")
-    end
+    hook.Add("LuctusJobbanBan","luctus_log",function(steamid,jobname,newBanTime,ply)
+        local name = steamid
+        if IsValid(ply) then
+            name = ply:Nick().."("..steamid..")"
+        end
+        LuctusLog("Jobban",name.." was jobbanned from "..jobname.." until "..os.date("%H:%M:%S - %d.%m.%Y",newBanTime))
+    end,-2)
+    hook.Add("LuctusJobbanUnban","luctus_log",function(steamid,jobname,ply)
+        local name = steamid
+        if IsValid(ply) then
+            name = ply:Nick().."("..steamid..")"
+        end
+        LuctusLog("Jobban",name.." was jobunbanned from "..jobname)
+    end,-2)
+    LuctusLogAddCategory("Jobban")
 end
 
 --AreaManager, create areas that players can enter
 if AreaManager then
-    if SERVER then
-        hook.Add("PlayerChangedArea","luctus_log",function(ply, newArea)
-            LuctusLog("AreaManager", ply:Nick().."("..ply:SteamID()..") changed area to "..newArea.uniquename)
-        end,-2)
-    else
-        LuctusLogAddCategory("AreaManager")
-    end
+    hook.Add("PlayerChangedArea","luctus_log",function(ply, newArea)
+        LuctusLog("AreaManager", ply:Nick().."("..ply:SteamID()..") changed area to "..newArea.uniquename)
+    end,-2)
+    LuctusLogAddCategory("AreaManager")
 end
 
 --Awarn3, hooks taken from the discord warning module of awarn3
 if AWarn then
-    if SERVER then
-        hook.Add("AWarnPlayerWarned","luctus_log",function(pl, aID, reason)
-            local admin = AWarn:GetPlayerFromID64(aID)
-            if not admin then return end
-            LuctusLog("awarn3", pl:GetName().."("..pl:SteamID()..") got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
-        end,-2)
+    hook.Add("AWarnPlayerWarned","luctus_log",function(pl, aID, reason)
+        local admin = AWarn:GetPlayerFromID64(aID)
+        if not admin then return end
+        LuctusLog("awarn3", pl:GetName().."("..pl:SteamID()..") got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
+    end,-2)
 
-        hook.Add("AWarnPlayerIDWarned","luctus_log",function(pID, aID, reason)
-            local admin = AWarn:GetPlayerFromID64( aID )
-            if not admin then return end
-            LuctusLog("awarn3", tostring("ID: " .. pID).." got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
-        end,-2)
-    else
-        LuctusLogAddCategory("awarn3")
-    end
+    hook.Add("AWarnPlayerIDWarned","luctus_log",function(pID, aID, reason)
+        local admin = AWarn:GetPlayerFromID64( aID )
+        if not admin then return end
+        LuctusLog("awarn3", tostring("ID: " .. pID).." got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
+    end,-2)
+    LuctusLogAddCategory("awarn3")
 end
 
 --CH_Mining, for mining gold with a pickaxe
 if CH_Mining then
-    if SERVER then
-        hook.Add("CH_Mining_Hook_MineMinerals","luctus_log",function(ply, mineral, extracted_amount)
-            --LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") mined "..extracted_amount.."x "..mineral)
-        end,-2)
-        hook.Add("CH_Mining_Hook_SellMinerals","luctus_log",function(ply, amount, mineral, mineral_worth)
-            LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") sold "..amount.."x "..mineral.."("..mineral_worth.."$ each)")
-        end,-2)
-    else
-        LuctusLogAddCategory("chmining")
-    end
+    hook.Add("CH_Mining_Hook_MineMinerals","luctus_log",function(ply, mineral, extracted_amount)
+        --LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") mined "..extracted_amount.."x "..mineral)
+    end,-2)
+    hook.Add("CH_Mining_Hook_SellMinerals","luctus_log",function(ply, amount, mineral, mineral_worth)
+        LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") sold "..amount.."x "..mineral.."("..mineral_worth.."$ each)")
+    end,-2)
+    LuctusLogAddCategory("chmining")
 end
 
 
 --Military Rank System (MRS), similar to jobranksystem
 if MRS and MRS.Config then
-    if SERVER then
-        hook.Add("MRS.OnPromotion","luctus_log",function(targetPly, adminPly, rankGroup, newRankId, oldRankId, adminRankId, newRankName, oldRankName)
-            local rType = "up"
-            if newRankId < oldRankId then
-                rType = "down"
-            end
-            LuctusLog("mranks",targetPly:Nick().."("..targetPly:SteamID()..") got ranked "..rType.." to "..newRankName.." by "..adminPly:Nick().."("..adminPly:SteamID()..")")
-        end)
-    else
-        LuctusLogAddCategory("mranks")
-    end
+    hook.Add("MRS.OnPromotion","luctus_log",function(targetPly, adminPly, rankGroup, newRankId, oldRankId, adminRankId, newRankName, oldRankName)
+        local rType = "up"
+        if newRankId < oldRankId then
+            rType = "down"
+        end
+        LuctusLog("mranks",targetPly:Nick().."("..targetPly:SteamID()..") got ranked "..rType.." to "..newRankName.." by "..adminPly:Nick().."("..adminPly:SteamID()..")")
+    end)
+    LuctusLogAddCategory("mranks")
 end
 
 --gDeathSystem
 if MedConfig then
-    if SERVER then
-        hook.Add("MedicSys_PlayerDeath", "luctus_log_MedicSys_PlayerDeath", function(ply,dmg)
-            if not IsValid(ply) then return end
-            local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
-            local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
-            local aname = "<N/A>"
-            local asteamid = "<N/A>"
-            local awep = "<N/A>"
-            if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-                aname = dmg:GetAttacker():GetClass()
-                if dmg:GetAttacker():IsPlayer() then
-                    aname = dmg:GetAttacker():Nick()
-                    asteamid = dmg:GetAttacker():SteamID()
-                    awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
-                end
+    hook.Add("MedicSys_PlayerDeath", "luctus_log_MedicSys_PlayerDeath", function(ply,dmg)
+        if not IsValid(ply) then return end
+        local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
+        local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
+        local aname = "<N/A>"
+        local asteamid = "<N/A>"
+        local awep = "<N/A>"
+        if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
+            aname = dmg:GetAttacker():GetClass()
+            if dmg:GetAttacker():IsPlayer() then
+                aname = dmg:GetAttacker():Nick()
+                asteamid = dmg:GetAttacker():SteamID()
+                awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
             end
-            LuctusLog("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
-            LuctusLog("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
-        end,-2)
-        hook.Add("MedicSys_Stabilized", "luctus_log_MedicSys_Stabilized", function(medicPly,downPly)
-            if not IsValid(medicPly) or not IsValid(downPly) then return end
-            LuctusLog("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
-        end,-2)
-        hook.Add("MedicSys_RagdollFinish", "luctus_log_MedicSys_RagdollFinish", function(ply,dmg)
-            if not IsValid(ply) then return end
-            local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
-            local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
-            local aname = "<N/A>"
-            local asteamid = "<N/A>"
-            local awep = "<N/A>"
-            if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
-                aname = dmg:GetAttacker():GetClass()
-                if dmg:GetAttacker():IsPlayer() then
-                    aname = dmg:GetAttacker():Nick()
-                    asteamid = dmg:GetAttacker():SteamID()
-                    awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
-                end
+        end
+        LuctusLog("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
+        LuctusLog("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
+    end,-2)
+    hook.Add("MedicSys_Stabilized", "luctus_log_MedicSys_Stabilized", function(medicPly,downPly)
+        if not IsValid(medicPly) or not IsValid(downPly) then return end
+        LuctusLog("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
+    end,-2)
+    hook.Add("MedicSys_RagdollFinish", "luctus_log_MedicSys_RagdollFinish", function(ply,dmg)
+        if not IsValid(ply) then return end
+        local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
+        local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
+        local aname = "<N/A>"
+        local asteamid = "<N/A>"
+        local awep = "<N/A>"
+        if dmg and dmg:GetAttacker() and IsValid(dmg:GetAttacker()) then
+            aname = dmg:GetAttacker():GetClass()
+            if dmg:GetAttacker():IsPlayer() then
+                aname = dmg:GetAttacker():Nick()
+                asteamid = dmg:GetAttacker():SteamID()
+                awep = dmg:GetAttacker():GetActiveWeapon():GetClass()
             end
-            LuctusLog("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
-        end,-2)
-        hook.Add("MedicSys_RevivePlayer", "luctus_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
-            if not IsValid(medicPly) or not IsValid(deadPly) then return end
-            LuctusLog("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
-        end,-2)
-    else
-        LuctusLogAddCategory("gDeathSystem")
-    end
+        end
+        LuctusLog("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
+    end,-2)
+    hook.Add("MedicSys_RevivePlayer", "luctus_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
+        if not IsValid(medicPly) or not IsValid(deadPly) then return end
+        LuctusLog("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
+    end,-2)
+    LuctusLogAddCategory("gDeathSystem")
 end
 
 --TBFY Handcuffs
 --This guy has no global vars that show the presence of his addon, so:
 if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterVehicle"]["Cuffs PreventVehicle"] then
-    if SERVER then
-        hook.Add("OnHandcuffed", "luctus_log_OnHandcuffed", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffBreak", "luctus_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
-            if not IsValid(handcuffedPly) then return end
-            if IsValid(helperPly) then
-                LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed by "..helperPly:Nick().."("..helperPly:SteamID()..")")
-            else
-                LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed themselves")
-            end
-        end,-2)
-        hook.Add("OnHandcuffGag", "luctus_log_OnHandcuffGag", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffUnGag", "luctus_log_OnHandcuffUnGag", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffBlindfold", "luctus_log_OnHandcuffBlindfold", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffUnBlindfold", "luctus_log_OnHandcuffUnBlindfold", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffStartDragging", "luctus_log_OnHandcuffStartDragging", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffStopDragging", "luctus_log_OnHandcuffStopDragging", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffTied", "luctus_log_OnHandcuffTied", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-        hook.Add("OnHandcuffUnTied", "luctus_log_OnHandcuffUnTied", function(ply,targetPly)
-            if not IsValid(ply) or not IsValid(targetPly) then return end
-            LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
-        end,-2)
-    else
-        LuctusLogAddCategory("cuffs")
-    end
+    hook.Add("OnHandcuffed", "luctus_log_OnHandcuffed", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffBreak", "luctus_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
+        if not IsValid(handcuffedPly) then return end
+        if IsValid(helperPly) then
+            LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed by "..helperPly:Nick().."("..helperPly:SteamID()..")")
+        else
+            LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed themselves")
+        end
+    end,-2)
+    hook.Add("OnHandcuffGag", "luctus_log_OnHandcuffGag", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffUnGag", "luctus_log_OnHandcuffUnGag", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffBlindfold", "luctus_log_OnHandcuffBlindfold", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffUnBlindfold", "luctus_log_OnHandcuffUnBlindfold", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffStartDragging", "luctus_log_OnHandcuffStartDragging", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffStopDragging", "luctus_log_OnHandcuffStopDragging", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffTied", "luctus_log_OnHandcuffTied", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    hook.Add("OnHandcuffUnTied", "luctus_log_OnHandcuffUnTied", function(ply,targetPly)
+        if not IsValid(ply) or not IsValid(targetPly) then return end
+        LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
+    end,-2)
+    LuctusLogAddCategory("cuffs")
 end
 
 --SCP, multiple jobs / things can log here
-if CLIENT and string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
+if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
     LuctusLogAddCategory("scp")
 end
 
@@ -322,6 +314,7 @@ if SERVER and GAS and GAS.AdminSits then
     hook.Add("GAS.AdminSits.SitEnded","luctus_log",function(Sit)
         LuctusLog("adminsit","Sit "..Sit.ID.." ended")
     end)
+    LuctusLogAddCategory("adminsit")
 end
 
 if SERVER and GAS and GAS.JobWhitelist then
@@ -361,17 +354,10 @@ if SERVER and GAS and GAS.JobWhitelist then
     hook.Add("bWhitelist:UsergroupRemovedFromBlacklist","luctus_log",function(value, jobid, adminAccountID)
         LuctusLog("bwhitelist",value.." grp was removed from blacklist for '"..team.GetName(jobid).."' by "..NameForAccID(adminAccountID))
     end)
+    LuctusLogAddCategory("bwhitelist")
 end
 
 
 end,2)
-
-hook.Add("gmodadminsuite:LoadModule:jobwhitelist","luctus_log",function()
-    LuctusLogAddCategory("bwhitelist")
-end)
-
-hook.Add("gmodadminsuite:LoadModule:adminsits","luctus_log",function()
-    LuctusLogAddCategory("adminsit")
-end)
 
 print("[luctus_logs] sh loaded")

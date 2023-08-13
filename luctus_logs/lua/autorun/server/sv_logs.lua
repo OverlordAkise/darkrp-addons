@@ -623,7 +623,4 @@ hook.Add("PlayerInitialSpawn","luctus_log_delete_old",function(ply)
     hook.Remove("PlayerInitialSpawn","luctus_log_delete_old")
 end)
 
---Make it not error on serverside if used in shared:
-function LuctusLogAddCategory() end
-
 print("[luctus_logs] Loaded SV file!")

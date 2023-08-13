@@ -30,6 +30,18 @@ luctus_log_quickfilters = {
     "Hitman"
 }
 
+--this will be filled upon first opening logs
+luctus_log_extras = {}
+
+hook.Add("InitPostEntity","luctus_log_get_categories",function()
+    net.Start("luctus_log_cats")
+    net.SendToServer()
+end)
+
+net.Receive("luctus_log_cats",function()
+    luctus_log_extras = net.ReadTable()
+end)
+
 luctus_log_ulxs = {
     ["copy name"] = function(ply) SetClipboardText(ply:Nick()) end,
     ["copy steam name"] = function(ply) SetClipboardText(ply:SteamName()) end,
@@ -39,16 +51,6 @@ luctus_log_ulxs = {
     ["slay"] = function(ply) RunConsoleCommand("ulx","slay",ply:Nick()) end,
     ["forcerespawn"] = function(ply) RunConsoleCommand("ulx","forcerespawn",ply:Nick()) end,
 }
-
---Support for adding custom categories
-hook.Add("InitPostEntity","luctus_log_categories",function()
-    hook.Run("LuctusLogAddCategory")
-end)
-
-function LuctusLogAddCategory(name)
-    table.insert(luctus_log_quickfilters,name)
-end
-
 
 local luctuslog = luctuslog or {}
 if luctuslog.log_win then luctuslog.log_win:Close() end
@@ -348,6 +350,12 @@ function luctuslog_createLogWindow()
     eventsCat = luctuslog.quicklist:Add("Events")
     for k,v in pairs(luctus_log_quickfilters) do
         luctuslogCreateButton(v,"",v,eventsCat)
+    end
+    
+    --Add addons
+    addonsCat = luctuslog.quicklist:Add("Addons")
+    for k,v in pairs(luctus_log_extras) do
+        luctuslogCreateButton(v,"",v,addonsCat)
     end
   
 end
