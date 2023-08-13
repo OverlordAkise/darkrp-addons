@@ -4,8 +4,6 @@
 util.AddNetworkString("luctus_radio_frequency")
 resource.AddWorkshop("635535045")
 
-LuctusLog = LuctusLog or function()end
-
 lradioHear = {}
 
 hook.Add("InitPostEntity","luctus_radio_init",function()
@@ -74,7 +72,7 @@ net.Receive("luctus_radio_frequency", function(len,ply)
     end
     ply.lradioFrequency = tonumber(freq)
     DarkRP.notify(ply,0,5,"Frequency updated to "..freq)
-    LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..ply.lradioFrequency)
+    hook.Run("LuctusRadioFreqChanged",ply,ply.lradioFrequency)
 end)
 
 print("[lucid_radio] sv loaded!")

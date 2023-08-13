@@ -42,9 +42,6 @@ SWEP.frequency = 99
 SWEP.isOn = false
 
 if CLIENT then
-    hook.Add("LuctusLogAddCategory","luctus_radio",function()
-        LuctusLogAddCategory("Radio")
-    end)
     function SWEP:Initialize()
         deviceScreen = vgui.Create("DFrame")
         deviceScreen:SetSize( 157, 60 )
