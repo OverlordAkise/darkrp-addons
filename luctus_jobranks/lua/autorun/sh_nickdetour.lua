@@ -18,10 +18,4 @@ hook.Add("loadCustomDarkRPItems", "luctus_nick_overwrite", function()
     PLAYER.Nick = PLAYER.Name
 end)
 
-if CLIENT then
-    hook.Add("LuctusLogAddCategory","luctus_jobranks",function()
-        LuctusLogAddCategory("Jobranks")
-    end)
-end
-
 print("[luctus_jobranks] sh loaded!")

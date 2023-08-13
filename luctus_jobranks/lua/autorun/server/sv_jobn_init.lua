@@ -4,8 +4,6 @@
 --to dynamically disable the addon
 LUCTUS_JOBRANKS_IS_ACTIVE = true
 
-LuctusLog = LuctusLog or function()end
-
 hook.Add("PostGamemodeLoaded","luctus_jobranks_dbinit",function()
     sql.Query("CREATE TABLE IF NOT EXISTS luctus_jobranks( steamid TEXT, jobcmd TEXT, rankid INT, UNIQUE(steamid,jobcmd) )")
 end)
@@ -59,8 +57,9 @@ function luctusRankup(ply,teamcmd,executor)
             ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[jobname][newId][5])
         end
         ply.lrankID = newId
-        LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just promoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2])
-        hook.Run("LuctusJobranks",executor,ply,luctus_jobranks[jobname][newId][2],true) --uprankPly,targetPly,newJobName,isUpRank)
+        local message = executor:Nick().."("..executor:SteamID()..") just promoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2]
+        print("[luctus_jobranks]",message)
+        hook.Run("LuctusJobranksUprank",executor,ply,luctus_jobranks[jobname][newId][2],message) --uprankPly,targetPly,newJobName,logmessage)
     end
 end
 
@@ -84,8 +83,9 @@ function luctusRankdown(ply,teamcmd,executor)
             ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[jobname][newId][5])
         end
         ply.lrankID = newId
-        LuctusLog("Jobranks",executor:Nick().."("..executor:SteamID()..") just demoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2])
-        hook.Run("LuctusJobranks",executor,ply,luctus_jobranks[jobname][newId][2],false) --uprankPly,targetPly,newJobName,isUpRank)
+        local message = executor:Nick().."("..executor:SteamID()..") just demoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2]
+        print("[luctus_jobranks]",message)
+        hook.Run("LuctusJobranksDownrank",executor,ply,luctus_jobranks[jobname][newId][2],message) --uprankPly,targetPly,newJobName,logmessage)
     end
 end
 
