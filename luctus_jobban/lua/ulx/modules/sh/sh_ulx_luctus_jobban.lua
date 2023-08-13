@@ -85,10 +85,5 @@ jobbanlist:addParam{ type=ULib.cmds.BoolArg, invisible=true }
 jobbanlist:help("List the current jobbans of a steamid")
 jobbanlist:setOpposite("ulx jobbancleanup", {_, _, true})
 
-if CLIENT then
-    hook.Add("LuctusLogAddCategory","luctus_jobban",function()
-        LuctusLogAddCategory("Jobban")
-    end)
-end
 
 print("[luctus_jobban] ulx loaded")

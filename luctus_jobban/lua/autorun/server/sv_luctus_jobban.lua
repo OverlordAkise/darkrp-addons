@@ -4,8 +4,6 @@
 --Set to false and jobbans will be ignored
 LUCTUS_JOBBAN_IS_ACTIVE = true
 
-LuctusLog = LuctusLog or print
-
 hook.Add("InitPostEntity","luctus_jobban",function() --DatabaseInitialized
     MySQLite.query("CREATE TABLE IF NOT EXISTS luctus_jobban(steamid VARCHAR(64), job VARCHAR(255), unbantime INT, UNIQUE(steamid,job))",function()end,function(err,str) error(err) end)
 end)
@@ -42,27 +40,29 @@ function LuctusJobbanBan(ply, job, bantime)
     if team.GetName(ply:Team()) == job then
         ply:changeTeam(GAMEMODE.DefaultTeam, true)
     end
-    LuctusJobbanBanID(ply:SteamID(), job, bantime)
+    LuctusJobbanBanID(ply:SteamID(), job, bantime, ply)
 end
 
-function LuctusJobbanBanID(steamid, job, bantime)
+function LuctusJobbanBanID(steamid, job, bantime, ply)
     local newBanTime = os.time()+bantime
     if bantime == 0 then
         newBanTime = 0
     end
     MySQLite.query("REPLACE INTO luctus_jobban(steamid,job,unbantime) VALUES("..sql.SQLStr(steamid)..","..sql.SQLStr(job)..","..(newBanTime)..")",function()
-        LuctusLog("Jobban",steamid.." was jobbanned from "..job.." until "..os.date("%H:%M:%S - %d.%m.%Y",newBanTime))
+        print("[luctus_jobban]",steamid.." was jobbanned from "..job.." until "..os.date("%H:%M:%S - %d.%m.%Y",newBanTime))
+        hook.Run("LuctusJobbanBan",steamid,job,newBanTime,ply)
     end,function(err,str) error(err) end)
 end
 
 function LuctusJobbanUnban(ply, job)
     ply.ljobban[job] = nil
-    LuctusJobbanUnbanID(ply:SteamID(), job)
+    LuctusJobbanUnbanID(ply:SteamID(), job, ply)
 end
 
-function LuctusJobbanUnbanID(steamid, job)
+function LuctusJobbanUnbanID(steamid, job, ply)
     MySQLite.query("DELETE FROM luctus_jobban WHERE steamid="..sql.SQLStr(steamid).." AND job="..sql.SQLStr(job),function()
-        LuctusLog("Jobban",steamid.." was jobunbanned from "..job)
+        print("[luctus_jobban]",steamid.." was jobunbanned from "..job)
+        hook.Run("LuctusJobbanUnban",steamid,job,ply)
     end,function(err,str) error(err) end)
 end
 
