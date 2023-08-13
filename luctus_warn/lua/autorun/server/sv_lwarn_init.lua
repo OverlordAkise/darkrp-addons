@@ -7,8 +7,6 @@ util.AddNetworkString("lw_warnplayer")
 util.AddNetworkString("lw_updatewarn")
 util.AddNetworkString("lw_deletewarn")
 
-LuctusLog = LuctusLog or function()end
-
 function LuctusWarnGetCount(steamid)
     local res = sql.QueryValue("SELECT SUM(active) FROM lwarn_warns WHERE targetid="..sql.SQLStr(steamid))
     if res == false then
@@ -32,12 +30,12 @@ function lwCheckPunishment(steamid)
     local user = sql.SQLStr(steamid)
     if number and LUCTUS_WARN_BAN_CONFIG[number] ~= nil then
         local minutes = LUCTUS_WARN_BAN_CONFIG[number]
-        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has been banned for "..minutes.." minutes for having "..number.." warns.")
+        hook.Run("LuctusWarnBanned",ply,number,minutes)
         lwPunish(ply, minutes, "[luctus_warn] You have been banned for "..minutes.." minutes for having too many warns!")
     end
     if number and number >= LUCTUS_WARNS_TILL_KICK then
         if not ply or ply==false then return end --Cant kick an offline player
-        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has been kicked for having "..number.." warns.")
+        hook.Run("LuctusWarnKicked",ply,number)
         ply:Kick("[luctus_warn] You have been kicked for having too many warns!")
     end
 end
@@ -79,8 +77,9 @@ net.Receive("lw_warnplayer", function(len,ply)
     if tply and IsValid(tply) then
         name = tply:Nick()
     end
-    LuctusLog("Warn",name.."("..target..") has been warned by "..ply:Nick().."("..ply:SteamID()..") for '"..reason.."'.")
-    hook.Run("LuctusWarnCreate",ply,name,target,reason) --warneePly, targetName, targetSteamID, reason
+    local message = name.."("..target..") has been warned by "..ply:Nick().."("..ply:SteamID()..") for '"..reason.."'"
+    print("[luctus_warn]",message)
+    hook.Run("LuctusWarnCreate",ply,tply,target,reason,message) --warneePly, targetName, targetSteamID, reason
 end)
 
 net.Receive("lw_requestwarns", function(len, ply)
