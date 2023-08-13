@@ -1,6 +1,6 @@
 --Luctus Logs
 --Made by OverlordAkise
-if CLIENT then return end
+
 --This file contains support for logging other addons
 --Which means not all of this will always be executed
 
@@ -357,7 +357,6 @@ if SERVER and GAS and GAS.JobWhitelist then
     LuctusLogAddCategory("bwhitelist")
 end
 
-
 end,2)
 
-print("[luctus_logs] sh loaded")
+print("[luctus_logs] sv customs loaded")
