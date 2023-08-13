@@ -5,12 +5,6 @@ util.AddNetworkString("luctus_abe_checkid")
 
 LUCTUS_ABE_IP_LIST = {}
 LUCTUS_ABE_IP_PROXYS = {}
-LuctusLog = LuctusLog or function()end
-
-local function Log(text)
-    print("[banevasion]",text)
-    LuctusLog("BanEvasion",text)
-end
 
 net.Receive("luctus_abe_checkid",function(len,ply)
     local sentSteamID = net.ReadString()
@@ -36,7 +30,8 @@ hook.Add("PlayerInitialSpawn","luctus_abe_checkfamily",function(ply)
 end)
 
 function LuctusAbeEcho(level,ply,message)
-    Log(message)
+    print("[banevasion]",message)
+    hook.Run("LuctusAntiBanEvasionDetection",ply,level,message)
     if level == 1 then
         ply:Kick()
     elseif level >= 2 then
@@ -47,7 +42,6 @@ function LuctusAbeEcho(level,ply,message)
             v:PrintMessage(3,"[banevasion] "..message)
         end
     end
-    hook.Run("LuctusAbe",ply,message)
 end
 
 function LuctusAbeCheckFamilySharing(ply)
