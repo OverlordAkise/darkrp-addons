@@ -191,7 +191,7 @@ end)
 concommand.Add("lwhitelist", openLucidWhitelistWindow)
 
 hook.Add("LuctusLogAddCategory","luctus_whitelist",function()
-    table.insert(lucid_log_quickfilters,"Whitelist")
+    LuctusLogAddCategory("Whitelist")
 end)
 
 print("[luctus_whitelist] Lucid Whitelist client loaded!")

@@ -20,7 +20,7 @@ end)
 
 if CLIENT then
     hook.Add("LuctusLogAddCategory","luctus_jobranks",function()
-        table.insert(lucid_log_quickfilters,"Jobranks")
+        LuctusLogAddCategory("Jobranks")
     end)
 end
 

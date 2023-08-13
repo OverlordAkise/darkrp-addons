@@ -87,7 +87,7 @@ jobbanlist:setOpposite("ulx jobbancleanup", {_, _, true})
 
 if CLIENT then
     hook.Add("LuctusLogAddCategory","luctus_jobban",function()
-        table.insert(lucid_log_quickfilters,"Jobban")
+        LuctusLogAddCategory("Jobban")
     end)
 end
 

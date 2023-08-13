@@ -43,7 +43,7 @@ SWEP.isOn = false
 
 if CLIENT then
     hook.Add("LuctusLogAddCategory","luctus_radio",function()
-        table.insert(lucid_log_quickfilters,"Radio")
+        LuctusLogAddCategory("Radio")
     end)
     function SWEP:Initialize()
         deviceScreen = vgui.Create("DFrame")

@@ -332,7 +332,7 @@ hook.Add("OnPlayerChat", "lw_opencommand", function(ply, text, team, isdead)
 end)
 
 hook.Add("LuctusLogAddCategory","luctus_warn",function()
-    table.insert(lucid_log_quickfilters,"Warn")
+    LuctusLogAddCategory("Warn")
 end)
 
 print("[luctus_warn] cl loaded!")
