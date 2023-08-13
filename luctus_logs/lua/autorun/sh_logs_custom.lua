@@ -31,6 +31,96 @@ if LUCTUS_ABE_FAMILY_SHARING then
     end
 end
 
+--Luctus Config
+if LUCTUS_INGAME_CONFIG then
+    if SERVER then
+        hook.Add("LuctusConfigChanged","luctus_log",function(ply,variable,typedValue,message)
+            LuctusLog("Config",message)
+        end,-2)
+    else
+        LuctusLogAddCategory("Config")
+    end
+end
+
+--Luctus Whitelist
+if LUCTUS_WHITELIST_CHATCMD then
+    if SERVER then
+        hook.Add("LuctusWhitelistUpdate","luctus_log",function(adminPly,ply,steamid,jtext)
+            local name = steamid
+            if ply then
+                name = ply:Nick().."("..ply:SteamID()..")"
+            end
+            LuctusLog("Whitelist",adminPly:Nick().."("..adminPly:SteamID()..") changed the whitelist of "..name)
+        end,-2)
+    else
+        LuctusLogAddCategory("Whitelist")
+    end
+end
+
+--Luctus Warn
+if LUCTUS_WARN_BAN_CONFIG then
+    if SERVER then
+        hook.Add("LuctusWarnCreate","luctus_log",function(adminPly,ply,steamid,reason,message)
+            LuctusLog("Warn",message)
+        end,-2)
+        hook.Add("LuctusWarnBanned","luctus_log",function(ply,warncount,minutes)
+            LuctusLog("Warn",ply:SteamID().." was banned for "..minutes.." minutes with "..warncount.." warns")
+        end,-2)
+        hook.Add("LuctusWarnKicked","luctus_log",function(ply,warncount)
+            LuctusLog("Warn",ply:SteamID().." was kicked for having "..warncount.." warns")
+        end,-2)
+    else
+        LuctusLogAddCategory("Warn")
+    end
+end
+
+--Luctus Jobranks
+if LUCTUS_JOBRANKS_RANKUP_CMD then
+    if SERVER then
+        hook.Add("LuctusJobranksUprank","luctus_log",function(adminPly,ply,newJobName,message)
+            LuctusLog("Jobranks",message)
+        end,-2)
+        hook.Add("LuctusJobranksDownrank","luctus_log",function(adminPly,ply,newJobName,message)
+            LuctusLog("Jobranks",message)
+        end,-2)
+    else
+        LuctusLogAddCategory("Jobranks")
+    end
+end
+
+--Luctus Radio
+if LUCTUS_RADIO_EXISTS then
+    if SERVER then
+        hook.Add("LuctusRadioFreqChanged","luctus_log",function(ply,newFreq)
+            LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..newFreq)
+        end,-2)
+    else
+        LuctusLogAddCategory("Radio")
+    end
+end
+
+--Luctus Jobbans
+if ulx and ulx.jobban then
+    if SERVER then
+        hook.Add("LuctusJobbanBan","luctus_log",function(steamid,jobname,newBanTime,ply)
+            local name = steamid
+            if IsValid(ply) then
+                name = ply:Nick().."("..steamid..")"
+            end
+            LuctusLog("Jobban",name.." was jobbanned from "..jobname.." until "..os.date("%H:%M:%S - %d.%m.%Y",newBanTime))
+        end,-2)
+        hook.Add("LuctusJobbanUnban","luctus_log",function(steamid,jobname,ply)
+            local name = steamid
+            if IsValid(ply) then
+                name = ply:Nick().."("..steamid..")"
+            end
+            LuctusLog("Jobban",name.." was jobunbanned from "..jobname)
+        end,-2)
+    else
+        LuctusLogAddCategory("Jobban")
+    end
+end
+
 --AreaManager, create areas that players can enter
 if AreaManager then
     if SERVER then
