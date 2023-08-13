@@ -1,7 +1,7 @@
 --Luctus Logs
 --Made by OverlordAkise
 
-lucid_log_quickfilters = {
+luctus_log_quickfilters = {
     "PlayerSay",
     "PlayerSpawn",
     "PlayerDeath",
@@ -30,7 +30,7 @@ lucid_log_quickfilters = {
     "Hitman"
 }
 
-lucid_log_ulxs = {
+luctus_log_ulxs = {
     ["copy name"] = function(ply) SetClipboardText(ply:Nick()) end,
     ["copy steam name"] = function(ply) SetClipboardText(ply:SteamName()) end,
     ["bring"] = function(ply) RunConsoleCommand("ulx","bring",ply:Nick()) end,
@@ -46,49 +46,49 @@ hook.Add("InitPostEntity","luctus_log_categories",function()
 end)
 
 function LuctusLogAddCategory(name)
-    table.insert(lucid_log_quickfilters,name)
+    table.insert(luctus_log_quickfilters,name)
 end
 
 
-local lucidlog = lucidlog or {}
-if lucidlog.log_win then lucidlog.log_win:Close() end
-lucidlog.log = {}
-lucidlog.log_win = nil
-lucidlog.list = nil
-lucidlog.page = 0
-lucidlog.filter = ""
-lucidlog.category = ""
-lucidlog.clickable = true
+local luctuslog = luctuslog or {}
+if luctuslog.log_win then luctuslog.log_win:Close() end
+luctuslog.log = {}
+luctuslog.log_win = nil
+luctuslog.list = nil
+luctuslog.page = 0
+luctuslog.filter = ""
+luctuslog.category = ""
+luctuslog.clickable = true
 
-net.Receive("lucid_log",function()
+net.Receive("luctus_log",function()
     local lenge = net.ReadInt(17)
     local data = net.ReadData(lenge)
     local jtext = util.Decompress(data)
     local tab = util.JSONToTable(jtext)
     if tab ~= nil then
-        lucidlog.log = tab
+        luctuslog.log = tab
     end
   
-    if IsValid(lucidlog.log_win) and IsValid(lucidlog.list) and lucidlog.log ~= nil then
-        lucidlog.list:Clear()
-        for k,v in pairs(lucidlog.log) do
+    if IsValid(luctuslog.log_win) and IsValid(luctuslog.list) and luctuslog.log ~= nil then
+        luctuslog.list:Clear()
+        for k,v in pairs(luctuslog.log) do
             if(v.date)then
-                lucidlog.list:AddLine( v.date, v.msg )
+                luctuslog.list:AddLine( v.date, v.msg )
             end
         end
     else
-        lucidlog_createLogWindow()
+        luctuslog_createLogWindow()
     end
 end)
 
-hook.Add("KeyPress","lucid_log_refocus",function(ply,key)
+hook.Add("KeyPress","luctus_log_refocus",function(ply,key)
     if ( key == IN_WALK ) then
-        if IsValid(lucidlog.log_win) then
-            lucidlog.clickable = true
+        if IsValid(luctuslog.log_win) then
+            luctuslog.clickable = true
             gui.EnableScreenClicker( true )
-            lucidlog.log_win:SetMouseInputEnabled( true )
-            lucidlog.log_win:SetKeyboardInputEnabled( true )
-            lucidlog.log_win:RequestFocus()
+            luctuslog.log_win:SetMouseInputEnabled( true )
+            luctuslog.log_win:SetKeyboardInputEnabled( true )
+            luctuslog.log_win:RequestFocus()
         end
     end
 end)
@@ -110,46 +110,46 @@ function luctusPrettifyScrollbar(el)
 end
 
 
-function lucidlog_createLogWindow()
-    if not lucidlog.log then return end
-    lucidlog.log_win = vgui.Create("DFrame")
-    lucidlog.log_win:SetTitle("LucidLog v3.1 | by OverlordAkise")
-    lucidlog.log_win:SetSize( 900, 500 )
-    lucidlog.log_win:Center()
-    lucidlog.log_win:SetX(ScrW()+300)
-    lucidlog.log_win:MakePopup()
-    lucidlog.log_win:ShowCloseButton(false)
-    lucidlog.log_win:MoveTo(ScrW()/2-lucidlog.log_win:GetWide()/2, lucidlog.log_win:GetY(),0.5,0)
-    function lucidlog.log_win:Paint(w,h)
+function luctuslog_createLogWindow()
+    if not luctuslog.log then return end
+    luctuslog.log_win = vgui.Create("DFrame")
+    luctuslog.log_win:SetTitle("luctuslog v3.1 | by OverlordAkise")
+    luctuslog.log_win:SetSize( 900, 500 )
+    luctuslog.log_win:Center()
+    luctuslog.log_win:SetX(ScrW()+300)
+    luctuslog.log_win:MakePopup()
+    luctuslog.log_win:ShowCloseButton(false)
+    luctuslog.log_win:MoveTo(ScrW()/2-luctuslog.log_win:GetWide()/2, luctuslog.log_win:GetY(),0.5,0)
+    function luctuslog.log_win:Paint(w,h)
         draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
         draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
     end
-    function lucidlog.log_win:OnKeyCodePressed( key ) 
+    function luctuslog.log_win:OnKeyCodePressed( key ) 
         if ( key == KEY_LALT ) then
-            lucidlog.clickable = false
+            luctuslog.clickable = false
             gui.EnableScreenClicker( false )
-            lucidlog.log_win:SetMouseInputEnabled( false )
-            lucidlog.log_win:SetKeyboardInputEnabled( false )
+            luctuslog.log_win:SetMouseInputEnabled( false )
+            luctuslog.log_win:SetKeyboardInputEnabled( false )
         end
     end
-    function lucidlog.log_win:OnClose()
+    function luctuslog.log_win:OnClose()
         gui.EnableScreenClicker( false )
     end
   
     --Close Button Top Right
-    local CloseButton = vgui.Create("DButton", lucidlog.log_win)
+    local CloseButton = vgui.Create("DButton", luctuslog.log_win)
     CloseButton:SetText("X")
     CloseButton:SetPos(900-22,2)
     CloseButton:SetSize(20,20)
     CloseButton:SetTextColor(Color(255,0,0))
     CloseButton.DoClick = function()
         gui.EnableScreenClicker( false )
-        lucidlog.log_win:SetMouseInputEnabled( false )
-        lucidlog.log_win:SetKeyboardInputEnabled( false )
-        lucidlog.clickable = false
-        lucidlog.log_win:MoveTo(-1*ScrW(), lucidlog.log_win:GetY(),0.5,0)
+        luctuslog.log_win:SetMouseInputEnabled( false )
+        luctuslog.log_win:SetKeyboardInputEnabled( false )
+        luctuslog.clickable = false
+        luctuslog.log_win:MoveTo(-1*ScrW(), luctuslog.log_win:GetY(),0.5,0)
         timer.Simple(0.5,function()
-            lucidlog.log_win:Close()
+            luctuslog.log_win:Close()
         end)
     end
     CloseButton.Paint = function(self,w,h)
@@ -159,11 +159,11 @@ function lucidlog_createLogWindow()
         end
     end
 
-    local toppanel = vgui.Create("DPanel",lucidlog.log_win)
+    local toppanel = vgui.Create("DPanel",luctuslog.log_win)
     toppanel:Dock(TOP)
     function toppanel:Paint() end
 
-    local leftpanel = vgui.Create("DPanel",lucidlog.log_win)
+    local leftpanel = vgui.Create("DPanel",luctuslog.log_win)
     leftpanel:Dock(LEFT)
     leftpanel:SetWide(150)
     function leftpanel:Paint() end
@@ -173,54 +173,54 @@ function lucidlog_createLogWindow()
     quicklabel:SetWide(150)
     quicklabel:SetText("Quick Filters")
 
-    lucidlog.date_from = vgui.Create("DTextEntry",toppanel)
-    lucidlog.date_from:Dock(LEFT)
-    lucidlog.date_from:SetWide(110)
-    lucidlog.date_from:SetValue( "2000-01-01 00:00:00" )
-    lucidlog.date_from:SetDrawLanguageID(false)
+    luctuslog.date_from = vgui.Create("DTextEntry",toppanel)
+    luctuslog.date_from:Dock(LEFT)
+    luctuslog.date_from:SetWide(110)
+    luctuslog.date_from:SetValue( "2000-01-01 00:00:00" )
+    luctuslog.date_from:SetDrawLanguageID(false)
 
-    lucidlog.date_to = vgui.Create("DTextEntry",toppanel)
-    lucidlog.date_to:Dock(LEFT)
-    lucidlog.date_to:SetWide(110)
-    lucidlog.date_to:SetValue( "2222-01-01 00:00:00" )
-    lucidlog.date_to:SetDrawLanguageID(false)
+    luctuslog.date_to = vgui.Create("DTextEntry",toppanel)
+    luctuslog.date_to:Dock(LEFT)
+    luctuslog.date_to:SetWide(110)
+    luctuslog.date_to:SetValue( "2222-01-01 00:00:00" )
+    luctuslog.date_to:SetDrawLanguageID(false)
 
-    lucidlog.date_should = vgui.Create("DCheckBoxLabel",toppanel)
-    lucidlog.date_should:Dock(LEFT)
-    lucidlog.date_should:SetText("Filter by date")
-    lucidlog.date_should:SetValue(false)
-    lucidlog.date_should:DockMargin(0,0,10,0)
+    luctuslog.date_should = vgui.Create("DCheckBoxLabel",toppanel)
+    luctuslog.date_should:Dock(LEFT)
+    luctuslog.date_should:SetText("Filter by date")
+    luctuslog.date_should:SetValue(false)
+    luctuslog.date_should:DockMargin(0,0,10,0)
 
-    lucidlog.filter = vgui.Create("DTextEntry",toppanel)
-    lucidlog.filter:Dock(LEFT)
-    lucidlog.filter:SetWide(150)
-    lucidlog.filter:SetValue("")
-    lucidlog.filter:SetDrawLanguageID(false)
+    luctuslog.filter = vgui.Create("DTextEntry",toppanel)
+    luctuslog.filter:Dock(LEFT)
+    luctuslog.filter:SetWide(150)
+    luctuslog.filter:SetValue("")
+    luctuslog.filter:SetDrawLanguageID(false)
 
-    lucidlog.filter_should = vgui.Create("DCheckBoxLabel",toppanel)
-    lucidlog.filter_should:Dock(LEFT)
-    lucidlog.filter_should:SetText("Filter by text")
-    lucidlog.filter_should:SetValue( false )
-    lucidlog.filter_should:DockMargin(0,0,10,0)
+    luctuslog.filter_should = vgui.Create("DCheckBoxLabel",toppanel)
+    luctuslog.filter_should:Dock(LEFT)
+    luctuslog.filter_should:SetText("Filter by text")
+    luctuslog.filter_should:SetValue( false )
+    luctuslog.filter_should:DockMargin(0,0,10,0)
 
 
-    lucidlog.LeftButton = vgui.Create("DButton",toppanel)
-    lucidlog.LeftButton:SetText( "<" )
-    lucidlog.LeftButton:SetWide(25)
-    lucidlog.LeftButton:Dock(LEFT)
-    lucidlog.LeftButton:DockMargin(0,0,10,0)
-    lucidlog.LeftButton:SetTextColor(Color(255,255,255))
-    lucidlog.LeftButton.DoClick = function()
-        lucidlog.page = lucidlog.page - 1
-        if lucidlog.page < 0 then lucidlog.page = 0 end
-        lucidlog.PageNumber:SetText(lucidlog.page)
-        lucidlog_clientRequest()
+    luctuslog.LeftButton = vgui.Create("DButton",toppanel)
+    luctuslog.LeftButton:SetText( "<" )
+    luctuslog.LeftButton:SetWide(25)
+    luctuslog.LeftButton:Dock(LEFT)
+    luctuslog.LeftButton:DockMargin(0,0,10,0)
+    luctuslog.LeftButton:SetTextColor(Color(255,255,255))
+    luctuslog.LeftButton.DoClick = function()
+        luctuslog.page = luctuslog.page - 1
+        if luctuslog.page < 0 then luctuslog.page = 0 end
+        luctuslog.PageNumber:SetText(luctuslog.page)
+        luctuslog_clientRequest()
     end
-    function lucidlog.LeftButton:Paint(w,h)
+    function luctuslog.LeftButton:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
         draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
     end
-    function lucidlog.LeftButton:Think()
+    function luctuslog.LeftButton:Think()
         if self:IsHovered() then
             self:SetTextColor(Color(0, 195, 165))
         else
@@ -228,26 +228,26 @@ function lucidlog_createLogWindow()
         end
     end
   
-    lucidlog.PageNumber = vgui.Create("DLabel",toppanel)
-    lucidlog.PageNumber:Dock(LEFT)
-    lucidlog.PageNumber:SetText("0")
-    lucidlog.PageNumber:SetWide(25)
+    luctuslog.PageNumber = vgui.Create("DLabel",toppanel)
+    luctuslog.PageNumber:Dock(LEFT)
+    luctuslog.PageNumber:SetText("0")
+    luctuslog.PageNumber:SetWide(25)
 
-    lucidlog.RightButton = vgui.Create("DButton",toppanel)
-    lucidlog.RightButton:SetText( ">" )
-    lucidlog.RightButton:SetWide(25)
-    lucidlog.RightButton:Dock(LEFT)
-    lucidlog.RightButton:SetTextColor(Color(255,255,255))
-    lucidlog.RightButton.DoClick = function()
-        lucidlog.page = lucidlog.page + 1
-        lucidlog.PageNumber:SetText(lucidlog.page)
-        lucidlog_clientRequest()
+    luctuslog.RightButton = vgui.Create("DButton",toppanel)
+    luctuslog.RightButton:SetText( ">" )
+    luctuslog.RightButton:SetWide(25)
+    luctuslog.RightButton:Dock(LEFT)
+    luctuslog.RightButton:SetTextColor(Color(255,255,255))
+    luctuslog.RightButton.DoClick = function()
+        luctuslog.page = luctuslog.page + 1
+        luctuslog.PageNumber:SetText(luctuslog.page)
+        luctuslog_clientRequest()
     end
-    function lucidlog.RightButton:Paint(w,h)
+    function luctuslog.RightButton:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,Color(255,255,255,255))
         draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
     end
-    function lucidlog.RightButton:Think()
+    function luctuslog.RightButton:Think()
         if self:IsHovered() then
             self:SetTextColor(Color(0, 195, 165))
         else
@@ -255,21 +255,21 @@ function lucidlog_createLogWindow()
         end
     end
   
-    lucidlog.SearchButton = vgui.Create("DButton",toppanel)
-    lucidlog.SearchButton:SetText( "Search" )
-    lucidlog.SearchButton:Dock(RIGHT)
-    lucidlog.SearchButton:SetTextColor(Color(0, 195, 165))
-    lucidlog.SearchButton.DoClick = function()
-        lucidlog.category = ""
-        lucidlog.page = 0
-        lucidlog.PageNumber:SetText(lucidlog.page)
-        lucidlog_clientRequest()
+    luctuslog.SearchButton = vgui.Create("DButton",toppanel)
+    luctuslog.SearchButton:SetText( "Search" )
+    luctuslog.SearchButton:Dock(RIGHT)
+    luctuslog.SearchButton:SetTextColor(Color(0, 195, 165))
+    luctuslog.SearchButton.DoClick = function()
+        luctuslog.category = ""
+        luctuslog.page = 0
+        luctuslog.PageNumber:SetText(luctuslog.page)
+        luctuslog_clientRequest()
     end
-    function lucidlog.SearchButton:Paint(w,h)
+    function luctuslog.SearchButton:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,Color(0,255,0,255))
         draw.RoundedBox(0, 1, 1, w-2, h-2, Color(32, 34, 37))
     end
-    function lucidlog.SearchButton:Think()
+    function luctuslog.SearchButton:Think()
         if self:IsHovered() then
             self:SetTextColor(Color(0, 195, 165))
         else
@@ -277,14 +277,14 @@ function lucidlog_createLogWindow()
         end
     end
 
-    lucidlog.list = vgui.Create("DListView",lucidlog.log_win)
-    lucidlog.list:Dock( FILL )
-    lucidlog.list:SetPos( 112, 52 )
-    lucidlog.list:SetSize( 840-112-1, 448-1 )
-    lucidlog.list:SetMultiSelect( false )
-    lucidlog.list:AddColumn("Date"):SetWidth(120)
-    lucidlog.list:AddColumn("Message"):SetWidth(607)
-    function lucidlog.list:OnRowRightClick(lineID, line)
+    luctuslog.list = vgui.Create("DListView",luctuslog.log_win)
+    luctuslog.list:Dock( FILL )
+    luctuslog.list:SetPos( 112, 52 )
+    luctuslog.list:SetSize( 840-112-1, 448-1 )
+    luctuslog.list:SetMultiSelect( false )
+    luctuslog.list:AddColumn("Date"):SetWidth(120)
+    luctuslog.list:AddColumn("Message"):SetWidth(607)
+    function luctuslog.list:OnRowRightClick(lineID, line)
         local Menu = DermaMenu()
         local activeB = Menu:AddOption("Copy line to clipboard")
         activeB:SetIcon( "icon16/add.png" )
@@ -300,7 +300,7 @@ function lucidlog_createLogWindow()
             plysubmenu:AddSpacer()
             plysubmenu.ply = player.GetBySteamID(players[i])
             if plysubmenu.ply then
-                for k,v in pairs(lucid_log_ulxs) do
+                for k,v in pairs(luctus_log_ulxs) do
                     plysubmenu:AddOption(k):SetIcon("icon16/bullet_go.png")
                 end
             else
@@ -311,8 +311,8 @@ function lucidlog_createLogWindow()
                     SetClipboardText(self.steamid)
                     return
                 end
-                if lucid_log_ulxs[text] then
-                    lucid_log_ulxs[text](self.ply)
+                if luctus_log_ulxs[text] then
+                    luctus_log_ulxs[text](self.ply)
                 end
             end
         end
@@ -325,50 +325,50 @@ function lucidlog_createLogWindow()
         Menu:Open()
     end
 
-    for k,v in pairs( lucidlog.log ) do
+    for k,v in pairs( luctuslog.log ) do
         if(v.date)then
-            lucidlog.list:AddLine( v.date, v.msg )
+            luctuslog.list:AddLine( v.date, v.msg )
         end
     end
   
-    lucidlog.quicklist = vgui.Create("DCategoryList",leftpanel)
-    lucidlog.quicklist:Dock(FILL)
-    function lucidlog.quicklist:Paint() end
+    luctuslog.quicklist = vgui.Create("DCategoryList",leftpanel)
+    luctuslog.quicklist:Dock(FILL)
+    function luctuslog.quicklist:Paint() end
 
-    local scrollBar = lucidlog.quicklist:GetVBar()
+    local scrollBar = luctuslog.quicklist:GetVBar()
     luctusPrettifyScrollbar(scrollBar)
   
     --Add players to quickfilter
-    playersCat = lucidlog.quicklist:Add("Players")
+    playersCat = luctuslog.quicklist:Add("Players")
     for k,v in pairs(player.GetAll()) do
-        lucidLogCreateButton(v:Nick(),v:SteamID(),"",playersCat)
+        luctuslogCreateButton(v:Nick(),v:SteamID(),"",playersCat)
     end
   
-    --Add lucid_log_quickfilters for events
-    eventsCat = lucidlog.quicklist:Add("Events")
-    for k,v in pairs(lucid_log_quickfilters) do
-        lucidLogCreateButton(v,"",v,eventsCat)
+    --Add luctus_log_quickfilters for events
+    eventsCat = luctuslog.quicklist:Add("Events")
+    for k,v in pairs(luctus_log_quickfilters) do
+        luctuslogCreateButton(v,"",v,eventsCat)
     end
   
 end
 
-function lucidLogCreateButton(name,filter,category,categoryList)
+function luctuslogCreateButton(name,filter,category,categoryList)
     local DButton = categoryList:Add( name )
     DButton:SetHeight(32)
     DButton:SetTextColor(Color(255,255,255))
     DButton.filter = filter
     DButton.category = category
     function DButton:DoClick()
-        lucidlog.filter:SetValue(self.filter)
+        luctuslog.filter:SetValue(self.filter)
         if self.filter ~= "" then
-            lucidlog.filter_should:SetValue(true)
+            luctuslog.filter_should:SetValue(true)
         else
-            lucidlog.filter_should:SetValue(false)
+            luctuslog.filter_should:SetValue(false)
         end
-        lucidlog.category = self.category
-        lucidlog.page = 0
-        lucidlog.PageNumber:SetText(lucidlog.page)
-        lucidlog_clientRequest()
+        luctuslog.category = self.category
+        luctuslog.page = 0
+        luctuslog.PageNumber:SetText(luctuslog.page)
+        luctuslog_clientRequest()
     end
     function DButton:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,Color(32, 34, 37))
@@ -383,38 +383,38 @@ function lucidLogCreateButton(name,filter,category,categoryList)
     end
 end
 
-function lucidlog_clientRequest()
+function luctuslog_clientRequest()
     local adate = ""
     local zdate = ""
-    if lucidlog.date_should:GetChecked() then
-        adate = lucidlog.date_from:GetValue()
-        zdate = lucidlog.date_to:GetValue()
+    if luctuslog.date_should:GetChecked() then
+        adate = luctuslog.date_from:GetValue()
+        zdate = luctuslog.date_to:GetValue()
         if adate:match("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d") == nil then
-            Derma_Message("Please enter a valid From-Date (YYYY-MM-DD HH:MM:SS) !", "[lucidlog]", "OK")
+            Derma_Message("Please enter a valid From-Date (YYYY-MM-DD HH:MM:SS) !", "[luctuslog]", "OK")
             return
         end
         if zdate:match("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d") == nil then
-            Derma_Message("Please enter a valid To-Date (YYYY-MM-DD HH:MM:SS) !", "[lucidlog]", "OK")
+            Derma_Message("Please enter a valid To-Date (YYYY-MM-DD HH:MM:SS) !", "[luctuslog]", "OK")
             return
         end
     end
-    net.Start("lucid_log")
-        if lucidlog.filter_should:GetChecked() then 
-            net.WriteString(lucidlog.filter:GetValue())
+    net.Start("luctus_log")
+        if luctuslog.filter_should:GetChecked() then 
+            net.WriteString(luctuslog.filter:GetValue())
         else
             net.WriteString("")
         end
 
-        net.WriteString(lucidlog.page)
+        net.WriteString(luctuslog.page)
 
-        if lucidlog.date_should:GetChecked() then
+        if luctuslog.date_should:GetChecked() then
             net.WriteString(adate)
             net.WriteString(zdate)
         else
             net.WriteString("")
             net.WriteString("")
         end
-        net.WriteString(lucidlog.category)
+        net.WriteString(luctuslog.category)
     net.SendToServer()
 end
 

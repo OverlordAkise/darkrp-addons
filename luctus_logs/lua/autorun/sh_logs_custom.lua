@@ -83,7 +83,7 @@ end
 --gDeathSystem
 if MedConfig then
     if SERVER then
-        hook.Add("MedicSys_PlayerDeath", "lucid_log_MedicSys_PlayerDeath", function(ply,dmg)
+        hook.Add("MedicSys_PlayerDeath", "luctus_log_MedicSys_PlayerDeath", function(ply,dmg)
             if not IsValid(ply) then return end
             local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
             local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
@@ -101,11 +101,11 @@ if MedConfig then
             LuctusLog("gDeathSystem",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep)
             LuctusLog("PlayerDeath",pname.."("..psteamid..") was killed by "..aname.."("..asteamid..") with "..awep.." (gdeath)")
         end,-2)
-        hook.Add("MedicSys_Stabilized", "lucid_log_MedicSys_Stabilized", function(medicPly,downPly)
+        hook.Add("MedicSys_Stabilized", "luctus_log_MedicSys_Stabilized", function(medicPly,downPly)
             if not IsValid(medicPly) or not IsValid(downPly) then return end
             LuctusLog("gDeathSystem",downPly:Nick().."("..downPly:SteamID()..") was stabilized by "..medicPly:Nick().."("..medicPly:SteamID()..")")
         end,-2)
-        hook.Add("MedicSys_RagdollFinish", "lucid_log_MedicSys_RagdollFinish", function(ply,dmg)
+        hook.Add("MedicSys_RagdollFinish", "luctus_log_MedicSys_RagdollFinish", function(ply,dmg)
             if not IsValid(ply) then return end
             local pname = ply:IsPlayer() and ply:Name() or "<N/A>"
             local psteamid = ply:IsPlayer() and ply:SteamID() or "<N/A>"
@@ -122,7 +122,7 @@ if MedConfig then
             end
             LuctusLog("gDeathSystem",pname.."("..psteamid..") was finished by "..aname.."("..asteamid..") with "..awep)
         end,-2)
-        hook.Add("MedicSys_RevivePlayer", "lucid_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
+        hook.Add("MedicSys_RevivePlayer", "luctus_log_MedicSys_RevivePlayer", function(medicPly,deadPly)
             if not IsValid(medicPly) or not IsValid(deadPly) then return end
             LuctusLog("gDeathSystem",deadPly:Nick().."("..deadPly:SteamID()..") was revived by "..medicPly:Nick().."("..medicPly:SteamID()..")")
         end,-2)
@@ -135,11 +135,11 @@ end
 --This guy has no global vars that show the presence of his addon, so:
 if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterVehicle"]["Cuffs PreventVehicle"] then
     if SERVER then
-        hook.Add("OnHandcuffed", "lucid_log_OnHandcuffed", function(ply,targetPly)
+        hook.Add("OnHandcuffed", "luctus_log_OnHandcuffed", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuffed "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffBreak", "lucid_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
+        hook.Add("OnHandcuffBreak", "luctus_log_OnHandcuffBreak", function(handcuffedPly,handcuff,helperPly)
             if not IsValid(handcuffedPly) then return end
             if IsValid(helperPly) then
                 LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed by "..helperPly:Nick().."("..helperPly:SteamID()..")")
@@ -147,35 +147,35 @@ if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterV
                 LuctusLog("cuffs",handcuffedPly:Nick().."("..handcuffedPly:SteamID()..") unhandcuffed themselves")
             end
         end,-2)
-        hook.Add("OnHandcuffGag", "lucid_log_OnHandcuffGag", function(ply,targetPly)
+        hook.Add("OnHandcuffGag", "luctus_log_OnHandcuffGag", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-gagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffUnGag", "lucid_log_OnHandcuffUnGag", function(ply,targetPly)
+        hook.Add("OnHandcuffUnGag", "luctus_log_OnHandcuffUnGag", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-ungagged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffBlindfold", "lucid_log_OnHandcuffBlindfold", function(ply,targetPly)
+        hook.Add("OnHandcuffBlindfold", "luctus_log_OnHandcuffBlindfold", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-blindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffUnBlindfold", "lucid_log_OnHandcuffUnBlindfold", function(ply,targetPly)
+        hook.Add("OnHandcuffUnBlindfold", "luctus_log_OnHandcuffUnBlindfold", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-unblindfolded "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffStartDragging", "lucid_log_OnHandcuffStartDragging", function(ply,targetPly)
+        hook.Add("OnHandcuffStartDragging", "luctus_log_OnHandcuffStartDragging", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-dragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffStopDragging", "lucid_log_OnHandcuffStopDragging", function(ply,targetPly)
+        hook.Add("OnHandcuffStopDragging", "luctus_log_OnHandcuffStopDragging", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-undragged "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffTied", "lucid_log_OnHandcuffTied", function(ply,targetPly)
+        hook.Add("OnHandcuffTied", "luctus_log_OnHandcuffTied", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-tied "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
-        hook.Add("OnHandcuffUnTied", "lucid_log_OnHandcuffUnTied", function(ply,targetPly)
+        hook.Add("OnHandcuffUnTied", "luctus_log_OnHandcuffUnTied", function(ply,targetPly)
             if not IsValid(ply) or not IsValid(targetPly) then return end
             LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
         end,-2)
