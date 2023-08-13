@@ -20,6 +20,17 @@ end
 --Wait for every addon to have loaded
 hook.Add("InitPostEntity","luctus_log_custom",function()
 
+--Luctus AntiBanEvasion
+if LUCTUS_ABE_FAMILY_SHARING then
+    if SERVER then
+        hook.Add("LuctusAntiBanEvasionDetection","luctus_log",function(ply,level,message)
+            LuctusLog("BanEvasion",message)
+        end,-2)
+    else
+        LuctusLogAddCategory("BanEvasion")
+    end
+end
+
 --AreaManager, create areas that players can enter
 if AreaManager then
     if SERVER then
