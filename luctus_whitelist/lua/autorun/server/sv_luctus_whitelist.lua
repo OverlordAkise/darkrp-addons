@@ -4,8 +4,6 @@
 util.AddNetworkString("lucid_whitelist_get")
 util.AddNetworkString("lucid_whitelist_set")
 
-LuctusLog = LuctusLog or function()end
-
 hook.Add("playerCanChangeTeam","luctus_whitelist",function(ply,newTeam,force)
     if force then return true, "Job change was forced!" end
     local jobname = team.GetName(newTeam)
@@ -62,7 +60,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
     else
         print("[luctus_whitelist] Successfully inserted new whitelist for user "..steamid)
     end
-  
+    local targetPly = nil
     if steamid == "everyone" then
         for job_index,job in pairs(RPExtraTeams) do
             if jsondata[job.name] then
@@ -74,6 +72,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
     else
         for k,v in pairs(player.GetAll()) do
             if v:SteamID() == steamid then
+                targetPly = v
                 for job_index,job in pairs(RPExtraTeams) do
                     if jsondata[job.name] then
                         v:SetNWBool(job.name,true)
@@ -85,8 +84,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
             end
         end
     end
-    LuctusLog("Whitelist",ply:Nick().."("..ply:SteamID()..") changed the whitelist for "..steamid)
-    hook.Run("LuctusWhitelistUpdate",ply,steamid,jtext)
+    hook.Run("LuctusWhitelistUpdate",ply,targetPly,steamid,jtext)
 end)
 
 net.Receive("lucid_whitelist_get", function(len,ply)
