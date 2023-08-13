@@ -65,8 +65,4 @@ function LuctusOpenIngameConfig(configTable)
     end
 end
 
-hook.Add("LuctusLogAddCategory","luctus_config",function()
-    LuctusLogAddCategory("Config")
-end)
-
 print("[luctus_config] CL loaded!")
