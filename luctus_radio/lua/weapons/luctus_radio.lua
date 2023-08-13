@@ -42,6 +42,7 @@ SWEP.frequency = 99
 SWEP.isOn = false
 
 if CLIENT then
+    LUCTUS_RADIO_EXISTS = true
     function SWEP:Initialize()
         deviceScreen = vgui.Create("DFrame")
         deviceScreen:SetSize( 157, 60 )
