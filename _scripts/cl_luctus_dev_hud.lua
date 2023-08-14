@@ -59,6 +59,43 @@ hook.Add("NotifyShouldTransmit","luctus_devtools",function(ent, shouldTransmit)
     end
 end)
 
+--Garbage Collection
+
+concommand.Add("devgcdelay",function(ply,cmd,args,argStr)
+    if not tonumber(argStr) then return end
+    GC_CACHE_TIMER = tonumber(argStr)
+    LuctusStartGCWatcher()
+end)
+
+GC_CACHE = {}
+GC_CACHE_TIMER = 1
+GC_CACHE_AVG = 0
+GC_CACHE_AVG_DYN = 0
+GC_CACHE_HIGHEST = -1
+GC_CACHE_LOWEST = math.huge
+GC_CACHE_SUM = 0
+function LuctusStartGCWatcher()
+    timer.Create("gc_watcher",GC_CACHE_TIMER,0,function()
+        --GC_CACHE_HIGHEST = -1
+        --GC_CACHE_LOWEST = math.huge
+        local gc = math.floor(collectgarbage("count"))
+        table.insert(GC_CACHE,gc)
+        GC_CACHE_SUM = GC_CACHE_SUM + gc
+        if #GC_CACHE > 100 then
+            GC_CACHE_SUM = GC_CACHE_SUM - table.remove(GC_CACHE,1)
+        end
+        if gc > GC_CACHE_HIGHEST then GC_CACHE_HIGHEST = gc end
+        if gc < GC_CACHE_LOWEST then GC_CACHE_LOWEST = gc end
+        GC_CACHE_AVG_DYN = GC_CACHE_SUM/#GC_CACHE
+        GC_CACHE_AVG = (GC_CACHE_HIGHEST+GC_CACHE_LOWEST)/2
+        --print("GC",gc)
+    end)
+end
+LuctusStartGCWatcher()
+
+
+--HUD
+
 local color_dark = Color(40,40,40,230)
 
 LstartHeight = 100
@@ -118,6 +155,10 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   draw.DrawText("#trans-/s: "..transmitsRemPerSecond,"Default",Lwidth,lineheight())
   draw.DrawText("#ents+/s: "..entitiesAddedLastSecond,"Default",Lwidth,lineheight())
   draw.DrawText("#ents-/s: "..entitiesRemovedLastSecond,"Default",Lwidth,lineheight())
+  
+  draw.DrawText("max ram: "..GC_CACHE_HIGHEST,"Default",Lwidth,lineheight(10))
+  draw.DrawText("avg ram: "..GC_CACHE_AVG_DYN,"Default",Lwidth,lineheight())
+  draw.DrawText("min ram: "..GC_CACHE_LOWEST,"Default",Lwidth,lineheight())
 
   draw.DrawText("You","Default",Lwidth,lineheight(10),Color(0,255,0))
   draw.DrawText("Model: "..lp:GetModel(),"Default",Lwidth,lineheight())
@@ -204,6 +245,22 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   for k,v in pairs(entitiesRemoved) do
     draw.DrawText("- "..v,"Default",scrw-840,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
   end
+  --GC Details
+  surface.SetDrawColor(255,255,255,255)
+  surface.DrawLine(300,100,300+105*10,100)
+  local prev = GC_CACHE_AVG
+  local highest = -1
+  local lowest = math.huge
+  for i=1, #GC_CACHE do
+    local val = GC_CACHE[i]
+    surface.DrawLine(300+i*10,200-(prev/GC_CACHE_AVG)*100,300+(i+1)*10,200-(val/GC_CACHE_AVG)*100)
+    prev = val
+    if val > highest then highest = val end
+    if val < lowest then lowest = val end
+  end
+  draw.DrawText(highest,"DermaDefault",300,10,color_white,TEXT_ALIGN_RIGHT)
+  draw.DrawText(lowest,"DermaDefault",300,200,color_white,TEXT_ALIGN_RIGHT)
+  draw.DrawText("RAM Usage","DermaDefault",280,93,color_white,TEXT_ALIGN_RIGHT)
 end)
 
 --[[
