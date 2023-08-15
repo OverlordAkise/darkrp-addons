@@ -53,8 +53,71 @@ if LUCTUS_INGAME_CONFIG then
     LuctusLogAddCategory("Config")
 end
 
+--Luctus Code
+if LUCTUS_SCP_CODES then
+    hook.Add("LuctusCodeChanged","luctus_log",function(ply,code)
+        LuctusLog("CodeSystem",ply:Nick().."("..ply:SteamID()..") changed the code to "..code)
+    end,-2)
+    LuctusLogAddCategory("CodeSystem")
+end
+
+--Luctus Disguise
+if LUCTUS_DISGUISE_ALLOWED_JOBS then
+    hook.Add("LuctusDisguiseDisguised","luctus_log",function(ply,jobname,model)
+        LuctusLog("Disguise",ply:Nick().."("..ply:SteamID()..") disguised to job "..jobname.." ("..model..")")
+    end,-2)
+    LuctusLogAddCategory("Disguise")
+end
+
+--Luctus Weaponcabinet
+if LUCTUS_WEAPONCABINET then
+    hook.Add("LuctusWeaponCabinetGet","luctus_log",function(ply,wep)
+        LuctusLog("Weaponcabinet",ply:Nick().."("..ply:SteamID()..") took out an "..wep)
+    end,-2)
+    hook.Add("LuctusWeaponCabinetReturn","luctus_log",function(ply,wep)
+        LuctusLog("Weaponcabinet",ply:Nick().."("..ply:SteamID()..") returned an "..wep)
+    end,-2)
+    
+    LuctusLogAddCategory("Weaponcabinet")
+end
+
+--Luctus SCP Management
+if LUCTUS_SCP_MGMT_COMMAND then
+    hook.Add("LuctusSGPMGMTEmergencyCall","luctus_log",function(ply,groupName)
+        LuctusLog("SCPMGMT",ply:Nick().."("..ply:SteamID()..") called for an "..groupName.."-Emergency.")
+    end,-2)
+    hook.Add("LuctusSGPMGMTEmergencyStop","luctus_log",function(ply,groupName)
+        LuctusLog("SCPMGMT",ply:Nick().."("..ply:SteamID()..") stopped an "..groupName.."-Emergency.")
+    end,-2)
+    hook.Add("LuctusSGPMGMTDemoteStart","luctus_log",function(adminPly,ply)
+        LuctusLog("SCPMGMT",adminPly:Nick().."("..adminPly:SteamID()..") demoted "..ply:Nick().."("..ply:SteamID()..") via MGMT.")
+    end,-2)
+    hook.Add("LuctusSGPMGMTDemoteStop","luctus_log",function(adminPly,ply)
+        LuctusLog("SCPMGMT",adminPly:Nick().."("..adminPly:SteamID()..") stopped the demoted of "..ply:Nick().."("..ply:SteamID()..") via MGMT.")
+    end,-2)
+    
+    LuctusLogAddCategory("SCPMGMT")
+end
+
+--Luctus Research, CRUD makes me proud
+if LUCTUS_RESEARCH_ALLOWED_JOBS then
+    hook.Add("LuctusResearchGetID","luctus_log",function(ply,rid)
+        LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") requested paper #"..rid)
+    end,-2)
+    hook.Add("LuctusResearchCreate","luctus_log",function(ply,summary)
+        LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") created paper: "..summary)
+    end,-2)
+    hook.Add("LuctusResearchEdit","luctus_log",function(ply,rid)
+        LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") edited paper #"..rid)
+    end,-2)
+    hook.Add("LuctusResearchDelete","luctus_log",function(ply,rid)
+        LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") deleted paper #"..rid)
+    end,-2)
+    LuctusLogAddCategory("Research")
+end
+
 --Luctus Breach
-if true then
+if LUCTUS_BREACH_DELAY then
     hook.Add("LuctusBreachOpen","luctus_log",function(ply)
         LuctusLog("Breach",ply:Nick().."("..ply:SteamID()..") just breached as "..team.GetName(ply:Team()))
     end,-2)
@@ -83,6 +146,12 @@ end
 if LUCTUS_WARN_BAN_CONFIG then
     hook.Add("LuctusWarnCreate","luctus_log",function(adminPly,ply,steamid,reason,message)
         LuctusLog("Warn",message)
+    end,-2)
+    hook.Add("LuctusWarnUpdate","luctus_log",function(ply,name,target,shouldRemove)
+        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has "..(shouldRemove and "removed" or "reactivated").." a warn of "..name.."("..target..")")
+    end,-2)
+    hook.Add("LuctusWarnDelete","luctus_log",function(ply,targetName,targetID)
+        LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has deleted a warn of "..targetName.."("..targetID..")")
     end,-2)
     hook.Add("LuctusWarnBanned","luctus_log",function(ply,warncount,minutes)
         LuctusLog("Warn",ply:SteamID().." was banned for "..minutes.." minutes with "..warncount.." warns")
