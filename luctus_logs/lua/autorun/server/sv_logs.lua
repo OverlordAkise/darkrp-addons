@@ -111,10 +111,10 @@ local function log_get(_filter,_page,_date_a,_date_z,_cat)
         end
         cat = " AND cat = "..sql.SQLStr(_cat)
     end
-    page = page * 24
+    page = page * 32
     local ret = {}
     if _date_z != "" then
-        ret = sql.Query("SELECT * FROM luctus_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY rowid DESC limit 24 offset "..page)
+        ret = sql.Query("SELECT * FROM luctus_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." AND datetime(date) > datetime("..sql.SQLStr(_date_a)..") AND datetime(date) < datetime("..sql.SQLStr(_date_z)..") ORDER BY rowid DESC limit 32 offset "..page)
     
         if(ret==false)then
             print("[luctus_logs] SQL ERROR DURING DATE FILTER!")
@@ -122,7 +122,7 @@ local function log_get(_filter,_page,_date_a,_date_z,_cat)
             return nil
         end
     else
-        ret = sql.Query("SELECT * FROM luctus_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." ORDER BY rowid DESC limit 24 offset "..page)
+        ret = sql.Query("SELECT * FROM luctus_log WHERE msg LIKE "..sql.SQLStr("%"..filter.."%")..cat.." ORDER BY rowid DESC limit 32 offset "..page)
     end
     return ret
 end
@@ -207,7 +207,7 @@ hook.Add("playerSetAFK","luctus_log_playerSetAFK",function(ply, nowAfkBool)
     end
 end,-2)
 hook.Add("playerWeaponsChecked","luctus_log_playerWeaponsChecked",function(checker, target, weapons)
-    if not IsValid(checker) or not IsValid(target) or not IsValid(weapons) then return end
+    if not IsValid(checker) or not IsValid(target) then return end
     log_push("WeaponChecker",checker:Nick().."("..checker:SteamID()..") weaponchecked "..target:Nick().."'s("..target:SteamID()..") weapons")
     --weapons = table
     --TODO
