@@ -61,6 +61,17 @@ if LUCTUS_SCP_CODES then
     LuctusLogAddCategory("CodeSystem")
 end
 
+--Luctus SNLR
+if LUCTUS_NLR_TIME then
+    hook.Add("LuctusNLRStart","luctus_log",function(ply,ntime,etime)
+        LuctusLog("NLR",ply:Nick().."("..ply:SteamID()..") NLR started ("..ntime.."s), ends at "..os.date("%H:%M:%S %d.%m.%Y" ,os.time()+ntime))
+    end,-2)
+    hook.Add("LuctusNLREnd","luctus_log",function(ply)
+        LuctusLog("NLR",ply:Nick().."("..ply:SteamID()..") NLR ended")
+    end,-2)
+    LuctusLogAddCategory("NLR")
+end
+
 --Luctus Disguise
 if LUCTUS_DISGUISE_ALLOWED_JOBS then
     hook.Add("LuctusDisguiseDisguised","luctus_log",function(ply,jobname,model)
