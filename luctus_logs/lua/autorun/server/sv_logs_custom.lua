@@ -56,7 +56,11 @@ end
 --Luctus Code
 if LUCTUS_SCP_CODES then
     hook.Add("LuctusCodeChanged","luctus_log",function(ply,code)
-        LuctusLog("CodeSystem",ply:Nick().."("..ply:SteamID()..") changed the code to "..code)
+        if IsValid(ply) then
+            LuctusLog("CodeSystem",ply:Nick().."("..ply:SteamID()..") changed the code to "..code)
+        else
+            LuctusLog("CodeSystem","Server changed the code to "..code)
+        end
     end,-2)
     LuctusLogAddCategory("CodeSystem")
 end
@@ -64,9 +68,11 @@ end
 --Luctus SNLR
 if LUCTUS_NLR_TIME then
     hook.Add("LuctusNLRStart","luctus_log",function(ply,ntime,etime)
+        if not IsValid(ply) then return end
         LuctusLog("NLR",ply:Nick().."("..ply:SteamID()..") NLR started ("..ntime.."s), ends at "..os.date("%H:%M:%S %d.%m.%Y" ,os.time()+ntime))
     end,-2)
     hook.Add("LuctusNLREnd","luctus_log",function(ply)
+        if not IsValid(ply) then return end
         LuctusLog("NLR",ply:Nick().."("..ply:SteamID()..") NLR ended")
     end,-2)
     LuctusLogAddCategory("NLR")
@@ -75,6 +81,7 @@ end
 --Luctus Disguise
 if LUCTUS_DISGUISE_ALLOWED_JOBS then
     hook.Add("LuctusDisguiseDisguised","luctus_log",function(ply,jobname,model)
+        if not IsValid(ply) then return end
         LuctusLog("Disguise",ply:Nick().."("..ply:SteamID()..") disguised to job "..jobname.." ("..model..")")
     end,-2)
     LuctusLogAddCategory("Disguise")
@@ -83,9 +90,11 @@ end
 --Luctus Weaponcabinet
 if LUCTUS_WEAPONCABINET then
     hook.Add("LuctusWeaponCabinetGet","luctus_log",function(ply,wep)
+        if not IsValid(ply) then return end
         LuctusLog("Weaponcabinet",ply:Nick().."("..ply:SteamID()..") took out an "..wep)
     end,-2)
     hook.Add("LuctusWeaponCabinetReturn","luctus_log",function(ply,wep)
+        if not IsValid(ply) then return end
         LuctusLog("Weaponcabinet",ply:Nick().."("..ply:SteamID()..") returned an "..wep)
     end,-2)
     
@@ -95,15 +104,19 @@ end
 --Luctus SCP Management
 if LUCTUS_SCP_MGMT_COMMAND then
     hook.Add("LuctusSGPMGMTEmergencyCall","luctus_log",function(ply,groupName)
+        if not IsValid(ply) then return end
         LuctusLog("SCPMGMT",ply:Nick().."("..ply:SteamID()..") called for an "..groupName.."-Emergency.")
     end,-2)
     hook.Add("LuctusSGPMGMTEmergencyStop","luctus_log",function(ply,groupName)
+        if not IsValid(ply) then return end
         LuctusLog("SCPMGMT",ply:Nick().."("..ply:SteamID()..") stopped an "..groupName.."-Emergency.")
     end,-2)
     hook.Add("LuctusSGPMGMTDemoteStart","luctus_log",function(adminPly,ply)
+        if not IsValid(ply) or not IsValid(adminPly) then return end
         LuctusLog("SCPMGMT",adminPly:Nick().."("..adminPly:SteamID()..") demoted "..ply:Nick().."("..ply:SteamID()..") via MGMT.")
     end,-2)
     hook.Add("LuctusSGPMGMTDemoteStop","luctus_log",function(adminPly,ply)
+        if not IsValid(ply) or not IsValid(adminPly) then return end
         LuctusLog("SCPMGMT",adminPly:Nick().."("..adminPly:SteamID()..") stopped the demoted of "..ply:Nick().."("..ply:SteamID()..") via MGMT.")
     end,-2)
     
@@ -113,15 +126,19 @@ end
 --Luctus Research, CRUD makes me proud
 if LUCTUS_RESEARCH_ALLOWED_JOBS then
     hook.Add("LuctusResearchGetID","luctus_log",function(ply,rid)
+        if not IsValid(ply) then return end
         LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") requested paper #"..rid)
     end,-2)
     hook.Add("LuctusResearchCreate","luctus_log",function(ply,summary)
+        if not IsValid(ply) then return end
         LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") created paper: "..summary)
     end,-2)
     hook.Add("LuctusResearchEdit","luctus_log",function(ply,rid)
+        if not IsValid(ply) then return end
         LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") edited paper #"..rid)
     end,-2)
     hook.Add("LuctusResearchDelete","luctus_log",function(ply,rid)
+        if not IsValid(ply) then return end
         LuctusLog("Research",ply:Nick().."("..ply:SteamID()..") deleted paper #"..rid)
     end,-2)
     LuctusLogAddCategory("Research")
@@ -130,12 +147,15 @@ end
 --Luctus Breach
 if LUCTUS_BREACH_DELAY then
     hook.Add("LuctusBreachOpen","luctus_log",function(ply)
+        if not IsValid(ply) then return end
         LuctusLog("Breach",ply:Nick().."("..ply:SteamID()..") just breached as "..team.GetName(ply:Team()))
     end,-2)
     hook.Add("LuctusBreachRequested","luctus_log",function(ply)
+        if not IsValid(ply) then return end
         LuctusLog("Breach",ply:Nick().."("..ply:SteamID()..") requested to breach as "..team.GetName(ply:Team()))
     end,-2)
     hook.Add("LuctusBreachApproved","luctus_log",function(adminPly,ply)
+        if not IsValid(ply) or not IsValid(adminPly) then return end
         LuctusLog("Breach",adminPly:Nick().."("..adminPly:SteamID()..") approved breach request of "..ply:Nick().."("..ply:SteamID()..") as "..team.GetName(ply:Team()))
     end,-2)
     LuctusLogAddCategory("Breach")
@@ -145,7 +165,7 @@ end
 if LUCTUS_WHITELIST_CHATCMD then
     hook.Add("LuctusWhitelistUpdate","luctus_log",function(adminPly,ply,steamid,jtext)
         local name = steamid
-        if ply then
+        if ply and IsValid(ply) then
             name = ply:Nick().."("..ply:SteamID()..")"
         end
         LuctusLog("Whitelist",adminPly:Nick().."("..adminPly:SteamID()..") changed the whitelist of "..name)
@@ -159,15 +179,19 @@ if LUCTUS_WARN_BAN_CONFIG then
         LuctusLog("Warn",message)
     end,-2)
     hook.Add("LuctusWarnUpdate","luctus_log",function(ply,name,target,shouldRemove)
+        if not IsValid(ply) then return end
         LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has "..(shouldRemove and "removed" or "reactivated").." a warn of "..name.."("..target..")")
     end,-2)
     hook.Add("LuctusWarnDelete","luctus_log",function(ply,targetName,targetID)
+        if not IsValid(ply) then return end
         LuctusLog("Warn",ply:Nick().."("..ply:SteamID()..") has deleted a warn of "..targetName.."("..targetID..")")
     end,-2)
     hook.Add("LuctusWarnBanned","luctus_log",function(ply,warncount,minutes)
+        if not IsValid(ply) then return end
         LuctusLog("Warn",ply:SteamID().." was banned for "..minutes.." minutes with "..warncount.." warns")
     end,-2)
     hook.Add("LuctusWarnKicked","luctus_log",function(ply,warncount)
+        if not IsValid(ply) then return end
         LuctusLog("Warn",ply:SteamID().." was kicked for having "..warncount.." warns")
     end,-2)
     LuctusLogAddCategory("Warn")
@@ -187,6 +211,7 @@ end
 --Luctus Radio
 if LUCTUS_RADIO_EXISTS then
     hook.Add("LuctusRadioFreqChanged","luctus_log",function(ply,newFreq)
+        if not IsValid(ply) then return end
         LuctusLog("Radio",ply:Nick().."("..ply:SteamID()..") set his radio freq to "..newFreq)
     end,-2)
     LuctusLogAddCategory("Radio")
@@ -214,6 +239,7 @@ end
 --AreaManager, create areas that players can enter
 if AreaManager then
     hook.Add("PlayerChangedArea","luctus_log",function(ply, newArea)
+        if not IsValid(ply) then return end
         LuctusLog("AreaManager", ply:Nick().."("..ply:SteamID()..") changed area to "..newArea.uniquename)
     end,-2)
     LuctusLogAddCategory("AreaManager")
@@ -221,10 +247,11 @@ end
 
 --Awarn3, hooks taken from the discord warning module of awarn3
 if AWarn then
-    hook.Add("AWarnPlayerWarned","luctus_log",function(pl, aID, reason)
+    hook.Add("AWarnPlayerWarned","luctus_log",function(ply, aID, reason)
+        if not IsValid(ply) then return end
         local admin = AWarn:GetPlayerFromID64(aID)
         if not admin then return end
-        LuctusLog("awarn3", pl:GetName().."("..pl:SteamID()..") got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
+        LuctusLog("awarn3", ply:GetName().."("..ply:SteamID()..") got warned by "..admin:GetName().."("..admin:SteamID()..") for reason: "..reason)
     end,-2)
 
     hook.Add("AWarnPlayerIDWarned","luctus_log",function(pID, aID, reason)
@@ -238,9 +265,11 @@ end
 --CH_Mining, for mining gold with a pickaxe
 if CH_Mining then
     hook.Add("CH_Mining_Hook_MineMinerals","luctus_log",function(ply, mineral, extracted_amount)
+        if not IsValid(ply) then return end
         --LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") mined "..extracted_amount.."x "..mineral)
     end,-2)
     hook.Add("CH_Mining_Hook_SellMinerals","luctus_log",function(ply, amount, mineral, mineral_worth)
+        if not IsValid(ply) then return end
         LuctusLog("chmining", ply:GetName().."("..ply:SteamID()..") sold "..amount.."x "..mineral.."("..mineral_worth.."$ each)")
     end,-2)
     LuctusLogAddCategory("chmining")
@@ -250,6 +279,7 @@ end
 --Military Rank System (MRS), similar to jobranksystem
 if MRS and MRS.Config then
     hook.Add("MRS.OnPromotion","luctus_log",function(targetPly, adminPly, rankGroup, newRankId, oldRankId, adminRankId, newRankName, oldRankName)
+        if not IsValid(targetPly) or not IsValid(adminPly) then return end
         local rType = "up"
         if newRankId < oldRankId then
             rType = "down"
