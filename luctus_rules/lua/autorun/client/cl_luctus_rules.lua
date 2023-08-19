@@ -1,3 +1,6 @@
+--Luctus Rules
+--Made by OverlordAkise
+
 function openLucidRulesWindow()
   --Main Window
   local frame = vgui.Create("DFrame")
@@ -64,3 +67,5 @@ hook.Add("InitPostEntity","lucid_openrulesonjoin",function()
 	end)
 end)
 concommand.Add("lucid_rules",openLucidRulesWindow)
+
+print("[luctus_rules] cl loaded")
