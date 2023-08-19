@@ -1,30 +1,26 @@
---Lucid Proplist
+--Luctus Proplist
 --Made by OverlordAkise
 --PropList created by OverlordAkise and Crumble
 
-lucidplist = {}
+local luctus_proplist = {}
 
 hook.Add("postLoadCustomDarkRPItems","chef_disableProps",function(ply, text, team)
-  print("[lucidprops] Initializing prop blacklist...")
-  local res = sql.Query("SELECT * FROM FPP_BLOCKEDMODELS1 WHERE model = 'models/lucidprops.mdl'")
-  if res == nil then
-    local stime = SysTime()
-    print("[lucidprops] Adding blockedmodels...")
-    sql.Begin()
-    for k,v in pairs(lucidplist) do
-      sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('"..v.."')")
+    local res = sql.Query("SELECT * FROM FPP_BLOCKEDMODELS1 WHERE model = 'models/lucidprops.mdl'")
+    if res == nil then
+        local stime = SysTime()
+        print("[luctus_proplist] Start adding blockedmodels...")
+        sql.Begin()
+        for k,v in pairs(lucidplist) do
+            sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('"..v.."')")
+        end
+        sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('models/lucidprops.mdl')")
+        sql.Commit()
+        print("[luctus_proplist] Finished adding blocked models, time taken: "..(SysTime()-stime).."s")
     end
-    sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('models/lucidprops.mdl')")
-    sql.Commit()
-    print("[lucidprops] Finished adding blockedmodels!")
-    print("[lucidprops] Time: "..(SysTime()-stime).."s")
-  else
-    print("[lucidprops] Blockedmodels already added!")
-  end
-  print("[lucidprops] Done with prop blacklisting!")
+    print("[luctus_proplist] proplist loaded")
 end)
 
-lucidplist = {
+luctus_proplist = {
 "models/combine_dropship_container.mdl",
 "models/airboat.mdl",
 "models/buggy.mdl",
@@ -1061,3 +1057,5 @@ lucidplist = {
 "models/props_foliage/tree_springers_01a.mdl",
 "models/props_lab/generator.mdl"
 }
+
+print("[luctus_proplist] sv loaded")
