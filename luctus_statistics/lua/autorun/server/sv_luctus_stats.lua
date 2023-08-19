@@ -23,7 +23,7 @@ hook.Add("postLoadCustomDarkRPItems","luctus_statistics_init_jobs",function()
             sql.Query("INSERT INTO luctus_stat_jobs VALUES("..sql.SQLStr(v.name)..",0,0)")
             print("[luctus_statistics] New job added: "..v.name)
         else
-            print("[luctus_statistics] Job already existed in db: "..v.name)
+            --print("[luctus_statistics] Job already existed in db: "..v.name)
         end
     end
 end)
