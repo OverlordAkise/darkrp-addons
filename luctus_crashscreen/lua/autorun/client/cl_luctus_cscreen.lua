@@ -1,5 +1,5 @@
---Lucid lcrashScreen
---by OverlordAkise
+--Luctus Crashscreen
+--By OverlordAkise
 
 lcrash_pingFrequency = 5 --seconds
 lcrash_timeout = 10 --seconds
