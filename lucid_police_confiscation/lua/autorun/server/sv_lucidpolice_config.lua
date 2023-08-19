@@ -1,24 +1,24 @@
---Lucid Confiscation Box
+--Luctus Confiscation Box
 --Made by OverlordAkise
---Made for McMange's PoliceRP
+--Made initially for McMange's PoliceRP
 
 --Should only sell for police?
-LUCID_CONFBOX_POLICEONLY = true
+LUCTUS_CONFBOX_POLICEONLY = true
 
---Should you be able to sell items from the f4 menu
-LUCID_CONFBOX_AUTO = true
---For what price should the items from the f4 menu sell?
-LUCID_CONFBOX_AUTOPRICE = 0.90 --%
-
---Custom prices for specific entities/weapons
-LUCID_CONFBOX_ITEMS = {
+--Sellable entities, has priority over F4Menu
+LUCTUS_CONFBOX_ITEMS = {
   ["weapon_ak472"] = 9999,
 }
 
+--Should you be able to sell items from the f4 menu
+LUCTUS_CONFBOX_F4ALLOWED = true
+
+--For what price should the items from the f4 menu sell?
+LUCTUS_CONFBOX_F4RATIO = 0.90 --%
 
 
 
 --Don't change this
-hook.Add("GravGunOnPickedUp", "lucid_confiscation", function(ply, ent)
-  ent.lucidConfiscationOwner = ply
+hook.Add("GravGunOnPickedUp", "luctus_police_confiscation", function(ply, ent)
+    ent.luctusConfiscationOwner = ply
 end)
