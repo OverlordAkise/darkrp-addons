@@ -2,15 +2,15 @@
 --Made by OverlordAkise
 --PropList created by OverlordAkise and Crumble
 
-local luctus_proplist = {}
+luctus_proplist = {}
 
-hook.Add("postLoadCustomDarkRPItems","chef_disableProps",function(ply, text, team)
+hook.Add("postLoadCustomDarkRPItems","luctus_disableProps",function(ply, text, team)
     local res = sql.Query("SELECT * FROM FPP_BLOCKEDMODELS1 WHERE model = 'models/lucidprops.mdl'")
     if res == nil then
         local stime = SysTime()
         print("[luctus_proplist] Start adding blockedmodels...")
         sql.Begin()
-        for k,v in pairs(lucidplist) do
+        for k,v in pairs(luctus_proplist) do
             sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('"..v.."')")
         end
         sql.Query("INSERT INTO FPP_BLOCKEDMODELS1(model) VALUES('models/lucidprops.mdl')")
