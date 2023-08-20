@@ -1,4 +1,4 @@
-local function removeOldTables()
+hook.Add("SpawnMenuOpen", "luctus_blockmenutabs", function()
     if LocalPlayer():IsAdmin() then return end
     for k, v in pairs( g_SpawnMenu.CreateMenu.Items ) do
         if (v.Tab:GetText() == language.GetPhrase("spawnmenu.category.npcs") or
@@ -12,5 +12,4 @@ local function removeOldTables()
             removeOldTables()
         end
     end
-end
-hook.Add("SpawnMenuOpen", "luctus_blockmenutabs", removeOldTables)
+end)

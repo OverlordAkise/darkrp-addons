@@ -2,6 +2,8 @@
 --Made by OverlordAkise
 
 hook.Add("PlayerInitialSpawn", "luctus_fix_thirdperson", function(ply)
-  RunConsoleCommand("simple_thirdperson_forcecollide",1)
-  hook.Remove("PlayerInitialSpawn", "luctus_fix_thirdperson")
+    RunConsoleCommand("simple_thirdperson_forcecollide",1)
+    hook.Remove("PlayerInitialSpawn", "luctus_fix_thirdperson")
 end)
+
+print("[luctus_thirdpersonfix] sv fix loaded")

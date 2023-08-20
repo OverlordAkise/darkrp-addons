@@ -5,7 +5,9 @@
 --This could be exploited by transfering weapons from police to hobo
 
 hook.Add("OnPlayerChangedTeam", "luctus_pocket_job_fix", function(ply, beforeNum, afterNum)
-  for k in pairs(ply.darkRPPocket or {}) do
-    ply:removePocketItem(k)
-  end
+    for k in pairs(ply.darkRPPocket or {}) do
+        ply:removePocketItem(k)
+    end
 end)
+
+print("[luctus_pocketfix] sv fix loaded")

@@ -8,28 +8,29 @@ local allowedRanks = {
     ["admin"] = true,
     ["operator"] = true,
     ["moderator"] = true,
-  }
+}
 
 hook.Add("PlayerInitialSpawn", "luctus_modweapons", function()
-  if not GM and not GAMEMODE then
-    print("[luctus_modweapons] Error: Couldn't load!")
-    return
-  end
-  print("[luctus_modweapons] Successfully loading!")
-  local function lcanSpawnWeapon(ply)
-      if allowedRanks[ply:GetUserGroup()] then
-        return true
-      end
-      DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("cant_spawn_weapons"))
-      return false
-  end
-  function GAMEMODE:PlayerSpawnSWEP(ply, class, info)
-      return lcanSpawnWeapon(ply) and self.Sandbox.PlayerSpawnSWEP(self, ply, class, info) and not ply:isArrested()
-  end
-  function GAMEMODE:PlayerGiveSWEP(ply, class, info)
-      return lcanSpawnWeapon(ply) and self.Sandbox.PlayerGiveSWEP(self, ply, class, info) and not ply:isArrested()
-  end
-  hook.Remove("PlayerInitialSpawn", "luctus_modweapons")
+    if not GM and not GAMEMODE then
+        print("[luctus_modweapons] Error: Couldn't load!")
+        return
+    end
+    
+    local function lcanSpawnWeapon(ply)
+        if allowedRanks[ply:GetUserGroup()] then
+            return true
+        end
+        DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("cant_spawn_weapons"))
+        return false
+    end
+    function GAMEMODE:PlayerSpawnSWEP(ply, class, info)
+        return lcanSpawnWeapon(ply) and self.Sandbox.PlayerSpawnSWEP(self, ply, class, info) and not ply:isArrested()
+    end
+    function GAMEMODE:PlayerGiveSWEP(ply, class, info)
+        return lcanSpawnWeapon(ply) and self.Sandbox.PlayerGiveSWEP(self, ply, class, info) and not ply:isArrested()
+    end
+    hook.Remove("PlayerInitialSpawn", "luctus_modweapons")
+    print("[luctus_modweapons] Successfully loaded!")
 end)
 
 print("[luctus_modweapons] Loaded hook!")
