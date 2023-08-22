@@ -569,6 +569,18 @@ if ulx then
     end)
 end
 
+if sam then
+    hook.Add("SAM.RanCommand", "luctus_log", function(ply, cmd_name, args, cmd, result)
+        local ply = "console"
+        local steamid = "console"
+        if IsValid(ply) then
+            ply = ply:Nick()
+            steamid = ply:SteamID()
+        end
+        log_push("sam",ply.."("..steamid..") used sam command '"..cmd_name.." "..table.concat(args," ").."'")
+    end)
+end
+
 
 hook.Add("PlayerSay","luctus_log_display",function(ply,text,team)
     if text == LuctusLogChatCommand and LuctusLogAllowedRanks[ply:GetUserGroup()] then
