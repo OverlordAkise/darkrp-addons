@@ -21,7 +21,7 @@ net.Receive("luctus_char_open", function()
 end)
 
 --Add it here to always be there no matter the config
---table.insert(LUCTUS_CHAR_UI_BUTTONS,{"Disconnect", function() RunConsoleCommand("disconnect") end})
+table.insert(LUCTUS_CHAR_UI_BUTTONS,{"Disconnect", function() RunConsoleCommand("disconnect") end})
 
 function LuctusCharMakeClickable(el,optCol,optWidth,optSmall)
     el.accentWidth = optSmall or 2
@@ -169,24 +169,54 @@ function LuctusCharNameInputMenuOpen(slot)
             surface.PlaySound("buttons/button16.wav")
             NameInputMenu:Close()
         else
-            surface.PlaySound( "buttons/combine_button1.wav" )
+            surface.PlaySound("buttons/combine_button1.wav")
         end
     end
 end
 
+if LUCTUS_CHAR_USE_BACKGROUND then
+    luctus_char_bg = luctus_char_bg or nil
+    luctus_char_bg_ext = string.GetExtensionFromFilename(LUCTUS_CHAR_BG_URL)
+    hook.Add("InitPostEntity","luctus_char_load_bg",function()
+        if file.Exists("luctus_char_bg."..luctus_char_bg_ext,"DATA") then
+            print("[luctus_char] Background already downloaded, loading...")
+            luctus_char_bg = Material("../data/luctus_char_bg."..luctus_char_bg_ext)
+            return
+        end
+        http.Fetch(LUCTUS_CHAR_BG_URL,function(body,size,headers,code)
+            if code != 200 then
+                ErrorNoHaltWithStack(body)
+                return
+            end
+            file.Write("luctus_char_bg."..luctus_char_bg_ext,body)
+            print("[luctus_char] Background downloaded and saved.")
+            luctus_char_bg = Material("../data/luctus_char_bg."..luctus_char_bg_ext)
+        end,
+        function(err)
+            ErrorNoHaltWithStack(err)
+        end)
+    end)
+end
 
 function LuctusCharOpenMenu(CharTable)
-    if IsValid(BgFrame)  then BgFrame:Close() end
-    BgFrame = vgui.Create( "DFrame" )
-    BgFrame:SetSize( ScrW() , ScrH() )
-    BgFrame:SetPos( 0 , 0 )
-    BgFrame:SetDraggable( false )
-    BgFrame:ShowCloseButton( false )
+    if IsValid(BgFrame) then BgFrame:Close() end
+    BgFrame = vgui.Create("DFrame")
+    BgFrame:SetSize(ScrW(), ScrH())
+    BgFrame:SetPos(0,0)
+    BgFrame:SetTitle("")
+    BgFrame:SetDraggable(false)
+    BgFrame:ShowCloseButton(false)
     BgFrame:MakePopup()
     BgFrame.StartTime = SysTime()
     function BgFrame:Paint(w, h)
-        Derma_DrawBackgroundBlur(self,self.StartTime)
-        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 175))
+        if LUCTUS_CHAR_USE_BACKGROUND then
+            surface.SetMaterial(luctus_char_bg)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(0, 0, w, h)
+        else
+            Derma_DrawBackgroundBlur(self,self.StartTime)
+            draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 175))
+        end
     end
     function BgFrame:OnKeyCodePressed(key) 
         if key == 93 then --F2
@@ -195,10 +225,10 @@ function LuctusCharOpenMenu(CharTable)
     end
 
     local TopPanel = vgui.Create("DPanel" , BgFrame)
-    TopPanel:SetPos( 0 , 0 )
-    TopPanel:SetSize( ScrW(), 60)
-    function TopPanel:Paint(w , h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 200))
+    TopPanel:SetPos(0, 0)
+    TopPanel:SetSize(ScrW(), 60)
+    function TopPanel:Paint(w, h)
+        --draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 200))
     end
 
 
@@ -215,45 +245,43 @@ function LuctusCharOpenMenu(CharTable)
     local firstButtonPadding = (ScrW()/2)-(#LUCTUS_CHAR_UI_BUTTONS*75)
   
     for k,v in pairs(LUCTUS_CHAR_UI_BUTTONS) do
-        local CustomButton = vgui.Create( "DButton" , TopPanel ) -- 1st Custom Button
+        local CustomButton = vgui.Create("DButton", TopPanel) -- 1st Custom Button
         CustomButton:SetPos(firstButtonPadding+((k-1)*5)+((k-1)*150), 0)
-        CustomButton:SetSize( 150 , 60 )
-        CustomButton:SetText( v[1] )
-        CustomButton:SetFont( "Trebuchet24" )
+        CustomButton:SetSize(150, 60)
+        CustomButton:SetText(v[1])
+        CustomButton:SetFont("Trebuchet24")
         LuctusCharMakeClickable(CustomButton)
         function CustomButton.DoClick()
             surface.PlaySound(ClickSound)
             if type(v[2]) == "string" then
-                gui.OpenURL( v[2] )
+                gui.OpenURL(v[2])
             else
                 v[2]()
             end
         end
     end
+    local totalPerc = (LUCTUS_CHAR_SLOTS*5)+LUCTUS_CHAR_SLOTS+1
+    local oneUnitWidth = ScrW()/totalPerc
     
-    --TODO: Calculate this dynamically
-    local PanelPosi = {
-        {0.052, 0.277},
-        {0.364, 0.277},
-        {0.677, 0.277}
-    }
-    
-    for k,v in pairs(PanelPosi) do
-        local px = ScrW() * 0.260
-        local py = ScrH() * 0.555
-        local character = CharTable[k]
+    local lastPos = 0
+    for i=1,LUCTUS_CHAR_SLOTS do
+        local px = oneUnitWidth*5
+        local py = ScrH()*0.6
+        local character = CharTable[i]
         if not character then character = {} end
+        PrintTable(character)
 
-        local CharPanel = vgui.Create("DPanel" , BgFrame)
-        CharPanel:SetPos(ScrW() * v[1] , ScrH()* v[2])
-        CharPanel:SetSize( px , py )
-        CharPanel.Paint = function( self , w , h )
-            draw.RoundedBox( 0 , 0 , 0 , w , h , Color( 0 , 0 , 0 , 175 ) )
-            draw.RoundedBox(0,0,0,w,h*0.2,Color(0,0,0,190))
+        local charPanel = vgui.Create("DPanel", BgFrame)
+        charPanel:SetPos(lastPos+oneUnitWidth, ScrH()*0.25)
+        charPanel:SetSize(px,py)
+        function charPanel:Paint(w,h)
+            draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 175))
+            --draw.RoundedBox(0,0,0,w,80,Color(30,30,30,230))
         end
-        local CharModelPan = vgui.Create( "DModelPanel" , CharPanel )
-        CharModelPan:SetPos( 0 , py*0.15 )
-        CharModelPan:SetSize( px , py*0.7 )
+        local CharModelPan = vgui.Create("DModelPanel", charPanel)
+        CharModelPan:Dock(FILL)
+        
+        lastPos = lastPos + oneUnitWidth + oneUnitWidth*5
 
         local jobcmd = character.job
         local jobmodel = ""
@@ -272,55 +300,54 @@ function LuctusCharOpenMenu(CharTable)
         end
 
 
-        local CharName1Label = vgui.Create( "DLabel" , CharPanel )
-        CharName1Label:SetPos( 0 , py*0.03 )
-        CharName1Label:SetContentAlignment(5)
-        CharName1Label:SetFont( "DermaLarge" )
+        local nameLabel = vgui.Create("DLabel", charPanel)
+        nameLabel:Dock(TOP)
+        nameLabel:SetHeight(50)
+        nameLabel:SetContentAlignment(5)
+        nameLabel:SetFont("DermaLarge")
+        nameLabel:SetText(character.name or "Empty")
 
-        CharName1Label:SetSize( CharPanel:GetWide() , ScrH() * 0.046 )
-        CharName1Label:SetText( character.name or "Empty" )
+        local jobLabel = vgui.Create("DLabel", charPanel)
+        jobLabel:Dock(TOP)
+        jobLabel:SetHeight(30)
+        jobLabel:SetContentAlignment(5)
+        jobLabel:SetFont("Trebuchet24")
+        jobLabel:SetText(character.job or "No Job")
 
-        local Char1JobLabel = vgui.Create( "DLabel" , CharPanel ) -- 1st Character Name
-        Char1JobLabel:SetPos( 0 , py*0.1 )
-        Char1JobLabel:SetContentAlignment(5)
-        Char1JobLabel:SetFont( "Trebuchet24" )
-        Char1JobLabel:SetSize( px , 30 )
-        Char1JobLabel:SetText(team.GetName(tonumber(character.job)) or "")
-
-        local CharPlay = vgui.Create( "DButton" , CharPanel )
-        CharPlay:SetPos( 0 , CharPanel:GetTall() - ScrH() * 0.074)
-        CharPlay:SetSize( ScrW() * 0.260 , ScrH() * 0.074 )
-        CharPlay:SetFont( "Trebuchet24" )
-        LuctusCharMakeClickable(CharPlay,Color(0,250,0),5,1)
+        local playButton = vgui.Create("DButton", charPanel)
+        playButton:Dock(BOTTOM)
+        playButton:SetHeight(70)
+        playButton:SetFont("Trebuchet24")
+        LuctusCharMakeClickable(playButton,Color(0,250,0),5,1)
         if character.playing then
-            CharPlay:SetText( "Currently playing!" )
+            playButton:SetText("Currently playing!")
         elseif not character.name then
-            CharPlay:SetText( "Create new character!" )
+            playButton:SetText("Create new character!")
         elseif character.name then
-            CharPlay:SetText( "Play this character!" )
+            playButton:SetText("Play this character!")
         end
-        function CharPlay.DoClick()
+        function playButton:DoClick()
             surface.PlaySound(ClickSound)
             if not character.name then
-                LuctusCharNameInputMenuOpen(k)
-            elseif(character.name and not character.playing) then
+                LuctusCharNameInputMenuOpen(i)
+            elseif character.name and not character.playing then
                 net.Start("luctus_char_play")
-                net.WriteUInt(k, 8)
+                net.WriteUInt(i, 8)
                 net.SendToServer()
                 BgFrame:Close()
             end
         end
         
         if character.name then
-            local CharDeleteButton = vgui.Create( "DButton" , CharPanel )
-            CharDeleteButton:SetPos( CharPanel:GetWide() - 33, 0)
-            CharDeleteButton:SetSize( 30 , 30 )
-            CharDeleteButton:SetText("delete")
-            function CharDeleteButton.DoClick()
+            local deleteButton = vgui.Create("DButton", charPanel)
+            deleteButton:SetPos(charPanel:GetWide() - 33, 0)
+            deleteButton:SetSize(30, 30)
+            deleteButton:SetText("delete")
+            function deleteButton:DoClick()
                 surface.PlaySound(ClickSound)
-                LuctusCharDeleteMenuOpen(k,character.name)
+                LuctusCharDeleteMenuOpen(i,character.name)
             end
-            LuctusCharMakeClickable(CharDeleteButton,Color(255,0,0),5,2)
+            LuctusCharMakeClickable(deleteButton,Color(255,0,0),5,2)
         end
         
     end

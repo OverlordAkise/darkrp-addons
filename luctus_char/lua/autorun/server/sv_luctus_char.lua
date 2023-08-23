@@ -102,7 +102,7 @@ net.Receive("luctus_char_play", function(len,ply)
         return
     end
     local Slot = net.ReadUInt(8)
-    Slot = math.Clamp(Slot,1,3)
+    Slot = math.Clamp(Slot,1,LUCTUS_CHAR_SLOTS)
     local ProfileTable = sql.QueryRow("SELECT * FROM luctus_char WHERE steamid = "..sql.SQLStr(ply:SteamID()).." and slot = "..Slot)
     if ProfileTable == false then
         error(sql.LastError())
@@ -126,7 +126,7 @@ end)
 net.Receive("luctus_char_create", function(len,ply)
     local SlotNumber = net.ReadUInt(8)
     local name = net.ReadString()
-    SlotNumber = math.Clamp(SlotNumber,1,3)
+    SlotNumber = math.Clamp(SlotNumber,1,LUCTUS_CHAR_SLOTS)
 
     local CharTable = sql.Query("SELECT * FROM luctus_char WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND slot = "..SlotNumber)
     if CharTable then return end
@@ -150,7 +150,7 @@ end)
 
 net.Receive("luctus_char_delete", function(len,ply)
     local DeletedSlot = net.ReadUInt(8)
-    DeletedSlot = math.Clamp(DeletedSlot,1,3)
+    DeletedSlot = math.Clamp(DeletedSlot,1,LUCTUS_CHAR_SLOTS)
     
     if DeletedSlot == ply.charCurSlot then
         DarkRP.notify(ply,1,4,"Can't delete a character that you are currently playing!")
@@ -207,7 +207,7 @@ net.Receive("luctus_char_admin_update", function(len, ply)
     local job = net.ReadString()
     local slot = net.ReadUInt(8)
 
-    slot = math.Clamp(slot,1,3)
+    slot = math.Clamp(slot,1,LUCTUS_CHAR_SLOTS)
     money = tonumber(money)
   
     local ChangedPlayer = player.GetBySteamID(steamid)
@@ -239,7 +239,7 @@ net.Receive("luctus_char_admin_delete", function(len,ply)
     end
     local SlotID = net.ReadUInt(8)
     local steamid = net.ReadString()
-    SlotID = math.Clamp(SlotID,1,3)
+    SlotID = math.Clamp(SlotID,1,LUCTUS_CHAR_SLOTS)
     local DeletedPlayer = player.GetBySteamID(steamid)
     if(IsValid(DeletedPlayer) and DeletedPlayer.charCurSlot == SlotID) then
         DarkRP.notify(ply,0,5,"Can't delete a character that is currently being played!")

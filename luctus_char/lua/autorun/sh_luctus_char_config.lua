@@ -4,6 +4,9 @@
 --Message shown in the middle of the job menu
 LUCTUS_CHAR_WELCOMEMSG = "Welcome to MyServer!" --GetHostName()
 
+--How many character slots can a player have?
+LUCTUS_CHAR_SLOTS = 3
+
 --Buttons that should be displayed at the top, left = name, right = url link or lua function
 --The disconnect button is added automatically on the right
 LUCTUS_CHAR_UI_BUTTONS = {
@@ -11,6 +14,11 @@ LUCTUS_CHAR_UI_BUTTONS = {
     {"Workshop", "https://google.com"},
     {"Discord", "https://google.com"},
 }
+
+--Should we use a background image or blur the character selection screen?
+LUCTUS_CHAR_USE_BACKGROUND = false
+--If true, what image URL should be used as background?
+LUCTUS_CHAR_BG_URL = "https://luctus.at/images/istina_banner.png"
 
 --Usergroups who may edit characters, kick from jobs, etc.
 LUCTUS_CHAR_ADMINS = {
