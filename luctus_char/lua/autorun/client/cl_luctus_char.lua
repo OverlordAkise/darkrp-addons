@@ -269,7 +269,6 @@ function LuctusCharOpenMenu(CharTable)
         local py = ScrH()*0.6
         local character = CharTable[i]
         if not character then character = {} end
-        PrintTable(character)
 
         local charPanel = vgui.Create("DPanel", BgFrame)
         charPanel:SetPos(lastPos+oneUnitWidth, ScrH()*0.25)
