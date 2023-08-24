@@ -87,7 +87,22 @@ hook.Add("LuctusLeaderboardAdd","utime",function()
         if res and res[1] then
             local tab = {}
             for k,v in pairs(res) do
-                table.insert(tab,{v.rpname,v.totaltime})
+                table.insert(tab,{v.rpname,string.NiceTime(tonumber(v.totaltime)).."/"..v.totaltime})
+            end
+            return tab
+        end
+        return {}
+    end)
+end)
+
+hook.Add("LuctusLeaderboardAdd","luctus_levelsystem",function()
+    if not LuctusLevelLoad then return end
+    LuctusLeaderboardAdd("Highest level",function()
+        local res = sql.Query("SELECT rpname,lvl FROM luctus_levelsystem INNER JOIN darkrp_player ON luctus_levelsystem.steamid64 = darkrp_player.uid ORDER BY lvl DESC LIMIT 20;")
+        if res and res[1] then
+            local tab = {}
+            for k,v in pairs(res) do
+                table.insert(tab,{v.rpname,v.lvl})
             end
             return tab
         end

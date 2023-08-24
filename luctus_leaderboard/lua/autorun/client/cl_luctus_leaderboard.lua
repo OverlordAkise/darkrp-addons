@@ -13,20 +13,28 @@ local color_white = Color(255,255,255)
 local color_black = Color(32, 34, 37)
 
 local function LuctusPrettifyScrollbar(el)
-  function el:Paint() return end
-	function el.btnGrip:Paint(w, h)
+    function el:Paint() return end
+    function el.btnGrip:Paint(w, h)
         draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
 
-	end
-	function el.btnUp:Paint(w, h)
-		draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
-	end
-	function el.btnDown:Paint(w, h)
-		draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
-	end
+    end
+    function el.btnUp:Paint(w, h)
+        draw.RoundedBox(0,0,0,w,h,accent_col)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+    end
+    function el.btnDown:Paint(w, h)
+        draw.RoundedBox(0,0,0,w,h,accent_col)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+    end
+end
+
+function DrawHighlightBorder(el,w,h,col)
+    surface.SetDrawColor(col)
+    surface.DrawLine(0,0,w,0)
+    surface.DrawLine(w-1,0,w-1,h-1)
+    surface.DrawLine(w-1,h-1,0,h-1)
+    surface.DrawLine(0,h-1,0,0)
 end
 
 function LuctusLeaderboardMenu(tab)
@@ -103,7 +111,7 @@ function LuctusLeaderboardMenu(tab)
                 draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
             end
             if mainPanel.board == self.board then
-                DrawHighlightBorder(self,w,h)
+                DrawHighlightBorder(self,w,h,accent_col)
             end
             draw.DrawText(self.board, "Trebuchet18", 10, 7, color_white)
         end
@@ -125,7 +133,7 @@ net.Receive("luctus_leaderboard_data",function()
     if not IsValid(leaderboardList) then return end
     leaderboardList:Clear()
     for k,v in pairs(tab) do
-        leaderboardList:AddLine(v[1],tonumber(v[2]))
+        leaderboardList:AddLine(v[1],v[2])
     end
 end)
 
