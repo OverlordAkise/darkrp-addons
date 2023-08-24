@@ -1,27 +1,22 @@
 --Luctus Mining System
 --Made by OverlordAkise
 
-luctus = luctus or {}
-luctus.mine = {}
-
---CONFIG START
-
 --Should crafted things be put into your DarkRP "pocket"
-LUCTUS_MINE_USE_POCKET = false
+LUCTUS_MINER_USE_POCKET = false
 
 -- Which job can get a pickaxe from the NPC
-LUCTUS_MINE_JOBNAME = "Miner"
+LUCTUS_MINER_JOBNAME = "Miner"
 --Which weapon should be able to "mine" rocks?
-LUCTUS_MINE_PICKAXE_CLASSNAME = "weapon_crowbar"
+LUCTUS_MINER_PICKAXE_CLASSNAME = "weapon_crowbar"
 --How long a rock takes to respawn, in seconds
-LUCTUS_MINE_RESPAWNTIME = 120
---Every hit, how much percent to get ore
-LUCTUS_MINE_OREPERCENT = 33
---HP that a rock has
-LUCTUS_MINE_ROCK_HP = 200
+LUCTUS_MINER_RESPAWNTIME = 120
+--Percentage chance of getting ore on hit
+LUCTUS_MINER_OREPERCENT = 33
+--HP of the rock
+LUCTUS_MINER_ROCK_HP = 200
 
 --Ore config
-luctus.mine.ores = {
+LUCTUS_MINER_ORES = {
     {Name = "Coal", PriceMin = 25, PriceMax = 75, Color=Color(255,255,255,255), DropPercent = 50},
     {Name = "Bronze", PriceMin = 100, PriceMax = 200, Color=Color(139,69,19,255), DropPercent = 30},
     {Name = "Silver", PriceMin = 200, PriceMax = 300, Color=Color(192,192,192,255), DropPercent = 20},
@@ -31,7 +26,7 @@ luctus.mine.ores = {
 }
 
 --Crafting config
-luctus.mine.craftables = {
+LUCTUS_MINER_CRAFTABLES = {
     ["m9k_knife"] = {Coal=50, Bronze=50,Silver=5},
     ["guthscp_keycard_lvl_1"] = {Coal=10, Silver=20},
     ["guthscp_keycard_lvl_2"] = {Coal=10, Gold=20},
@@ -39,4 +34,4 @@ luctus.mine.craftables = {
     ["guthscp_keycard_lvl_4"] = {Coal=10, Ruby=10},
 } 
 
-print("[luctus_mine] SH config file loaded!")
+print("[luctus_miner] config loaded")

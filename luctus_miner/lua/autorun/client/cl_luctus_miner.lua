@@ -7,21 +7,51 @@ local lightDark = Color(40,40,40)
 local dark = Color(10,10,10)
 local buttonTextColor = Color(200,200,200)
 
-function luctusMineHUD()
-    surface.SetDrawColor(Color(0,0,0,200))
-    surface.DrawRect(5, ScrH()/2, 145, (#luctus.mine.ores+1) * 24)
+LUCTUS_MINER_SHOW_HUD = false
+LUCTUS_MINER_MY_ORES = LUCTUS_MINER_MY_ORES or {}
+
+hook.Add("InitPostEntity","luctus_miner_get",function()
+    net.Start("luctus_miner_sync_all")
+    net.SendToServer()
+end)
+
+net.Receive("luctus_miner_sync_all",function()
+    LUCTUS_MINER_MY_ORES = net.ReadTable()
+    print("[luctus_miner] Synced ore!")
+end)
+
+net.Receive("luctus_miner_sync",function()
+    local name = net.ReadString()
+    local newValue = net.ReadUInt(16)
+    notification.AddLegacy((newValue-LUCTUS_MINER_MY_ORES[name]).." "..name, NOTIFY_GENERIC, 3)
+    surface.PlaySound("buttons/lightswitch2.wav")
+    LUCTUS_MINER_MY_ORES[name] = newValue
+end)
+
+hook.Add("OnContextMenuOpen","luctus_miner_hud_on",function()
+    LUCTUS_MINER_SHOW_HUD = true
+end)
+
+hook.Add("OnContextMenuClose","luctus_miner_hud_off",function()
+    LUCTUS_MINER_SHOW_HUD = false
+end)
+
+hook.Add("HUDPaint","luctus_miner_hud",function()
+    if not LUCTUS_MINER_SHOW_HUD then return end
+    surface.SetDrawColor(0,0,0,200)
+    surface.DrawRect(5, ScrH()/2, 145, (#LUCTUS_MINER_ORES+1) * 24)
     
     surface.SetFont("Trebuchet24")
     surface.SetTextPos(10,ScrH()/2)
-    surface.SetDrawColor(Color(255,255,255,255))
+    surface.SetDrawColor(255,255,255,255)
     surface.DrawText("-Ore Inventory:")
     
-    for k,v in pairs(luctus.mine.ores) do
-        surface.SetTextColor(v["Color"])
+    for k,v in pairs(LUCTUS_MINER_ORES) do
+        surface.SetTextColor(v.Color)
         surface.SetTextPos(10,ScrH()/2+k*24)
-        surface.DrawText(v.Name..": "..LocalPlayer():GetNWInt("ore_"..v.Name,0))
+        surface.DrawText(v.Name..": "..LUCTUS_MINER_MY_ORES[v.Name])
     end
-end
+end)
 
 function LuctusMinerGetName(ent)
     if not ent or ent == "" then return "<ERR>" end
@@ -32,18 +62,6 @@ function LuctusMinerGetName(ent)
     return ent
 end
 
-
-hook.Add("OnContextMenuOpen","luctus_mine_hud_on",function()
-    hook.Add("HUDPaint","luctus_mine_hud",luctusMineHUD)
-end)
-
-hook.Add("OnContextMenuClose","luctus_mine_hud_off",function()
-    hook.Remove("HUDPaint","luctus_mine_hud")
-end)
-  
-net.Receive("luctus_mine_npc",function()
-    luctusNPCMenu()
-end)
 
 local function CreateCloseButton(parent)
     local parent_x, parent_y = parent:GetSize()
@@ -92,15 +110,15 @@ local function CreateFrame(name)
     return frame
 end
 
-net.Receive("luctus_mine_craft",function()
+net.Receive("luctus_miner_craft",function()
     if IsValid(MineCraftPanel) then return end
     local npc = net.ReadEntity()
-    MineCraftPanel = CreateFrame("Luctus Miner | Crafting Table")
+    MineCraftPanel = CreateFrame("Miner | Crafting Table")
 
     local DScrollPanel = vgui.Create( "DScrollPanel", MineCraftPanel )
     DScrollPanel:Dock(FILL)
 
-    for k,v in pairs(luctus.mine.craftables) do
+    for k,v in pairs(LUCTUS_MINER_CRAFTABLES) do
         local row = DScrollPanel:Add("DPanel")
         row:Dock(TOP)
         row:SetPaintBackground(false)
@@ -131,7 +149,7 @@ net.Receive("luctus_mine_craft",function()
         button:SetColor(buttonTextColor)
         button:DockMargin(10,0,20,0)
         button.DoClick = function()
-            net.Start("luctus_mine_craft")
+            net.Start("luctus_miner_craft")
                 net.WriteString(k)
                 net.WriteEntity(npc)
             net.SendToServer()
@@ -141,15 +159,16 @@ net.Receive("luctus_mine_craft",function()
 end)
 
 
-function luctusNPCMenu()
+net.Receive("luctus_miner_npc",function()
     if IsValid(MineNPCPanel) then return end
     local npc = net.ReadEntity()
-    MineNPCPanel = CreateFrame("Luctus Miner | NPC to sell ore")
+    local sellTable = net.ReadTable()
+    MineNPCPanel = CreateFrame("Miner | Ore-Seller")
 
-    local DScrollPanel = vgui.Create( "DScrollPanel", MineNPCPanel )
+    local DScrollPanel = vgui.Create("DScrollPanel", MineNPCPanel)
     DScrollPanel:Dock(FILL)
 
-    for k,v in pairs(luctus.mine.ores) do
+    for k,v in pairs(LUCTUS_MINER_ORES) do
         local row = DScrollPanel:Add("DPanel")
         row:SetPos(0,(k-1)*25)
         row:SetSize(700,25)
@@ -157,15 +176,15 @@ function luctusNPCMenu()
 
         local oreName = vgui.Create("DLabel",row)
         oreName:SetPos(20,3)
-        oreName:SetColor(v["Color"])
-        oreName:SetText(v["Name"])
+        oreName:SetColor(v.Color)
+        oreName:SetText(v.Name)
 
         local oreSlider = vgui.Create("DNumSlider",row)
         oreSlider:SetPos(120,0)
-        oreSlider:SetSize(400,25)	
-        oreSlider:SetText(v["Name"])
+        oreSlider:SetSize(400,25)
+        oreSlider:SetText(v.Name)
         oreSlider:SetMin(0)
-        oreSlider:SetMax(LocalPlayer():GetNWInt("ore_"..v["Name"],0))
+        oreSlider:SetMax(LUCTUS_MINER_MY_ORES[v.Name] or 0)
         oreSlider:SetDecimals()
         oreSlider:SetDark(false)
         oreSlider:GetTextArea():SetDrawLanguageID(false)
@@ -174,7 +193,7 @@ function luctusNPCMenu()
 
         local sellValueLabel = vgui.Create("DLabel",row)
         sellValueLabel:SetPos(530,3)
-        sellValueLabel:SetText("x "..npc:GetNWInt("sOre_"..v["Name"],0).."$")  
+        sellValueLabel:SetText("x "..(sellTable[v.Name] or "<ERR>").."$")  
 
         local sellButton = vgui.Create("DButton",row)
         sellButton:SetPos(600,2)
@@ -185,13 +204,13 @@ function luctusNPCMenu()
             local text = oreSlider:GetValue()
             local num = 0
             if text == "" then
-                num = LocalPlayer():GetNWInt("ore_"..v["Name"],0)
+                num = LUCTUS_MINER_MY_ORES[v.Name]
             else
-                num = tonumber(text)
+                num = math.Round(tonumber(text))
             end
-            net.Start("luctus_mine_npc")
+            net.Start("luctus_miner_npc")
                 net.WriteInt(num,16)
-                net.WriteString(v["Name"])
+                net.WriteString(v.Name)
                 net.WriteEntity(npc)
             net.SendToServer()
         end
@@ -201,11 +220,11 @@ function luctusNPCMenu()
     pickaxeButton:Dock(BOTTOM)
     pickaxeButton:SetText("Give me a pickaxe!")
     pickaxeButton.DoClick = function()
-        net.Start("luctus_get_pickaxe")
+        net.Start("luctus_miner_get_pickaxe")
         net.SendToServer()
         MineNPCPanel:Close()
     end
     BeautifyButton(pickaxeButton)
-end
+end)
 
-print("[luctus_mine] CL file loaded!")
+print("[luctus_miner] cl loaded")
