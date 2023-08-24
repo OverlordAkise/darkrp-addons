@@ -26,4 +26,4 @@ hook.Add("postLoadCustomDarkRPItems","luctus_levelsystem_register",function()
     DarkRP.registerDarkRPVar("level", net.WriteDouble, net.ReadDouble)
 end)
 
-print("[luctus_levelsystem] SH file loaded!")
+print("[luctus_levelsystem] sh loaded")

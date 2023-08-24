@@ -9,8 +9,9 @@ LUCTUS_XP_KILL = 5 --how many XP per player kill
 
 -- CONFIG END
 
-hook.Add("PostGamemodeLoaded","luctus_scpnames",function()
-    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_levelsystem( steamid TEXT, exp INT, lvl INT )")
+hook.Add("PostGamemodeLoaded","luctus_levelsystem",function()
+    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_levelsystem( steamid TEXT, steamid64 TEXT, exp INT, lvl INT )")
+    --SteamID64 to link it to a playername with darkrp_player table
     if res == false then
         error(sql.LastError())
     end
@@ -27,31 +28,31 @@ function plymeta:setXP(xp)
 end
 
 function plymeta:addXP(amount)
-	local curXP = self:getXP() + amount
+    local curXP = self:getXP() + amount
     local curLevel = self:getLevel()
     DarkRP.notify(self,0,5,"You received "..amount.." XP!")
-	while curXP >= levelReqExp(curLevel)  do
-		curXP = curXP - levelReqExp(curLevel)
-		curLevel = curLevel + 1
+    while curXP >= levelReqExp(curLevel)  do
+        curXP = curXP - levelReqExp(curLevel)
+        curLevel = curLevel + 1
         DarkRP.notify(self,0,5,"You reached Lv."..curLevel.."!")
-	end
+    end
     self:setXP(curXP)
     self:setLevel(curLevel)
-    Luctus_savexp(self)
+    LuctusLevelSave(self)
 end
 
 plymeta.AddXP = plymeta.addXP
 
 --internal functions from now on
 
-function Luctus_savexp(ply)
+function LuctusLevelSave(ply)
     local res = sql.Query("UPDATE luctus_levelsystem SET exp = "..ply:getXP()..", lvl = "..ply:getLevel().." WHERE steamid = "..sql.SQLStr(ply:SteamID()))
     if res == false then
         ErrorNoHaltWithStack(sql.LastError())
     end
 end
 
-function Luctus_loadxp(ply)
+function LuctusLevelLoad(ply)
     ply:setLevel(1)
     ply:setXP(0)
     local res = sql.QueryRow("SELECT * FROM luctus_levelsystem WHERE steamid = "..sql.SQLStr(ply:SteamID()))
@@ -63,7 +64,7 @@ function Luctus_loadxp(ply)
         ply:setXP(tonumber(res.exp))
         print("[luctus_levelsystem] User successfully loaded!")
     else
-        local res = sql.Query("INSERT INTO luctus_levelsystem(steamid,exp,lvl) VALUES("..sql.SQLStr(ply:SteamID())..",0,1)")
+        local res = sql.Query("INSERT INTO luctus_levelsystem(steamid,steamid64,exp,lvl) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(ply:SteamID64())..",0,1)")
         if res == false then
             error(sql.LastError())
         end
@@ -71,31 +72,30 @@ function Luctus_loadxp(ply)
     end
 end
 
-hook.Add("PlayerDisconnected", "LVL_SaveOnDisconnect", function(ply)
-    Luctus_savexp(ply)
+hook.Add("PlayerDisconnected", "luctus_levelsystem", function(ply)
+    LuctusLevelSave(ply)
 end)
  
-hook.Add("ShutDown", "LVL_SaveOnShutdown", function()
+hook.Add("ShutDown", "luctus_levelsystem", function()
     for k,v in pairs(player.GetAll()) do
-        Luctus_savexp(v)
+        LuctusLevelSave(v)
     end
 end)
 
-hook.Add("PlayerInitialSpawn","LVL_InitialLevel",function(ply)
-    Luctus_loadxp(ply)
+hook.Add("PlayerInitialSpawn","luctus_levelsystem",function(ply)
+    LuctusLevelLoad(ply)
 end)
 
-hook.Add("PlayerDeath","LVL_SetLevel",function(ply,inflictor,attacker)
+hook.Add("PlayerDeath","luctus_levelsystem",function(ply,inflictor,attacker)
     if attacker:IsPlayer() && IsValid(attacker) then
         attacker:addXP(LUCTUS_XP_KILL)
     end
 end)
 
-timer.Create("luctus_lvl_timer",LUCTUS_XP_TIMER,0,function()
+timer.Create("luctus_levelsystem",LUCTUS_XP_TIMER,0,function()
     for k,v in pairs(player.GetAll()) do
         v:addXP(LUCTUS_XP_TIMER_XP)
     end
 end)
 
-
-print("[luctus_levelsystem] SV file loaded!")
+print("[luctus_levelsystem] sv loaded")

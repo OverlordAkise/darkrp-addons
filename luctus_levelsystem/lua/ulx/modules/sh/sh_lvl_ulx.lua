@@ -7,7 +7,7 @@ local CATEGORY_NAME = "LevelSystem"
 function ulx.setlevel( calling_ply, target_ply, amount )
     target_ply:setLevel(math.floor(amount))
     target_ply:setXP(0)
-    Luctus_savexp(target_ply)
+    LuctusLevelSave(target_ply)
     if target_ply.DarkRPUnInitialized then return end
     ulx.fancyLogAdmin( calling_ply, "#A set level of #T to #s", target_ply, amount )
 end
