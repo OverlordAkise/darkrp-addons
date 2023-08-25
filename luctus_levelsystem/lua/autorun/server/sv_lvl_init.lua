@@ -77,7 +77,7 @@ hook.Add("PlayerDisconnected", "luctus_levelsystem", function(ply)
 end)
  
 hook.Add("ShutDown", "luctus_levelsystem", function()
-    for k,v in pairs(player.GetAll()) do
+    for k,v in pairs(player.GetHumans()) do
         LuctusLevelSave(v)
     end
 end)
