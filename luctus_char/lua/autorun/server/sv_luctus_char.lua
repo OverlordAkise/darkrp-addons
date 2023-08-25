@@ -28,6 +28,7 @@ hook.Add("PlayerInitialSpawn", "luctus_char_lockuntilchosen", function(ply)
     ply.charCooldown = 0
     timer.Simple(3, function()
         if not IsValid(ply) then return end
+        if ply:IsBot() then return end --fix bot freezing and teleporting because of :Lock
         ply:Lock()
         ply.IsChoosingChar = true
         ply.charCurSlot = -1
