@@ -16,7 +16,13 @@ LUCTUS_DAYWARD_STREAK = 1
 net.Receive("luctus_dayward_sync",function()
     LUCTUS_DAYWARD_LAST = net.ReadInt(32)
     LUCTUS_DAYWARD_STREAK = net.ReadInt(32)
-    LuctusDaywardOpenMenu()
+    if not LuctusMotdOpen then
+        LuctusDaywardOpenMenu()
+    else
+        hook.Add("LuctusMotdClosed","luctus_dailyreward",function()
+            LuctusDaywardOpenMenu()
+        end)
+    end
     
 end)
 
