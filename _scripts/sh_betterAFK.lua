@@ -8,6 +8,8 @@ hook.Add("DarkRPPreLoadModules","luctus_enableAFK",function(GM)
     DarkRP.disabledDefaults["modules"]["afk"] = false
 end)
 
+if CLIENT then return end
+
 hook.Add("PostGamemodeLoaded","luctus_betterAFK",function()
 if DarkRP then
 
