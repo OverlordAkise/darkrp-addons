@@ -16,7 +16,7 @@ end)
 
 --bantime length = minutes
 function LuctusAC_Punish(ply, length, pMessage)
-    print("[luctus_ac] [punish] Banning",ply:Nick(),ply:SteamID(),"(time:",length,") for",pMessage)
+    print("[luctus_ac] Banning",ply:Nick(),ply:SteamID(),"(time:",length,") for",pMessage)
     if not IsValid(ply) then return end
     if ply.isAlreadyBanned then return end
     ply.isAlreadyBanned = true
@@ -31,7 +31,7 @@ function LuctusAC_Punish(ply, length, pMessage)
         ply:Ban( length, false )
         ply:Kick( pMessage )
     end
-    print("[luctus_ac] [punish] Ban done.")
+    print("[luctus_ac] Ban done.")
     PrintMessage(HUD_PRINTTALK,"[luctus_ac] "..ply:Nick().." was banned for '"..pMessage.."'!")
     hook.Run("LuctusAC",ply:Nick(),ply:SteamID(),length,pMessage)
 end
@@ -40,37 +40,46 @@ net.Receive("luctusac_change",function(len,ply)
     local conname = net.ReadString()
     local convalue = net.ReadString()
     if convalue != GetConVar(conname):GetString() then
-        print("[luctus_ac] [luctusac_change] Received net msg",ply:Nick(),ply:SteamID(),"->",conname,":",convalue)
+        print("[luctus_ac] Convar mismatch",ply:Nick(),ply:SteamID(),"->",conname,":",convalue)
         LuctusAC_Punish(ply,0,"changing convars")
     end
 end)
 
 net.Receive("luctusac_caught",function(len,ply)
     local reason = net.ReadString()
-    print("[luctus_ac] [luctusac_caught] Received net msg",ply:Nick(),ply:SteamID(),"->",reason)
+    print("[luctus_ac] Caught",ply:Nick(),ply:SteamID(),"->",reason)
     LuctusAC_Punish(ply,0,"cheating")
 end)
 
 --anti net spam
+LUCTUS_AC_NETCOUNT = LUCTUS_AC_NETCOUNT or {}
+LUCTUS_AC_NETLAST = LUCTUS_AC_NETLAST or {}
+LUCTUS_AC_NETBANNED = LUCTUS_AC_NETBANNED or {}
 hook.Add("PlayerInitialSpawn","luctus_ac",function(ply)
-    ply.netCount = 0
-    ply.netLast = CurTime()
+    LUCTUS_AC_NETCOUNT[ply] = 0
+    LUCTUS_AC_NETLAST[ply] = CurTime()
 end)
 
 local netIncoming = net.Incoming
 function net.Incoming( len, ply )
-    if ply.netBanned then return end
-    if (ply.netLast + 5) <= CurTime() then
-        ply.netCount = 0
-        ply.netLast = CurTime()
+    if LUCTUS_AC_NETBANNED[ply] then return end
+    if LUCTUS_AC_NETLAST[ply] <= CurTime() then
+        LUCTUS_AC_NETCOUNT[ply] = 0
+        LUCTUS_AC_NETLAST[ply] = CurTime()+5
     end
-    ply.netCount = ply.netCount + 1
-    if ply.netCount > 500 then --more than 1 netmsg per tick for 5seconds
-        print("[luctus_ac] [net_spam] Detected:",ply:Nick(),ply:SteamID(),"->",ply.netCount,"net messages in 5s")
+    LUCTUS_AC_NETCOUNT[ply] = LUCTUS_AC_NETCOUNT[ply] + 1
+    if LUCTUS_AC_NETCOUNT[ply] > 300 then -- >1 net/tick if 66ticks
+        print("[luctus_ac] Net spam detected from",ply:Nick(),ply:SteamID())
         LuctusAC_Punish(ply,0,"net spam")
-        ply.netBanned = true
+        LUCTUS_AC_NETBANNED[ply] = true
     end
     netIncoming(len,ply)
 end
+
+hook.Add("PlayerDisconnected","luctus_ac_cleanup",function(ply)
+    LUCTUS_AC_NETCOUNT[ply] = nil
+    LUCTUS_AC_NETLAST[ply] = nil
+    LUCTUS_AC_NETBANNED[ply] = nil
+end)
 
 print("[luctus_ac] Serverside loaded!")
