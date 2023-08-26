@@ -68,6 +68,7 @@ local buyCommands = {
         else
             RunConsoleCommand('darkrp', item.command)
         end
+        if IsValid(luctusF4.mainFrame) then luctusF4.mainFrame:Close() end
     end,
 }
 
