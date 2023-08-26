@@ -26,6 +26,7 @@ hook.Add("InitPostEntity", "luctus_technician_breaker", function()
         if randomEnt and IsValid(randomEnt) and not randomEnt:GetBroken() then
             randomEnt:SetBroken(true)
             --print("[luctus_technician] Sabotaged a random object!")
+            hook.Run("LuctusTechnicianBroke",randomEnt)
         end
     end)
     print("[luctus_technician] Timer created!")

@@ -75,6 +75,7 @@ function ENT:Think()
             local gainMoney = math.random(LUCTUS_TECHNICIAN_MIN_REWARD,LUCTUS_TECHNICIAN_MAX_REWARD)
             DarkRP.notify(self.UsingPlayer, 3, 5, "You repaired the object and got "..gainMoney.."$!")
             self.UsingPlayer:addMoney(gainMoney)
+            hook.Run("LuctusTechnicianRepaired",self.UsingPlayer,self)
             self:CancelUse() 
             return 
         end

@@ -154,6 +154,7 @@ net.Receive("luctus_miner_npc",function(len,ply)
     DarkRP.notify(ply,3,5,"[Miner] You sold your ore for "..(npc.SellTable[ore]*num).."$!")
     LuctusMinerSavePlayer(ply)
     npc:EmitSound("ambient/levels/labs/coinslot1.wav")
+    hook.Run("LuctusMinerSold",ply,ore,num)
 end)
 
 net.Receive("luctus_miner_get_pickaxe", function(len,ply)
