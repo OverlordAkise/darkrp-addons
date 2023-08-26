@@ -83,7 +83,7 @@ if CLIENT then
       ply.animationSWEPAngle = Lerp(FrameTime() * 5, ply.animationSWEPAngle, targetValue)
     end
 
-    local la_old_animation = ply:GetNWString("la_old_animation")
+    local la_old_animation = ply:GetNW2String("la_old_animation")
     if la_old_animation ~= class and AnimationList[la_old_animation] then
       for boneName, angle in pairs(AnimationList[la_old_animation]) do
         local bone = ply:LookupBone(boneName)
@@ -94,7 +94,7 @@ if CLIENT then
       end
     end
 
-    ply:SetNWString("la_old_animation",class)
+    ply:SetNW2String("la_old_animation",class)
 
     if AnimationList[class] then
       for boneName, angle in pairs(AnimationList[class]) do
@@ -109,14 +109,14 @@ if CLIENT then
 
   hook.Add("Think", "AnimationSWEP.Think", function ()
     for _, ply in pairs( player.GetHumans() ) do
-      local la_animation = ply:GetNWString("la_animation")
+      local la_animation = ply:GetNW2String("la_animation")
 
       if la_animation ~= "" then
         if not ply.animationSWEPAngle then
           ply.animationSWEPAngle = 0
         end
 
-        if ply:GetNWBool("la_in_animation") then
+        if ply:GetNW2Bool("la_in_animation") then
           applyAnimation(ply, 1, la_animation)
         else
           applyAnimation(ply, 0, la_animation)
@@ -131,8 +131,8 @@ else
     
   timer.Create("luctus_animations_reset_on_movement",0.3,0,function()
     for k,ply in pairs(player.GetAll()) do
-      if not ply:GetNWBool("la_in_animation",false) then return end
-      if math.Round(ply:GetVelocity():Length(),2) > ply:GetNWInt("la_max_speed", 10) then
+      if not ply:GetNW2Bool("la_in_animation",false) then return end
+      if math.Round(ply:GetVelocity():Length(),2) > ply:GetNW2Int("la_max_speed", 10) then
         ToggleEmoteStatus(ply, false)
       end
       if ply:KeyDown(IN_DUCK) then
@@ -154,23 +154,23 @@ else
     ply.emoteNetCooldown = CurTime() + 1
     
     if AnimationList[animName] then
-      ply:SetNWString("la_animation", animName)
+      ply:SetNW2String("la_animation", animName)
     end
   end)
     
   hook.Add("PlayerInitialSpawn", "luctus_animations_setdefault", function(ply)
-    ply:SetNWString("la_animation", "<unknown>")
+    ply:SetNW2String("la_animation", "<unknown>")
   end)
 
   function ToggleEmoteStatus(ply, crossing)
     if crossing then
       --PrintMessage(3, "Toggling on!")
-      ply:SetNWBool("la_in_animation", true)
-      ply:SetNWInt("la_max_speed", 110)
+      ply:SetNW2Bool("la_in_animation", true)
+      ply:SetNW2Int("la_max_speed", 110)
     else
       --PrintMessage(3, "Toggling off!")
-      ply:SetNWBool("la_in_animation", false)
-      ply:SetNWInt("la_max_speed", 5)
+      ply:SetNW2Bool("la_in_animation", false)
+      ply:SetNW2Int("la_max_speed", 5)
     end
   end
 end
