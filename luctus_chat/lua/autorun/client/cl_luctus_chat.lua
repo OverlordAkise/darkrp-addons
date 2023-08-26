@@ -155,7 +155,7 @@ function eChat.buildBox()
     
     function eChat.chatLog:Think()
         if eChat.lastMessage then
-            if CurTime() - eChat.lastMessage > LUCTUS_CHAT_MSG_FADETIME then
+            if gui.IsGameUIVisible() or CurTime() - eChat.lastMessage > LUCTUS_CHAT_MSG_FADETIME then
                 self:SetVisible(false)
             else
                 self:SetVisible(true)
@@ -340,8 +340,11 @@ hook.Add("PlayerBindPress", "luctus_chat", function(ply, bind, pressed)
     end
 end)
 
+local dontDrawChat = {
+    ["CHudChat"] = false,
+}
 hook.Add("HUDShouldDraw", "luctus_chat_hidedefault", function(name)
-    if name == "CHudChat" then return false end
+    return dontDrawChat[name]
 end)
 
 function chat.GetChatBoxPos()
