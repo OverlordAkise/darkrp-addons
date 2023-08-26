@@ -24,14 +24,13 @@ hook.Add("HUDShouldDraw", "luctus_hud_hide", function(vs)
     if noDraw[vs] then return false end
 end)
 
-local function CreateImageIcon( icon, x, y, col, val )
-    surface.SetDrawColor( col )
-    surface.SetMaterial( icon )
-    local w, h = 16, 16
+local function CreateImageIcon(icon, x, y, col, val)
+    surface.SetDrawColor(col)
+    surface.SetMaterial(icon)
     if val then
-        surface.SetDrawColor( color_white )
+        surface.SetDrawColor(color_white)
     end
-    surface.DrawTexturedRect( x, y, w, h )
+    surface.DrawTexturedRect(x, y, 16, 16)
 end
 
 --local vars for HUD
@@ -73,18 +72,17 @@ hook.Add( "HUDPaint", "luctus_hud", function()
     surface.SetDrawColor(backgroundCol)
     surface.DrawRect(startX+2, startY+2, baseWidth - 4, baseHeight - 4)
     --Job
-    surface.SetFont("LucidHUDFont")
-    draw.SimpleText( ply:Nick(), "LucidHUDFont", 15, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-    draw.SimpleText( ply:getDarkRPVar("job"), "LucidHUDFont", 15, startY + 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+    draw.SimpleText(ply:Nick(), "LucidHUDFont", 15, startY + 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(ply:getDarkRPVar("job"), "LucidHUDFont", 15, startY + 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     --Avatar
+    local wep = ply:GetActiveWeapon()
     if !IsValid(avatar) then
         avatar = vgui.Create("SpawnIcon")
-        avatar:SetPos( startX + 10, startY + 49 )
+        avatar:SetPos(startX + 10, startY + 49)
         avatar:SetSize(75, 75)
         avatar:SetModel(ply:GetModel())
         avatar:ParentToHUD()
         avatar.Think = function(self)
-            wep = LocalPlayer():GetActiveWeapon()
             if wep:IsValid() and wep:GetClass() == "gmod_camera" then
                 self:Remove()
             end
@@ -113,7 +111,7 @@ hook.Add( "HUDPaint", "luctus_hud", function()
     --Armor
     surface.SetDrawColor(armorCol)
     surface.DrawRect(barX + iconOffset, barY + 28, math.Clamp((ply:Armor()*maxBarSize)/ply:GetMaxArmor(),0,maxBarSize) - iconOffset, barHeight)
-    draw.SimpleText(ply:Armor() > 0 and ply:Armor() or 0, "LucidHUDFont", 215, barY + 32, color_white, TEXT_ALIGN_CENTER)
+    draw.SimpleText(ply:Armor(), "LucidHUDFont", 215, barY + 32, color_white, TEXT_ALIGN_CENTER)
     --Green Money
     surface.SetDrawColor(moneyCol)
     surface.DrawRect(barX + iconOffset, barY + 55, maxBarSize - iconOffset, barHeight)
@@ -122,30 +120,27 @@ hook.Add( "HUDPaint", "luctus_hud", function()
     CreateImageIcon(health_icon, 104, startY + 54, healthCol)
     CreateImageIcon(shield_icon, 103,startY + 81, shieldCol)
     CreateImageIcon(cash_icon, 104, startY + 109, color_white)
-    CreateImageIcon(star_icon, 30, startY + 129, darkenedCol, ply:isWanted() )
-    CreateImageIcon(tick_icon, 55, startY + 130, darkenedCol, ply:getDarkRPVar("HasGunlicense") )
+    CreateImageIcon(star_icon, 30, startY + 129, darkenedCol, ply:isWanted())
+    CreateImageIcon(tick_icon, 55, startY + 130, darkenedCol, ply:getDarkRPVar("HasGunlicense"))
     --Hunger
-    if ply:getDarkRPVar("Energy") then
+    local energy = ply:getDarkRPVar("Energy")
+    if energy then
         surface.SetDrawColor(darkenedCol)
         surface.DrawRect(barX, barY + 82, maxBarSize, barHeight/2)
         surface.SetDrawColor(secCol)
-        surface.DrawRect(barX + iconOffset, barY + 82, ((LocalPlayer():getDarkRPVar("Energy")*maxBarSize)/100) - iconOffset, barHeight/2)
-        draw.SimpleText(LocalPlayer():getDarkRPVar("Energy"), "LucidHUDFont", 215, barY+79, color_white, TEXT_ALIGN_CENTER)
+        surface.DrawRect(barX + iconOffset, barY + 82, ((energy*maxBarSize)/100) - iconOffset, barHeight/2)
+        draw.SimpleText(energy, "LucidHUDFont", 215, barY+79, color_white, TEXT_ALIGN_CENTER)
         CreateImageIcon(cup_icon, 104, startY + 130, color_white)
     end
-    wep = ply:GetActiveWeapon()
+    --weapon
     if wep:IsValid() then
-        local veh = ply:GetVehicle()
-        if veh:IsValid() and !ply:GetAllowWeaponsInVehicle() then return end
-        wep_class = wep:GetClass()
-        wep_name = wep:GetPrintName() or wep_class or "Unbekannt"
-        ammo_type = wep:GetPrimaryAmmoType()
+        local wep_name = wep:GetPrintName() or wep:GetClass() or "Unbekannt"
+        local ammo_type = wep:GetPrimaryAmmoType()
         if ammo_type == -1 then
             surface.SetDrawColor(wepCol)
             surface.DrawRect(scrw-245, scrh-170, 200, 30)
             draw.SimpleText(wep_name, "LucidHUDFont", scrw-240, scrh-165, color_white, TEXT_ALIGN_LEFT)
-        end
-        if ammo_type ~= -1 then
+        else
             surface.SetDrawColor(wepCol)
             surface.DrawRect(scrw-245, scrh-170, 200, 105)
             draw.SimpleText(wep_name, "LucidHUDFont", scrw-240, scrh-165, color_white, TEXT_ALIGN_LEFT)
