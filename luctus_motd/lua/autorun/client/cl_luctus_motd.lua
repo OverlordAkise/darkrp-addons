@@ -32,6 +32,7 @@ surface.CreateFont("luctus_motd_font", {
 })
 
 luctus_motd_frame = luctus_motd_frame or nil
+local firstTimeClosing = true
 function LuctusMotdOpen()
     if IsValid(luctus_motd_frame) then return end
     gui.EnableScreenClicker(true)
@@ -96,7 +97,13 @@ function LuctusMotdOpen()
     htmlPanel:OpenURL(LUCTUS_MOTD_STARTURL)
 
 
-    LUCTUS_MOTD_BUTTONS["Close"] = function() luctus_motd_frame:Close() end
+    LUCTUS_MOTD_BUTTONS["Close"] = function()
+        if firstTimeClosing then
+            hook.Run("LuctusMotdClosed")
+            firstTimeClosing = false
+        end
+        luctus_motd_frame:Close()
+    end
     
     for k, v in SortedPairs(LUCTUS_MOTD_BUTTONS,true) do
         local button = vgui.Create("DButton", leftScrollPanel)
