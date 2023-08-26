@@ -593,7 +593,7 @@ function luctusF4.openTab(name)
             luctusPaintHover(self,self:GetWide(),self:GetTall(),true, self.shouldBeDisabled and Color(90,90,90,255) or nil)
         end
 
-        function categoryRow.DoClick()
+        function categoryRow:DoClick()
             luctusF4.curSkin = 1
             luctusF4.curItem = item
             luctusF4.purchaseButton.id = item
@@ -622,6 +622,12 @@ function luctusF4.openTab(name)
                 end
             end
             buttonClickSound()
+            if not self.lastClicked then self.lastClicked = 0 end
+            print(CurTime()-self.lastClicked)
+            if CurTime()-self.lastClicked < 0.3 then
+                luctusF4.purchaseButton:DoClick()
+            end
+            self.lastClicked = CurTime()
         end
         
         
