@@ -110,5 +110,20 @@ hook.Add("LuctusLeaderboardAdd","luctus_levelsystem",function()
     end)
 end)
 
+hook.Add("LuctusLeaderboardAdd","ch_atm",function()
+    if not CH_ATM then return end
+    LuctusLeaderboardAdd("Most bank $",function()
+        local res = sql.Query("SELECT amount,nick FROM ch_atm_accounts ORDER BY amount DESC LIMIT 20;")
+        if res and res[1] then
+            local tab = {}
+            for k,v in pairs(res) do
+                table.insert(tab,{v.nick,v.amount})
+            end
+            return tab
+        end
+        return {}
+    end)
+end)
+
 
 print("[luctus_leaderboard] sv loaded")
