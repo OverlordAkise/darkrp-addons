@@ -275,6 +275,40 @@ if CH_Mining then
     LuctusLogAddCategory("chmining")
 end
 
+--itemstore
+if itemstore then
+    hook.Add("ItemStoreItemPickedUp","luctus_log",function(ply, item, ent)
+        if not IsValid(ply) then return end
+        LuctusLog("itemstore", ply:GetName().."("..ply:SteamID()..") itemstore-pickuped "..ent:GetClass())
+    end,-2)
+    hook.Add("ItemStoreItemUsed","luctus_log",function(ply, container, item)
+        if not IsValid(ply) then return end
+        local fromText = ""
+        if container and container.GetOwner and IsValid(container:GetOwner()) and container:GetOwner():GetClass()=="itemstore_deathloot" then
+            fromText = " from deathloot"
+        end
+        LuctusLog("itemstore", ply:GetName().."("..ply:SteamID()..") itemstore-used "..item:GetName()..fromText)
+    end,-2)
+    hook.Add("ItemStoreItemsMoved","luctus_log",function(ply,fromContainer,fromSlot,fromItem,toCon,toSlot,toItem)
+        if not IsValid(ply) then return end
+        local fromText = ""
+        if fromContainer and fromContainer.GetOwner and IsValid(fromContainer:GetOwner()) and fromContainer:GetOwner():GetClass()=="itemstore_deathloot" then
+            fromText = " from deathloot"
+        end
+        LuctusLog("itemstore", ply:GetName().."("..ply:SteamID()..") itemstore-pickuped "..fromItem:GetName()..fromText)
+    end,-2)
+    hook.Add("ItemStoreItemDropped","luctus_log",function(ply, container, slot, item)
+        if not IsValid(ply) then return end
+        if isnumber(item) then return end --split and drop have the same hookname, meh
+        LuctusLog("itemstore", ply:GetName().."("..ply:SteamID()..") itemstore-dropped "..item:GetName())
+    end,-2)
+    hook.Add("ItemStoreItemDestroyed","luctus_log",function(ply, container, slot, item)
+        if not IsValid(ply) then return end
+        LuctusLog("itemstore", ply:GetName().."("..ply:SteamID()..") itemstore-destroyed "..item:GetName())
+    end,-2)
+    LuctusLogAddCategory("itemstore")
+end
+
 
 --Military Rank System (MRS), similar to jobranksystem
 if MRS and MRS.Config then
