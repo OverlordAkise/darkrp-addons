@@ -53,7 +53,7 @@ local function log_push(cat,text)
         table.insert(luctus_weblogcache,{os.time().."000000000", text})
     else
         local value = {}
-        value.date = sql.Query("SELECT datetime()")[1]["datetime()"]
+        value.date = os.date("%Y-%m-%d %H:%M:%S")
         value.msg = text
         value.cat = cat
         table.insert(luctus_weblogcache,value)
