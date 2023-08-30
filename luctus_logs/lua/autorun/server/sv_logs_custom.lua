@@ -53,6 +53,24 @@ if LUCTUS_INGAME_CONFIG then
     LuctusLogAddCategory("Config")
 end
 
+--Luctus Popups
+if LuctusPopupCreate then
+    hook.Add("LuctusPopupCreated","luctus_log",function(ply,text)
+        LuctusLog("Tickets",ply:Nick().."("..ply:SteamID()..") created a ticket: "..text)
+    end,-2)
+    hook.Add("LuctusPopupClaimed","luctus_log",function(ply,admin)
+        LuctusLog("Tickets",admin:Nick().."("..admin:SteamID()..") claimed the ticket of "..ply:Nick().."("..ply:SteamID()..")")
+    end,-2)
+    hook.Add("LuctusPopupClosed","luctus_log",function(ply,admin)
+        local extraText = "automatically"
+        if not admin or not IsValid(admin) then
+            extraText = "by "..ply:Nick().."("..ply:SteamID()..")"
+        end
+        LuctusLog("Tickets",ply:Nick().."("..ply:SteamID()..") ticket was closed "..extraText)
+    end,-2)
+    LuctusLogAddCategory("Tickets")
+end
+
 --Luctus Code
 if LUCTUS_SCP_CODES then
     hook.Add("LuctusCodeChanged","luctus_log",function(ply,code)
