@@ -13,21 +13,61 @@ local green = Color(0,200,0,200)
 local yellow = Color(200,200,0,200)
 local red = Color(200,0,0,200)
 
-hook.Add("InitPostEntity","luctus_stamina_load",function()
-    hook.Add("HUDPaint","luctus_stamina", function()
-        local curWidth = (staminaCur*ScrW())/staminaMax
-        local w = ScrW()
-        if curWidth == w then return end
-        local col = green
-        if curWidth/w < 0.66 then
-            col = yellow
-        end
-        if curWidth/w < 0.33 then
-            col = red
-        end
-        draw.RoundedBox(0, 0, ScrH()-6, curWidth, 12, col)
-    end)
+function LuctusStaminaHUD()
+    local curWidth = (staminaCur*ScrW())/staminaMax
+    local w = ScrW()
+    if curWidth == w then return end
+    local col = green
+    if curWidth/w < 0.66 then
+        col = yellow
+    end
+    if curWidth/w < 0.33 then
+        col = red
+    end
+    draw.RoundedBox(0, 0, ScrH()-6, curWidth, 12, col)
+end
+
+function LuctusStaminaEdgeHUD()
+    local VARS = table.Copy(EdgeHUD.Vars)
+    local x = VARS.ScreenMargin
+	local y = ScrH() - VARS.ScreenMargin - VARS.WidgetHeight * 4 - VARS.ElementsMargin
+    local wx = x + EdgeHUD.LeftOffset
+    local wy = y - EdgeHUD.BottomOffset
+    local ww = VARS.infoWidgetWidth
+    local wh = VARS.WidgetHeight/2
+    
+    local curWidth = (staminaCur*ww)/staminaMax
+    if curWidth == ww then return end
+    local col = green
+    if curWidth/ww < 0.66 then
+        col = yellow
+    end
+    if curWidth/ww < 0.33 then
+        col = red
+    end
+    
+    draw.RoundedBox(0,wx,wy,curWidth,wh,col)
+    
+    surface.SetDrawColor(EdgeHUD.Colors["Black_Transparent"])
+    surface.DrawRect(wx, wy, ww, wh)
+    surface.SetDrawColor(EdgeHUD.Colors["White_Outline"])
+    surface.DrawOutlinedRect(wx, wy, ww, wh)
+    surface.SetDrawColor(EdgeHUD.Colors["White_Corners"])
+    EdgeHUD.DrawEdges(wx,wy,ww,wh,10)
+    
+    
+    draw.SimpleTextOutlined("Stamina","Trebuchet18",wx+10,wy+(wh/2),Color(255,255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+end
+
+hook.Add("InitPostEntity","luctus_stamina",function()
+    if EdgeHUD then
+        print("[luctus_stamina] edgehud found, loading design")
+        hook.Add("HUDPaint","luctus_stamina",LuctusStaminaEdgeHUD)
+    else
+        hook.Add("HUDPaint","luctus_stamina",LuctusStaminaHUD)
+    end
 end)
+
 
 local OnGroundCache = false
 hook.Add("CreateMove","luctus_stamina",function(cmd)
