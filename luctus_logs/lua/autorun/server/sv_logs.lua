@@ -586,6 +586,27 @@ if sam then
     end)
 end
 
+if sAdmin then
+    hook.Add("sA:RanCommand", "luctus_log", function(ply, cmd_name, args, argStr)
+        local name = "console"
+        local steamid = "console"
+        if IsValid(ply) then
+            name = ply:Nick()
+            steamid = ply:SteamID()
+        end
+        log_push("sAdmin",name.."("..steamid..") used sAdmin command '"..cmd_name.." "..argStr.."'")
+    end)
+    hook.Add("sA:EdittedBan", "luctus_log",function(ply, sid64, new_time, reason)
+        local ply = "console"
+        local steamid = "console"
+        if IsValid(ply) then
+            ply = ply:Nick()
+            steamid = ply:SteamID()
+        end
+        log_push("sAdmin",ply.."("..steamid..") edited the bantime of "..sid64.." to "..new_time.." because of "..reason)
+    end)
+end
+
 
 hook.Add("PlayerSay","luctus_log_display",function(ply,text,team)
     if text == LuctusLogChatCommand and LuctusLogAllowedRanks[ply:GetUserGroup()] then
