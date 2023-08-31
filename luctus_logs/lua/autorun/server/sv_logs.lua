@@ -567,6 +567,11 @@ if ulx then
         end
         log_push("ulx",ply.."("..steamid..") used ulx command '"..cmd..argss.."'")
     end)
+    --Log ban edits, which are not logged by the above
+    hook.Add(ULib.HOOK_USER_BANNED or "ULibPlayerBanned","luctus_log",function(steamid,t)
+        if not t.modified_admin then return end
+        log_push("ulx",t.modified_admin.." edited the ban of "..steamid.." to "..string.NiceTime(t.unban-t.time).." for "..(t.reason))
+    end)
 end
 
 if sam then
