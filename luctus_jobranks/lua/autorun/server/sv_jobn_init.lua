@@ -46,17 +46,17 @@ function luctusRankup(ply,teamcmd,executor)
     end
     if res and res[1] then
         newId = math.min(tonumber(res[1].rankid) + 1,#luctus_jobranks[jobname])
-        LuctusJobranksSet(ply:SteamID(),teamcmd,newId)
+        luctusJobranksSave(ply:SteamID(),teamcmd,newId)
         
         DarkRP.notify(ply,0,5,"Du wurdest befördert!")
         ply:PrintMessage(HUD_PRINTTALK, "Du wurdest befördert!")
-        ply:SetNWString("l_nametag", luctus_jobranks[jobname][newId][1])
-        ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[jobname][newId][2]..")")
-        ply:setDarkRPVar("salary", ply:getJobTable().salary)
-        if luctus_jobranks[jobname][newId][5] then
-            ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[jobname][newId][5])
+        
+        LuctusJobranksApply(ply,ply:Team(),newId)
+        
+        if ply:Alive() then
+            LuctusJobranksSpawn(ply)
         end
-        ply.lrankID = newId
+        
         local message = executor:Nick().."("..executor:SteamID()..") just promoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2]
         print("[luctus_jobranks]",message)
         hook.Run("LuctusJobranksUprank",executor,ply,luctus_jobranks[jobname][newId][2],message) --uprankPly,targetPly,newJobName,logmessage)
@@ -72,24 +72,24 @@ function luctusRankdown(ply,teamcmd,executor)
     end
     if res and res[1] then
         newId = math.max(tonumber(res[1].rankid) - 1,1)
-        LuctusJobranksSet(ply:SteamID(),teamcmd,newId)
+        luctusJobranksSave(ply:SteamID(),teamcmd,newId)
 
         DarkRP.notify(ply,0,5,"Du wurdest degradiert!")
         ply:PrintMessage(HUD_PRINTTALK, "Du wurdest degradiert!")
-        ply:SetNWString("l_nametag", luctus_jobranks[jobname][newId][1])
-        ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[jobname][newId][2]..")")
-        ply:setDarkRPVar("salary", ply:getJobTable().salary)
-        if luctus_jobranks[jobname][newId][5] then
-            ply:setDarkRPVar("salary", ply:getJobTable().salary + luctus_jobranks[jobname][newId][5])
+        
+        LuctusJobranksApply(ply,ply:Team(),newId)
+        
+        if ply:Alive() then
+            LuctusJobranksSpawn(ply)
         end
-        ply.lrankID = newId
+        
         local message = executor:Nick().."("..executor:SteamID()..") just demoted "..ply:Nick().."("..ply:SteamID()..") to "..luctus_jobranks[jobname][newId][2]
         print("[luctus_jobranks]",message)
         hook.Run("LuctusJobranksDownrank",executor,ply,luctus_jobranks[jobname][newId][2],message) --uprankPly,targetPly,newJobName,logmessage)
     end
 end
 
-function LuctusJobranksSet(steamid,jobcmd,rank)
+function luctusJobranksSave(steamid,jobcmd,rank)
     local res = sql.Query("REPLACE INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(steamid)..","..sql.SQLStr(jobcmd)..","..rank..")")
     if res == false then
         error(sql.LastError())
@@ -121,8 +121,11 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text)
             end
             local tRankID = luctusGetRankID(tPly:Team(),tPly:GetNWString("l_nametag",""))
             if tRankID and rankID > (isRankup and tRankID+1 or tRankID) then --can max uprank to one rank below you
-                luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
-            else
+                if isRankup then
+                    luctusRankup(tPly,RPExtraTeams[tPly:Team()].command,ply)
+                else
+                    luctusRankdown(tPly,RPExtraTeams[tPly:Team()].command,ply)
+                end
                 ply:PrintMessage(HUD_PRINTTALK, "ERROR: You can not change the rank of this player!")
             end
         else
@@ -133,15 +136,32 @@ hook.Add("PlayerSay", "luctus_jobranks_promote", function(ply,text)
 end)
 
 hook.Add("PlayerSpawn", "luctus_nametags", function(ply)
+    timer.Simple(0.1,function()
+        LuctusJobranksSpawn(ply)
+    end)
+end,2)
+
+function LuctusJobranksSpawn(ply)
     local jobname = team.GetName(ply:Team())
     if ply.lrankID and tonumber(ply.lrankID) and luctus_jobranks[jobname] and luctus_jobranks[jobname][ply.lrankID] then
-        if luctus_jobranks[jobname][ply.lrankID][4] then
-            for k,v in pairs(luctus_jobranks[jobname][ply.lrankID][4]) do
+        local ranktab = luctus_jobranks[jobname][ply.lrankID]
+        if ranktab[4] then
+            for k,v in pairs(ranktab[4]) do
                 ply:Give(v)
             end
         end
+        if ranktab[6] then
+            ply:SetMaxHealth(ranktab[6])
+            ply:SetHealth(ranktab[6])
+        end
+        if ranktab[7] then
+            ply:SetArmor(ranktab[7])
+        end
+        if ranktab[8] then
+            ply:SetModel(ranktab[8])
+        end
     end
-end)
+end
 
 hook.Add("OnPlayerChangedTeam", "luctus_nametags", function(ply, beforeNum, afterNum)
     local beforeName = team.GetName(beforeNum)
@@ -166,18 +186,7 @@ function LuctusJobranksLoadPlayer(ply,curTeam)
     end
     if res and res[1] then
         local rankid = res[1].rankid
-        if not tonumber(rankid) then
-            print("[luctus_jobranks] ERROR SELECT RANKID WAS NOT A NUMBER!")
-            return
-        end
-        rankid = tonumber(rankid)
-        ply:SetNWString("l_nametag",luctus_jobranks[jobname][rankid][1])
-        ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[jobname][rankid][2]..")")
-        ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary)
-        if luctus_jobranks[jobname][rankid][5] then
-            ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary + luctus_jobranks[jobname][rankid][5])
-        end
-        ply.lrankID = rankid
+        LuctusJobranksApply(ply,curTeam,rankid)
     else
         local inres = sql.Query("INSERT INTO luctus_jobranks(steamid,jobcmd,rankid) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(RPExtraTeams[curTeam].command)..",1)")
         if inres == false then
@@ -186,14 +195,24 @@ function LuctusJobranksLoadPlayer(ply,curTeam)
         if inres == nil then
             print("[luctus_jobranks] New player successfully inserted!")
         end
-        ply:SetNWString("l_nametag", luctus_jobranks[jobname][1][1])
-        ply:updateJob(ply:getDarkRPVar("job").." ("..luctus_jobranks[jobname][1][2]..")")
-        ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary)
-        if luctus_jobranks[jobname][1][5] then
-            ply:setDarkRPVar("salary", RPExtraTeams[curTeam].salary + luctus_jobranks[jobname][1][5])
-        end
-        ply.lrankID = 1
+        LuctusJobranksApply(ply,curTeam,1)
     end
+end
+
+function LuctusJobranksApply(ply,jobid,rankid)
+    if not tonumber(rankid) then
+        print("[luctus_jobranks] ERROR RANKID WAS NOT A NUMBER!")
+        return
+    end
+    rankid = tonumber(rankid)
+    local jobname = team.GetName(jobid)
+    ply:SetNWString("l_nametag",luctus_jobranks[jobname][rankid][1])
+    ply:updateJob(ply:getJobTable().name.." ("..luctus_jobranks[jobname][rankid][2]..")")
+    ply:setDarkRPVar("salary", RPExtraTeams[jobid].salary)
+    if luctus_jobranks[jobname][rankid][5] then
+        ply:setDarkRPVar("salary", RPExtraTeams[jobid].salary + luctus_jobranks[jobname][rankid][5])
+    end
+    ply.lrankID = rankid
 end
 
 hook.Add("playerGetSalary", "luctus_jobranks_salary", function(player, amount)

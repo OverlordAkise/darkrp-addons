@@ -17,6 +17,9 @@ LUCTUS_JOBRANKS_RANKDOWN_CMD = "!demote"
 --3   false,          If the rank can up / downrank other players
 --4   {"m9k_mp5sd"},  What weapons the rank spawns with
 --5   15              Custom Salary (added ontop of base job salary)
+--6   110             HP the job should have
+--7   10              Starting Armor the job should have
+--8   ply.mdl         Custom playermodel, this will be forced onto you and overwrite the job playermodel
 
 --An Example:
 luctus_jobranks["Citizen"] = {
@@ -32,8 +35,8 @@ luctus_jobranks["Citizen"] = {
 --Required/Mandatory are only the first 2 things: Short-Name and Long-Name
 --This is also valid:
 luctus_jobranks["Hobo"] = {
-    [1] = {"[LCOL]", "Lieutenant Colonel"},
-    [2] = {"[COL]", "Colonel",true}
+    [1] = {"[LCOL]", "Lieutenant Colonel",false,{},15,110,10,"models/player/combine_super_soldier.mdl"},
+    [2] = {"[COL]", "Colonel"}
 }
 
 --You can also copy rankconfigs, but the ranks of players will NOT copy over! Only the config gets copied!
