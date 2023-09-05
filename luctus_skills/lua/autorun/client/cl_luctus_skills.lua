@@ -28,6 +28,9 @@ hook.Add("InitPostEntity","luctus_skills_uen_fix",function()
             return self:getDarkRPVar("level")
         end
     end
+    if not LocalPlayer().getLevel then
+        ErrorNoHaltWithStack("ERROR, No compatible leveling system installed! Skills not working!")
+    end
 end)
 
 function LuctusSkillsHasLevel(skill)

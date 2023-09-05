@@ -8,6 +8,10 @@ hook.Add("InitPostEntity","luctus_skills",function()
     if res==false then
         error(sql.LastError())
     end
+    local meta = FindMetaTable("Player")
+    if not meta.getLevel then
+        ErrorNoHaltWithStack("ERROR, No compatible leveling system installed! Skills not working!")
+    end
 end)
 
 hook.Add("PlayerSay","luctus_skills",function(ply,text)
