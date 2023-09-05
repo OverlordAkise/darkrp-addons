@@ -34,7 +34,7 @@ function LuctusSkillLoadPly(ply)
     end
     if res and res[1] then
         for k,v in pairs(res) do
-            ply.lskills[v.skill] = v.level
+            ply.lskills[v.skill] = tonumber(v.level)
         end
     end
 end
@@ -54,11 +54,13 @@ net.Receive("luctus_skills",function(len,ply)
     PrintTable(tab)
     --Check input
     local levelTotal = 0
-    for skill,level in pairs(tab) do
-        if not LUCTUS_SKILLS[skill] then return end
-        if level > 0 and ply:getLevel() < LUCTUS_SKILLS[skill].req then return end
-        if level > LUCTUS_SKILLS[skill].max then return end
-        levelTotal = levelTotal + level
+    local skills = LUCTUS_SKILLS
+    for name,level in pairs(tab) do
+        local skill = skills[name]
+        if not skill then return end
+        if level > 0 and ply:getLevel() < skill.req then return end
+        if level > skill.max then return end
+        levelTotal = levelTotal + (skill.cost*level)
     end
     if levelTotal > ply:getLevel() then return end
     --Set input
@@ -107,9 +109,9 @@ hook.Add( "PlayerFootstep", "luctus_skills", function(ply)
 end)
 
 timer.Create("luctus_skills_hp",60,0,function()
-    for k,v in pairs(player.GetAll()) do
-        if IsValid(v) and v.lskills and v.lskills.Patience then
-            v:SetHealth(math.min(v:Health()+v.lskills.Patience,v:GetMaxHealth()))
+    for k,ply in pairs(player.GetHumans()) do
+        if IsValid(ply) and ply.lskills and ply.lskills.Patience then
+            ply:SetHealth(math.min(ply:Health()+ply.lskills.Patience,ply:GetMaxHealth()))
         end
     end
 end)

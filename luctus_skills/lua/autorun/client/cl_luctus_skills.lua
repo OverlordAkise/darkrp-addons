@@ -241,19 +241,24 @@ function LuctusSkillsOpenMenu()
     end
 end
 
-function LuctusSkillsChange(skill,shouldUp)
+function LuctusSkillsChange(name,shouldUp)
+    local skill = LUCTUS_SKILLS_LOCAL[name]
     if shouldUp then
-        LUCTUS_SKILLS_LOCAL[skill].level = math.min(LUCTUS_SKILLS_LOCAL[skill].level+1,LUCTUS_SKILLS_LOCAL[skill].max)
+        if skill.cost > LUCTUS_SKILLS_FREEPOINTS then
+            surface.PlaySound("player/suit_denydevice.wav")
+            return
+        end
+        skill.level = math.min(skill.level+1,skill.max)
     else
-        LUCTUS_SKILLS_LOCAL[skill].level = math.max(LUCTUS_SKILLS_LOCAL[skill].level-1,0)
+        skill.level = math.max(skill.level-1,0)
     end
     LuctusSkillUpdatePoints()
 end
 
 function LuctusSkillUpdatePoints()
     local totalSpent = 0
-    for k,v in pairs(LUCTUS_SKILLS_LOCAL) do
-        totalSpent = totalSpent + v.level
+    for k,skill in pairs(LUCTUS_SKILLS_LOCAL) do
+        totalSpent = totalSpent + (skill.level*skill.cost)
     end
     LUCTUS_SKILLS_FREEPOINTS = LocalPlayer():getLevel()-totalSpent
 end
