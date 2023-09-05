@@ -86,13 +86,14 @@ function LuctusAbeCheckCountry(ply)
     if ip == "loopback" or ip == "Error!" then return end --local game or bot
     http.Fetch("http://ip-api.com/json/"..ip,function(body)
         data = util.JSONToTable(body)
-        if data.status == "fail" then
+        if not data.status or data.status ~= "success" then
             ErrorNoHaltWithStack("IP API failed!")
             return
         end
+        LuctusAbeEcho(0,ply,ply:SteamName().." ("..ply:SteamID()..") joined with an IP from '"..data.country.."' (ip:"..ip..",isp:"..data.isp..",org:"..data.org..")")
         if not LUCTUS_ABE_IP_OK_COUNTRIES[data.country] then
             if not IsValid(ply) then return end --already kicked
-            LuctusAbeEcho(LUCTUS_ABE_IP_FOREIGN_COUNTRY,ply,"The player "..ply:SteamName().." ("..ply:SteamID()..") joined with an IP from '"..data.country.."' ("..ip..")")
+            LuctusAbeEcho(LUCTUS_ABE_IP_FOREIGN_COUNTRY,ply,ply:SteamName().." ("..ply:SteamID()..") joined with an IP from '"..data.country.."'")
         end
     end)
 end
