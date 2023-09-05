@@ -2,23 +2,21 @@
 --Made by OverlordAkise
 
 function levelReqExp(lvl)
-    lvl = tonumber(lvl)
     return (5+(lvl*5))
 end
 
 local plymeta = FindMetaTable("Player")
 
 function plymeta:hasLevel(level)
-    if not tonumber(level) then return end
-    return tonumber(self:getDarkRPVar("level")) >= tonumber(level)
+    return self:getLevel() >= level
 end
 
 function plymeta:getLevel()
-    return self:getDarkRPVar("level")
+    return tonumber(self:getDarkRPVar("level"))
 end
 
 function plymeta:getXP()
-    return self:getDarkRPVar("xp")
+    return tonumber(self:getDarkRPVar("xp"))
 end
 
 hook.Add("postLoadCustomDarkRPItems","luctus_levelsystem_register",function()

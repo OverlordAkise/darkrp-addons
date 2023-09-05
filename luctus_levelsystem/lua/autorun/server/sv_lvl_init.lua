@@ -3,6 +3,7 @@
 
 -- CONFIG
 
+LUCTUS_XP_PERJOB = false --Should each job have its own leveling
 LUCTUS_XP_TIMER = 300 --seconds, interval for giving XP
 LUCTUS_XP_TIMER_XP = 20 --how many XP every interval
 LUCTUS_XP_KILL = 5 --how many XP per player kill
@@ -45,8 +46,16 @@ plymeta.AddXP = plymeta.addXP
 
 --internal functions from now on
 
+local function sSID(ply)
+    if LUCTUS_XP_PERJOB then
+        return sql.SQLStr(ply:SteamID()..team.GetName(ply:Team()))
+    else
+        return sql.SQLStr(ply:SteamID())
+    end
+end
+
 function LuctusLevelSave(ply)
-    local res = sql.Query("UPDATE luctus_levelsystem SET exp = "..ply:getXP()..", lvl = "..ply:getLevel().." WHERE steamid = "..sql.SQLStr(ply:SteamID()))
+    local res = sql.Query("UPDATE luctus_levelsystem SET exp = "..ply:getXP()..", lvl = "..ply:getLevel().." WHERE steamid = "..sSID(ply))
     if res == false then
         ErrorNoHaltWithStack(sql.LastError())
     end
@@ -55,7 +64,7 @@ end
 function LuctusLevelLoad(ply)
     ply:setLevel(1)
     ply:setXP(0)
-    local res = sql.QueryRow("SELECT * FROM luctus_levelsystem WHERE steamid = "..sql.SQLStr(ply:SteamID()))
+    local res = sql.QueryRow("SELECT * FROM luctus_levelsystem WHERE steamid = "..sSID(ply))
     if res == false then
         error(sql.LastError())
     end
@@ -64,7 +73,7 @@ function LuctusLevelLoad(ply)
         ply:setXP(tonumber(res.exp))
         print("[luctus_levelsystem] User successfully loaded!")
     else
-        local res = sql.Query("INSERT INTO luctus_levelsystem(steamid,steamid64,exp,lvl) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(ply:SteamID64())..",0,1)")
+        local res = sql.Query("INSERT INTO luctus_levelsystem(steamid,steamid64,exp,lvl) VALUES("..sSID(ply)..","..sql.SQLStr(ply:SteamID64())..",0,1)")
         if res == false then
             error(sql.LastError())
         end
@@ -72,8 +81,15 @@ function LuctusLevelLoad(ply)
     end
 end
 
+hook.Add("OnPlayerChangedTeam", "luctus_levelsystem", function(ply,before,after)
+    if LUCTUS_XP_PERJOB then
+        LuctusLevelLoad(ply)
+    end
+end)
+
 hook.Add("PlayerDisconnected", "luctus_levelsystem", function(ply)
     LuctusLevelSave(ply)
+    timer.Remove("levelload_"..ply:SteamID())
 end)
  
 hook.Add("ShutDown", "luctus_levelsystem", function()
@@ -83,7 +99,19 @@ hook.Add("ShutDown", "luctus_levelsystem", function()
 end)
 
 hook.Add("PlayerInitialSpawn","luctus_levelsystem",function(ply)
-    LuctusLevelLoad(ply)
+    if not LUCTUS_XP_PERJOB then
+        LuctusLevelLoad(ply)
+    else
+        timer.Create("levelload_"..ply:SteamID(),1,0,function()
+            if not IsValid(ply) then
+                timer.Remove("levelload_"..ply:SteamID())
+                return
+            end
+            if ply:Team() == 0 then return end
+            LuctusLevelLoad(ply)
+            timer.Remove("levelload_"..ply:SteamID())
+        end)
+    end
 end)
 
 hook.Add("PlayerDeath","luctus_levelsystem",function(ply,inflictor,attacker)
