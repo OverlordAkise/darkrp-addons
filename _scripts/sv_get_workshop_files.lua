@@ -20,7 +20,9 @@ function GetRecursiveWorkshopFiles(curfolder,base)
     for k,v in pairs(files) do
         --print("v",string.find(v,".lua"))
         if not string.find(v,".lua") then continue end
-        file.Write("_dump/"..curfolder..v..".txt",file.Read(curfolder..v,base))
+        local err, errStr = pcall(function() file.Write("_dump/"..curfolder..v..".txt",file.Read(curfolder..v,base)) end)
+        if not err then print(errStr) end
+        
     end
     for k,v in pairs(folders) do
         GetRecursiveWorkshopFiles(curfolder..v.."/",base)
