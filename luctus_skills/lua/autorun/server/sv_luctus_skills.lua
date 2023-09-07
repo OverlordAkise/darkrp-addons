@@ -84,8 +84,6 @@ hook.Add("EntityTakeDamage","luctus_skills",function(ply,dmginfo)
 --hook.Add("ScalePlayerDamage","luctus_skills",function(ply,hitgroup,dmginfo)
     if ply:IsPlayer() then
         local skillTab = LUCTUS_SKILLS_PLY[ply]
-        print("Damage:",ply,skillTab)
-        print(skillTab["Upperthighmuscles"])
         if skillTab["Upperthighmuscles"] and dmginfo:IsFallDamage() then
             dmginfo:SubtractDamage(skillTab["Upperthighmuscles"])
         end
