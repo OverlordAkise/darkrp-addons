@@ -168,7 +168,7 @@ hook.Add("playerPickedUpCheque","luctus_log_playerPickedUpCheque",function(plyPi
     if not IsValid(plyPickup) then return end
     local mText = plyPickup:Nick().."("..plyPickup:SteamID()..") picked up a "..amount.."$ cheque"
     if IsValid(plyReceiver) then
-      mText = mText + " written for "..plyReceiver:Nick().."("..plyReceiver:SteamID()..")"
+      mText = mText .. " written for "..plyReceiver:Nick().."("..plyReceiver:SteamID()..")"
     end
     if successBool then
         log_push("Cheques",mText)
@@ -486,6 +486,10 @@ hook.Add("PlayerDisconnected", "luctus_log_PlayerDisconnected", function(ply)
 end,-2)
 hook.Add("EntityTakeDamage","luctus_log_EntityTakeDamage",function(target, dmg)
     if not IsValid(target) then return end
+    if dmg:IsFallDamage() and target:IsPlayer() then
+        log_push("Damage",target:Nick().."("..target:SteamID()..") took falldamage of "..math.Round(dmg:GetDamage(),2))
+        return
+    end
     if not dmg:GetAttacker():IsPlayer() then return end
     local name = target:GetClass()
     if target:IsPlayer() then
@@ -499,7 +503,7 @@ hook.Add("EntityTakeDamage","luctus_log_EntityTakeDamage",function(target, dmg)
         weapon = dmg:GetAttacker():GetActiveWeapon():GetClass()
     end
     log_push("Damage",dmg:GetAttacker():Nick().."("..dmg:GetAttacker():SteamID()..") damaged "..name.." for "..math.Round(dmg:GetDamage(),2).." with "..weapon)
-end,-2)
+end,2)
 
 
 local ulx_noLogCommands = {
