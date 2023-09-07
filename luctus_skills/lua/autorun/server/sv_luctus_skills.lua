@@ -3,8 +3,10 @@
 
 util.AddNetworkString("luctus_skills")
 
+LUCTUS_SKILLS_PLY = LUCTUS_SKILLS_PLY or {}
+
 hook.Add("InitPostEntity","luctus_skills",function()
-    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_skills (steamid TEXT, skill TEXT, level INT, UNIQUE(steamid,skill) ON CONFLICT REPLACE)")
+    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_skills (steamid TEXT, skills TEXT, UNIQUE(steamid) ON CONFLICT REPLACE)")
     if res==false then
         error(sql.LastError())
     end
@@ -14,32 +16,29 @@ hook.Add("InitPostEntity","luctus_skills",function()
     end
 end)
 
+function LuctusSkillHas(ply,name)
+    return LUCTUS_SKILLS_PLY[ply][name] > 0
+end
+
 hook.Add("PlayerSay","luctus_skills",function(ply,text)
     if text == "!skills" then
-        local tab = table.Copy(LUCTUS_SKILLS)
-        for skill,v in pairs(tab) do
-            if ply.lskills[skill] then
-                tab[skill]["level"] = ply.lskills[skill]
-            else
-                tab[skill]["level"] = 0
-            end
-        end
         net.Start("luctus_skills")
-            net.WriteTable(tab)
+            net.WriteTable(LUCTUS_SKILLS_PLY[ply])
         net.Send(ply)
     end
 end)
 
 function LuctusSkillLoadPly(ply)
-    ply.lskills = {}
-    local res = sql.Query("SELECT * FROM luctus_skills WHERE steamid = "..sql.SQLStr(ply:SteamID()))
-    if res == false then
+    LUCTUS_SKILLS_PLY[ply] = {}
+    for name,tab in pairs(LUCTUS_SKILLS) do
+        LUCTUS_SKILLS_PLY[ply][name] = 0
+    end
+    local skills = sql.QueryValue("SELECT skills FROM luctus_skills WHERE steamid = "..sql.SQLStr(ply:SteamID()))
+    if skills == false then
         error(sql.LastError())
     end
-    if res and res[1] then
-        for k,v in pairs(res) do
-            ply.lskills[v.skill] = tonumber(v.level)
-        end
+    if skills then
+        LUCTUS_SKILLS_PLY[ply] = util.JSONToTable(skills)
     end
 end
 
@@ -47,32 +46,35 @@ hook.Add("PlayerInitialSpawn","luctus_skills",function(ply)
     LuctusSkillLoadPly(ply)
 end)
 
+hook.Add("PlayerDisconnected","luctus_skills",function(ply)
+    LUCTUS_SKILLS_PLY[ply] = nil
+end)
+
 net.Receive("luctus_skills",function(len,ply)
-    
     local numberOfSkills = net.ReadUInt(8)
     if numberOfSkills > 100 then return end
     local tab = {}
     for i=1,numberOfSkills do
         tab[net.ReadString()] = net.ReadUInt(8)
     end
-    PrintTable(tab)
     --Check input
     local levelTotal = 0
+    local plyLevel = ply:getLevel()
     local skills = LUCTUS_SKILLS
     for name,level in pairs(tab) do
         local skill = skills[name]
         if not skill then return end
-        if level > 0 and ply:getLevel() < skill.req then return end
+        if level > 0 and plyLevel < skill.req then return end
         if level > skill.max then return end
         levelTotal = levelTotal + (skill.cost*level)
     end
-    if levelTotal > ply:getLevel() then return end
-    --Set input
-    local res = nil
+    if levelTotal > plyLevel then return end
+    --Save
+    local res = sql.Query("INSERT INTO luctus_skills(steamid,skills) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(util.TableToJSON(tab))..")")
+    if res == false then error(sql.LastError()) end
+    --Set
     for skill,level in pairs(tab) do
-        ply.lskills[skill] = level
-        res = sql.Query("INSERT INTO luctus_skills(steamid,skill,level) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(skill)..","..level..")")
-        if res==false then error(sql.LastError()) end
+        LUCTUS_SKILLS_PLY[ply][skill] = level
     end
     DarkRP.notify(ply,0,5,"[skills] Successfully saved!")
     ply:PrintMessage(3,"[skills] Successfully saved!")
@@ -80,42 +82,46 @@ end)
 
 hook.Add("EntityTakeDamage","luctus_skills",function(ply,dmginfo)
 --hook.Add("ScalePlayerDamage","luctus_skills",function(ply,hitgroup,dmginfo)
+    if ply:IsPlayer() then
+        local skillTab = LUCTUS_SKILLS_PLY[ply]
+        print("Damage:",ply,skillTab)
+        print(skillTab["Upperthighmuscles"])
+        if skillTab["Upperthighmuscles"] and dmginfo:IsFallDamage() then
+            dmginfo:SubtractDamage(skillTab["Upperthighmuscles"])
+        end
+        if skillTab["Second Chance"] and ply:Health() == ply:GetMaxHealth() and dmginfo:GetDamage() >= ply:Health() then
+            dmginfo:SetDamage(ply:Health()-1)
+            return
+        end
+    end
     local att = dmginfo:GetAttacker()
-    if not IsValid(att) then return end
-    if not att:IsPlayer() then return end
+    if not IsValid(att) or not att:IsPlayer() then return end
     local wep = att:GetActiveWeapon()
     if not IsValid(wep) then return end
     
-    if att.lskills.Boxer and wep:GetClass() == "weapon_fists" then
-        dmginfo:AddDamage(att.lskills.Boxer)
+    local skillTab = LUCTUS_SKILLS_PLY[att]
+    if skillTab["Boxer"] and wep:GetClass() == "weapon_fists" then
+        dmginfo:AddDamage(skillTab["Boxer"])
     end
-    if att.lskills.BoxChampion and wep:GetClass() == "weapon_fists" then
+    if skillTab["BoxChampion"] and wep:GetClass() == "weapon_fists" then
         dmginfo:AddDamage(10)
     end
-    if att.lskills.Fireman and dmginfo:IsDamageType(DMG_BURN) then
-        dmginfo:SubtractDamage(att.lskills.Fireman)
+    if skillTab["Fireman"] and dmginfo:IsDamageType(DMG_BURN) then
+        dmginfo:SubtractDamage(skillTab["Fireman"])
     end
-    if att.lskills.Upperthighmuscles and dmginfo:IsDamageType(DMG_FALL) then
-        dmginfo:SubtractDamage(att.lskills.Upperthighmuscles)
-    end
-    if att.lskills["Last Chance"] and att:Health() <= 5 then
+    if skillTab["Last Chance"] and att:Health() <= 5 then
         dmginfo:AddDamage(10)
     end
-    --At the end
-    if not ply.lskills then return end
-    if ply.lskills["Second Chance"] and ply:Health() == ply:GetMaxHealth() and dmginfo:GetDamage() >= ply:Health() then
-        dmginfo:SetDamage(ply:Health()-1)
-    end
-end)
+end,-1)
 
 hook.Add( "PlayerFootstep", "luctus_skills", function(ply)
-    if ply.lskills.SneakyShoes and ply.lskills.SneakyShoes > 0 then return true end
+    if LuctusSkillHas(ply,"SneakyShoes") then return true end
 end)
 
 timer.Create("luctus_skills_hp",60,0,function()
     for k,ply in pairs(player.GetHumans()) do
-        if IsValid(ply) and ply.lskills and ply.lskills.Patience then
-            ply:SetHealth(math.min(ply:Health()+ply.lskills.Patience,ply:GetMaxHealth()))
+        if LuctusSkillHas(ply,"Patience") then
+            ply:SetHealth(math.min(ply:Health()+LUCTUS_SKILLS_PLY[ply]["Patience"],ply:GetMaxHealth()))
         end
     end
 end)

@@ -1,8 +1,6 @@
 --Luctus Skills
 --Made by OverlordAkise
 
---TODO: Add "cost" functionality to better balance skills
-
 LUCTUS_SKILLS = {
     ["Boxer"] = {
         req = 0,

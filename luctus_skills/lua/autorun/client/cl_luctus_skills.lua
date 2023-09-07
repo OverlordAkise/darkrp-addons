@@ -13,9 +13,9 @@ end)
 function LuctusSkillsSend()
     net.Start("luctus_skills")
         net.WriteUInt(table.Count(LUCTUS_SKILLS_LOCAL),8)
-        for skill,v in pairs(LUCTUS_SKILLS_LOCAL) do
-            net.WriteString(skill)
-            net.WriteUInt(v.level,8)
+        for name,skill in pairs(LUCTUS_SKILLS_LOCAL) do
+            net.WriteString(name)
+            net.WriteUInt(skill,8)
         end
     net.SendToServer()
 end
@@ -34,7 +34,7 @@ hook.Add("InitPostEntity","luctus_skills_uen_fix",function()
 end)
 
 function LuctusSkillsHasLevel(skill)
-    return LocalPlayer():getLevel() > LUCTUS_SKILLS_LOCAL[skill].req
+    return LocalPlayer():getLevel() > LUCTUS_SKILLS[skill].req
 end
 
 local accent_col = Color(0, 195, 165)
@@ -44,27 +44,26 @@ local color_white = Color(255,255,255)
 local color_black = Color(32, 34, 37)
 
 local function LuctusPrettifyScrollbar(el)
-  function el:Paint() return end
-	function el.btnGrip:Paint(w, h)
+    function el:Paint() return end
+    function el.btnGrip:Paint(w, h)
         draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
-
-	end
-	function el.btnUp:Paint(w, h)
-		draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
-	end
-	function el.btnDown:Paint(w, h)
-		draw.RoundedBox(0,0,0,w,h,accent_col)
-		draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
-	end
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+    end
+    function el.btnUp:Paint(w, h)
+        draw.RoundedBox(0,0,0,w,h,accent_col)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+    end
+    function el.btnDown:Paint(w, h)
+        draw.RoundedBox(0,0,0,w,h,accent_col)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, color_black)
+    end
 end
 
 function LuctusSkillsOpenMenu()
     if IsValid(skFrame) then return end
     
     local firstSkill = ""
-    for k,v in pairs(LUCTUS_SKILLS_LOCAL) do
+    for k,v in pairs(LUCTUS_SKILLS) do
         if LocalPlayer():getLevel() >= v.req then
             firstSkill = k
             break
@@ -143,7 +142,7 @@ function LuctusSkillsOpenMenu()
     descPanel:SetFont("Trebuchet18")
     descPanel:SetEditable(false)
     descPanel:SetTextColor(color_white)
-    descPanel:SetText(LUCTUS_SKILLS_LOCAL[firstSkill].desc)
+    descPanel:SetText(LUCTUS_SKILLS[firstSkill].desc)
     
     local progBar = vgui.Create("DPanel", mainPanel)
     progBar:Dock(TOP)
@@ -151,10 +150,10 @@ function LuctusSkillsOpenMenu()
     progBar:SetHeight(20)
     progBar:SetPaintBackground(false)
     function progBar:Paint(w,h)
-        local width = (LUCTUS_SKILLS_LOCAL[mainPanel.skill].level*w)/LUCTUS_SKILLS_LOCAL[mainPanel.skill].max
+        local width = (LUCTUS_SKILLS_LOCAL[mainPanel.skill]*w)/LUCTUS_SKILLS[mainPanel.skill].max
         draw.RoundedBox(0,0,0,w,h,color_black)
         draw.RoundedBox(0,0,0,width,h,accent_col)
-        draw.SimpleText(LUCTUS_SKILLS_LOCAL[mainPanel.skill].level.."/"..LUCTUS_SKILLS_LOCAL[mainPanel.skill].max,"Trebuchet18",w/2,h/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+        draw.SimpleText(LUCTUS_SKILLS_LOCAL[mainPanel.skill].."/"..LUCTUS_SKILLS[mainPanel.skill].max,"Trebuchet18",w/2,h/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     end
     
     local lowerPanel = vgui.Create("DPanel", mainPanel)
@@ -212,7 +211,7 @@ function LuctusSkillsOpenMenu()
     end
     
     
-    for skill,v in pairs(LUCTUS_SKILLS_LOCAL) do
+    for skill,v in pairs(LUCTUS_SKILLS) do
         local skillBut = vgui.Create("DButton",categoryButtons)
         skillBut.skill = skill
         skillBut:Dock(TOP)
@@ -230,7 +229,7 @@ function LuctusSkillsOpenMenu()
             draw.DrawText(self.skill, "Trebuchet18", 10, 7, color_white)
             if not LuctusSkillsHasLevel(self.skill) then
                 draw.RoundedBox(0, 0, 0, w, h, Color(24, 27, 32,200))
-                draw.SimpleText("Req. Lv"..LUCTUS_SKILLS_LOCAL[self.skill].req,"Trebuchet18",w-10, 7,color_red,TEXT_ALIGN_RIGHT)
+                draw.SimpleText("Req. Lv"..LUCTUS_SKILLS[self.skill].req,"Trebuchet18",w-10, 7,color_red,TEXT_ALIGN_RIGHT)
             end
         end
         skillBut.DoClick = function(self)
@@ -239,29 +238,30 @@ function LuctusSkillsOpenMenu()
                 return
             end
             mainPanel.skill = self.skill
-            descPanel:SetText(LUCTUS_SKILLS_LOCAL[self.skill].desc)
+            descPanel:SetText(LUCTUS_SKILLS[self.skill].desc)
         end
     end
 end
 
 function LuctusSkillsChange(name,shouldUp)
-    local skill = LUCTUS_SKILLS_LOCAL[name]
+    local skill = LUCTUS_SKILLS[name]
+    local ltSkill = LUCTUS_SKILLS_LOCAL[name]
     if shouldUp then
         if skill.cost > LUCTUS_SKILLS_FREEPOINTS then
             surface.PlaySound("player/suit_denydevice.wav")
             return
         end
-        skill.level = math.min(skill.level+1,skill.max)
+        LUCTUS_SKILLS_LOCAL[name] = math.min(ltSkill+1,skill.max)
     else
-        skill.level = math.max(skill.level-1,0)
+        LUCTUS_SKILLS_LOCAL[name] = math.max(ltSkill-1,0)
     end
     LuctusSkillUpdatePoints()
 end
 
 function LuctusSkillUpdatePoints()
     local totalSpent = 0
-    for k,skill in pairs(LUCTUS_SKILLS_LOCAL) do
-        totalSpent = totalSpent + (skill.level*skill.cost)
+    for name,skill in pairs(LUCTUS_SKILLS) do
+        totalSpent = totalSpent + (LUCTUS_SKILLS_LOCAL[name]*skill.cost)
     end
     LUCTUS_SKILLS_FREEPOINTS = LocalPlayer():getLevel()-totalSpent
 end
