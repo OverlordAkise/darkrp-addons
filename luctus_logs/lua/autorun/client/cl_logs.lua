@@ -313,8 +313,8 @@ function luctuslog_createLogWindow()
     luctuslog.list:AddColumn("Message")
     function luctuslog.list:OnRowRightClick(lineID, line)
         local Menu = DermaMenu()
-        local activeB = Menu:AddOption("Copy line to clipboard")
-        activeB:SetIcon( "icon16/add.png" )
+        Menu:AddOption("Copy line to clipboard"):SetIcon("icon16/add.png")
+        Menu:AddOption("Search for category"):SetIcon("icon16/arrow_left.png")
         local players = {}
         for s in string.gmatch(line.msg,"STEAM_%d:%d:[%d]+") do
             table.insert(players,s)
@@ -324,6 +324,7 @@ function luctuslog_createLogWindow()
             parent:SetIcon("icon16/user_go.png")
             plysubmenu.steamid = players[i]
             plysubmenu:AddOption("Copy SteamID of user"):SetIcon("icon16/attach.png")
+            plysubmenu:AddOption("Search for SteamID of user"):SetIcon("icon16/magnifier.png")
             plysubmenu:AddSpacer()
             plysubmenu.ply = player.GetBySteamID(players[i])
             if plysubmenu.ply then
@@ -338,15 +339,41 @@ function luctuslog_createLogWindow()
                     SetClipboardText(self.steamid)
                     return
                 end
+                if text == "Search for SteamID of user" then
+                    luctuslog.filter:SetValue(self.steamid)
+                    luctuslog.category = ""
+                    luctuslog.page = 0
+                    luctuslog.PageNumber:SetText(0)
+                    luctuslog_clientRequest()
+                    return
+                end
                 if luctus_log_ulxs[text] then
                     luctus_log_ulxs[text](self.ply)
                 end
             end
         end
+        Menu:AddSpacer()
+        Menu:AddOption("Reset all filters"):SetIcon("icon16/arrow_rotate_clockwise.png")
         function Menu:OptionSelected(selPanel, panelText)
             if panelText == "Copy line to clipboard" then 
                 SetClipboardText("["..line:GetColumnText(1).."] "..line.msg)
                 return 
+            end
+            if panelText == "Search for category" then
+                luctuslog.filter:SetValue("")
+                luctuslog.category = line:GetColumnText(2) --Cat
+                luctuslog.page = 0
+                luctuslog.PageNumber:SetText(0)
+                luctuslog_clientRequest()
+                return
+            end
+            if panelText == "Reset all filters" then
+                luctuslog.filter:SetValue("")
+                luctuslog.category = ""
+                luctuslog.page = 0
+                luctuslog.PageNumber:SetText(0)
+                luctuslog_clientRequest()
+                return
             end
         end
         Menu:Open()
