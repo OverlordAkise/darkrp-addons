@@ -33,6 +33,13 @@ local remove_gm_moves = true
 --and do not use the wep:startDarkRPCommand function then set this to true
 local remove_startcommand = true
 
+--Remove many animations which speeds up server processing
+--Only set this to true if you do not need swimming/driving animations!
+--Removed:
+-- Superman flying by having high speed in the air, Driving Animation
+-- Fancy Noclip-Hovering animation, Swimming Animation
+local remove_animations = false
+
 --CONFIG END
 
 
@@ -79,6 +86,28 @@ hook.Add("InitPostEntity","luctus_performance",function()
     end
     if remove_startcommand then
         function GAMEMODE:StartCommand(ply,usrcmd) end
+    end
+    if not remove_animations then return end
+    function GAMEMODE:CalcMainActivity(ply, velocity)
+        ply.CalcIdeal = ACT_MP_STAND_IDLE
+        ply.CalcSeqOverride = -1
+        if ply:IsOnGround() and not ply.m_bWasOnGround then
+            ply:AnimRestartGesture(GESTURE_SLOT_JUMP, ACT_LAND, true)
+        end
+        if not (self:HandlePlayerJumping(ply,velocity) or self:HandlePlayerDucking(ply,velocity)) then
+            local len2d = velocity:Length2DSqr()
+            if len2d > 22500 then
+                ply.CalcIdeal = ACT_MP_RUN
+            elseif len2d > 0.25 then
+                ply.CalcIdeal = ACT_MP_WALK
+            end
+        end
+        ply.m_bWasOnGround = ply:IsOnGround()
+        ply.m_bWasNoclipping = ply:GetMoveType() == MOVETYPE_NOCLIP and not ply:InVehicle()
+        if ply:GetMoveType() == MOVETYPE_NOCLIP then
+            ply.CalcIdeal = ACT_MP_STAND_IDLE
+        end
+        return ply.CalcIdeal, ply.CalcSeqOverride
     end
 end)
 
