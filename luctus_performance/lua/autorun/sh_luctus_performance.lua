@@ -1,9 +1,7 @@
 --Luctus Performance
 --Made by OverlordAkise
 
---This file should give your server a boost
---in performance by lowering cpu usage
-
+--This file should give your server a boost in performance by lowering cpu usage
 
 --No reason to not do this, so true
 local remove_widgets = true
@@ -38,7 +36,7 @@ local remove_startcommand = true
 --Removed:
 -- Superman flying by having high speed in the air, Driving Animation
 -- Fancy Noclip-Hovering animation, Swimming Animation
-local remove_animations = false
+local remove_animations = true
 
 --CONFIG END
 
@@ -87,28 +85,11 @@ hook.Add("InitPostEntity","luctus_performance",function()
     if remove_startcommand then
         function GAMEMODE:StartCommand(ply,usrcmd) end
     end
-    if not remove_animations then return end
-    function GAMEMODE:CalcMainActivity(ply, velocity)
-        ply.CalcIdeal = ACT_MP_STAND_IDLE
-        ply.CalcSeqOverride = -1
-        if ply:IsOnGround() and not ply.m_bWasOnGround then
-            ply:AnimRestartGesture(GESTURE_SLOT_JUMP, ACT_LAND, true)
-        end
-        if not (self:HandlePlayerJumping(ply,velocity) or self:HandlePlayerDucking(ply,velocity)) then
-            local len2d = velocity:Length2DSqr()
-            if len2d > 22500 then
-                ply.CalcIdeal = ACT_MP_RUN
-            elseif len2d > 0.25 then
-                ply.CalcIdeal = ACT_MP_WALK
-            end
-        end
-        ply.m_bWasOnGround = ply:IsOnGround()
-        ply.m_bWasNoclipping = ply:GetMoveType() == MOVETYPE_NOCLIP and not ply:InVehicle()
-        if ply:GetMoveType() == MOVETYPE_NOCLIP then
-            ply.CalcIdeal = ACT_MP_STAND_IDLE
-        end
-        return ply.CalcIdeal, ply.CalcSeqOverride
+    if remove_animations then
+        include("sh_luctus_new_anims.lua")
     end
+    
+    print("[luctus_performance] optimizations loaded")
 end)
 
 print("[luctus_performance] sh loaded")
