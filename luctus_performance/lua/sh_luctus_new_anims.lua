@@ -9,8 +9,12 @@ type     runs       total time taken    average time taken
 default  665        6.18516             0.00930099
 striped  693        3.959110            0.00571300
 +tables  669        2.73095             0.0040821375
++meta    681        1.544720            0.0022683113
 
-This version is striped of unnecessary animations + using a table cache instead of ply index
+This is the default gmod animation lua but:
+ - striped from swimming,noclipping,vaulting animations
+ - using tables instead of ply index (tab[ply].x instead of ply.x)
+ - caching meta functions, this was by far using the most ply __index
 
 --]]
 
@@ -20,15 +24,26 @@ local plycache = {}
 
 local GAM = gmod.GetGamemode()
 
+local plymeta = FindMetaTable("Player")
+local entmeta = FindMetaTable("Entity")
+local plyOnGround = entmeta.OnGround
+local plyAnimRestartMainSequence = plymeta.AnimRestartMainSequence
+local plyWaterLevel = entmeta.WaterLevel
+local plyTranslateWeaponActivity = plymeta.TranslateWeaponActivity
+local plyGetMoveType = entmeta.GetMoveType
+local plyIsFlagSet = entmeta.IsFlagSet
+local plySetPlaybackRate = entmeta.SetPlaybackRate
+
+
 function GAM:HandlePlayerJumping( ply, velocity )
-	if ( ply:GetMoveType() == MOVETYPE_NOCLIP ) then
+	if ( plyGetMoveType(ply) == MOVETYPE_NOCLIP ) then
 		plycache[ply].m_bJumping = false
 		return
 	end
 
 	-- airwalk more like hl2mp, we airwalk until we have 0 velocity, then it's the jump animation
 	-- underwater we're alright we airwalking
-	if ( !plycache[ply].m_bJumping && !ply:OnGround() && ply:WaterLevel() <= 0 ) then
+	if ( !plycache[ply].m_bJumping && !plyOnGround(ply) && plyWaterLevel(ply) <= 0 ) then
 
 		if ( !plycache[ply].m_fGroundTime ) then
 
@@ -48,15 +63,15 @@ function GAM:HandlePlayerJumping( ply, velocity )
 		if plycache[ply].m_bFirstJumpFrame then
 
 			plycache[ply].m_bFirstJumpFrame = false
-			ply:AnimRestartMainSequence()
+			plyAnimRestartMainSequence(ply)
 
 		end
 
-		if ( ply:WaterLevel() >= 2 ) || ( ( CurTime() - plycache[ply].m_flJumpStartTime ) > 0.2 && ply:OnGround() ) then
+		if ( plyWaterLevel(ply) >= 2 ) || ( ( CurTime() - plycache[ply].m_flJumpStartTime ) > 0.2 && plyOnGround(ply) ) then
 
 			plycache[ply].m_bJumping = false
 			plycache[ply].m_fGroundTime = nil
-			ply:AnimRestartMainSequence()
+			plyAnimRestartMainSequence(ply)
 
 		end
 
@@ -71,7 +86,7 @@ function GAM:HandlePlayerJumping( ply, velocity )
 end
 
 function GAM:HandlePlayerDucking( ply, velocity )
-	if ( !ply:IsFlagSet( FL_ANIMDUCKING ) ) then return false end
+	if ( !plyIsFlagSet(ply, FL_ANIMDUCKING ) ) then return false end
 
 	if ( velocity:Length2DSqr() > 0.25 ) then
 		plycache[ply].CalcIdeal = ACT_MP_CROUCHWALK
@@ -108,13 +123,13 @@ function GAM:UpdateAnimation( ply, velocity, maxseqgroundspeed )
 	local rate = math.min( movement, 2 )
 
 	-- if we're under water we want to constantly be swimming..
-	if ( ply:WaterLevel() >= 2 ) then
+	if ( plyWaterLevel(ply) >= 2 ) then
 		rate = math.max( rate, 0.5 )
-	elseif ( !ply:IsOnGround() && len >= 1000 ) then
+	elseif ( !plyOnGround(ply) && len >= 1000 ) then
 		rate = 0.1
 	end
 
-	ply:SetPlaybackRate( rate )
+	plySetPlaybackRate(ply,rate)
 
 	-- We only need to do this clientside..
 	if ( CLIENT ) then
@@ -193,7 +208,7 @@ function GAM:CalcMainActivity( ply, velocity )
     plycache[ply] = plycache[ply] or {}
 	plycache[ply].CalcIdeal = ACT_MP_STAND_IDLE
 	plycache[ply].CalcSeqOverride = -1
-	if ply:IsOnGround() and not plycache[ply].m_bWasOnGround then
+	if plyOnGround(ply) and not plycache[ply].m_bWasOnGround then
         ply:AnimRestartGesture(GESTURE_SLOT_JUMP, ACT_LAND, true)
     end
     if not (self:HandlePlayerJumping(ply,velocity) or self:HandlePlayerDucking(ply,velocity)) then
@@ -204,9 +219,9 @@ function GAM:CalcMainActivity( ply, velocity )
             plycache[ply].CalcIdeal = ACT_MP_WALK
         end
     end
-    plycache[ply].m_bWasOnGround = ply:IsOnGround()
-    plycache[ply].m_bWasNoclipping = ply:GetMoveType() == MOVETYPE_NOCLIP and not ply:InVehicle()
-    if ply:GetMoveType() == MOVETYPE_NOCLIP then
+    plycache[ply].m_bWasOnGround = plyOnGround(ply)
+    plycache[ply].m_bWasNoclipping = plyGetMoveType(ply) == MOVETYPE_NOCLIP and not ply:InVehicle()
+    if plyGetMoveType(ply) == MOVETYPE_NOCLIP then
         plycache[ply].CalcIdeal = ACT_MP_STAND_IDLE
     end
     return plycache[ply].CalcIdeal, plycache[ply].CalcSeqOverride
@@ -229,7 +244,7 @@ IdleActivityTranslate[ ACT_LAND ]							= ACT_LAND
 
 -- it is preferred you return ACT_MP_* in CalcMainActivity, and if you have a specific need to not tranlsate through the weapon do it here
 function GAM:TranslateActivity( ply, act )
-	local newact = ply:TranslateWeaponActivity( act )
+	local newact = plyTranslateWeaponActivity(ply,act)
 
 	-- select idle anims if the weapon didn't decide
 	if ( act == newact ) then
@@ -244,7 +259,7 @@ function GAM:DoAnimationEvent( ply, event, data )
     plycache[ply] = plycache[ply] or {}
 	if ( event == PLAYERANIMEVENT_ATTACK_PRIMARY ) then
 
-		if ply:IsFlagSet( FL_ANIMDUCKING ) then
+		if plyIsFlagSet(ply, FL_ANIMDUCKING ) then
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_ATTACK_CROUCH_PRIMARYFIRE, true )
 		else
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_ATTACK_STAND_PRIMARYFIRE, true )
@@ -259,7 +274,7 @@ function GAM:DoAnimationEvent( ply, event, data )
 
 	elseif ( event == PLAYERANIMEVENT_RELOAD ) then
 
-		if ply:IsFlagSet( FL_ANIMDUCKING ) then
+		if plyIsFlagSet(ply, FL_ANIMDUCKING ) then
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_CROUCH, true )
 		else
 			ply:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_STAND, true )
@@ -273,7 +288,7 @@ function GAM:DoAnimationEvent( ply, event, data )
 		plycache[ply].m_bFirstJumpFrame = true
 		plycache[ply].m_flJumpStartTime = CurTime()
 
-		ply:AnimRestartMainSequence()
+		plyAnimRestartMainSequence(ply)
 
 		return ACT_INVALID
 

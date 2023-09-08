@@ -92,4 +92,6 @@ hook.Add("InitPostEntity","luctus_performance",function()
     print("[luctus_performance] optimizations loaded")
 end)
 
+AddCSLuaFile("sh_luctus_new_anims.lua")
+
 print("[luctus_performance] sh loaded")
