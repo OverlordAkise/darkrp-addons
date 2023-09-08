@@ -82,33 +82,35 @@ end)
 
 hook.Add("EntityTakeDamage","luctus_skills",function(ply,dmginfo)
 --hook.Add("ScalePlayerDamage","luctus_skills",function(ply,hitgroup,dmginfo)
+    --Defender
     if ply:IsPlayer() then
         local skillTab = LUCTUS_SKILLS_PLY[ply]
-        if skillTab["Upperthighmuscles"] and dmginfo:IsFallDamage() then
+        if dmginfo:IsFallDamage() then
             dmginfo:SubtractDamage(skillTab["Upperthighmuscles"])
         end
-        if skillTab["Second Chance"] and ply:Health() == ply:GetMaxHealth() and dmginfo:GetDamage() >= ply:Health() then
+        if skillTab["Second Chance"] > 0 and ply:Health() == ply:GetMaxHealth() and dmginfo:GetDamage() >= ply:Health() then
             dmginfo:SetDamage(ply:Health()-1)
             return
         end
     end
+    --Attacker
     local att = dmginfo:GetAttacker()
     if not IsValid(att) or not att:IsPlayer() then return end
     local wep = att:GetActiveWeapon()
     if not IsValid(wep) then return end
     
     local skillTab = LUCTUS_SKILLS_PLY[att]
-    if skillTab["Boxer"] and wep:GetClass() == "weapon_fists" then
+    if wep:GetClass() == "weapon_fists" then
         dmginfo:AddDamage(skillTab["Boxer"])
     end
-    if skillTab["BoxChampion"] and wep:GetClass() == "weapon_fists" then
-        dmginfo:AddDamage(10)
+    if wep:GetClass() == "weapon_fists" then
+        dmginfo:AddDamage(skillTab["BoxChampion"]*10)
     end
-    if skillTab["Fireman"] and dmginfo:IsDamageType(DMG_BURN) then
+    if dmginfo:IsDamageType(DMG_BURN) then
         dmginfo:SubtractDamage(skillTab["Fireman"])
     end
-    if skillTab["Last Chance"] and att:Health() <= 5 then
-        dmginfo:AddDamage(10)
+    if att:Health() <= 5 then
+        dmginfo:AddDamage(skillTab["Last Chance"]*10)
     end
 end,-1)
 
