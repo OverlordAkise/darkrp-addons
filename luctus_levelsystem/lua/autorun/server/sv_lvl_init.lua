@@ -126,4 +126,13 @@ timer.Create("luctus_levelsystem",LUCTUS_XP_TIMER,0,function()
     end
 end)
 
+--Restrict job changes
+hook.Add("playerCanChangeTeam","luctus_levelsystem",function(ply,newTeam,force)
+    if force then return true, "Job change was forced!" end
+    local jobTable = RPExtraTeams[newTeam]
+    if jobTable and jobTable.level and ply:getLevel() < jobTable.level then
+        return false, "Level too low!"
+    end
+end)
+
 print("[luctus_levelsystem] sv loaded")
