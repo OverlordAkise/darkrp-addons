@@ -17,7 +17,7 @@ hook.Add("DarkRPVarChanged","luctus_levelsystem",function(ply,name,old,new)
     end
     if name == "level" then
         level = new
-        reqXP = levelReqExp(level)
+        reqXP = LuctusLevelRequiredXP(level)
         xpBarLength = (xp*w)/reqXP
     end
 end)

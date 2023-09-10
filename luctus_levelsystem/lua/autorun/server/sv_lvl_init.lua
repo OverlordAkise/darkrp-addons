@@ -1,15 +1,6 @@
 --Luctus Levelsystem
 --Made by OverlordAkise
 
--- CONFIG
-
-LUCTUS_XP_PERJOB = false --Should each job have its own leveling
-LUCTUS_XP_TIMER = 300 --seconds, interval for giving XP
-LUCTUS_XP_TIMER_XP = 20 --how many XP every interval
-LUCTUS_XP_KILL = 5 --how many XP per player kill
-
--- CONFIG END
-
 hook.Add("PostGamemodeLoaded","luctus_levelsystem",function()
     local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_levelsystem( steamid TEXT, steamid64 TEXT, exp INT, lvl INT )")
     --SteamID64 to link it to a playername with darkrp_player table
@@ -29,11 +20,12 @@ function plymeta:setXP(xp)
 end
 
 function plymeta:addXP(amount)
-    local curXP = self:getXP() + amount
+    local getxp = amount*LUCTUS_LEVEL_XP_MULTIPLIER
+    local curXP = self:getXP() + getxp
     local curLevel = self:getLevel()
-    DarkRP.notify(self,0,5,"You received "..amount.." XP!")
-    while curXP >= levelReqExp(curLevel)  do
-        curXP = curXP - levelReqExp(curLevel)
+    DarkRP.notify(self,0,5,"You received "..getxp.." XP!")
+    while curXP >= LuctusLevelRequiredXP(curLevel)  do
+        curXP = curXP - LuctusLevelRequiredXP(curLevel)
         curLevel = curLevel + 1
         DarkRP.notify(self,0,5,"You reached Lv."..curLevel.."!")
     end

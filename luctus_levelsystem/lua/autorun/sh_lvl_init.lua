@@ -1,10 +1,6 @@
 --Luctus Levelsystem
 --Made by OverlordAkise
 
-function levelReqExp(lvl)
-    return (5+(lvl*5))
-end
-
 local plymeta = FindMetaTable("Player")
 
 function plymeta:hasLevel(level)
