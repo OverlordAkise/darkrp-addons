@@ -1,13 +1,19 @@
 --Luctus Ingame Config
 --Made by OverlordAkise
 
+hook.Add("OnPlayerChat","luctus_ingame_config",function(ply,text,isteam,isdead)
+    if ply ~= LocalPlayer() then return end
+    if text ~= LUCTUS_INGAME_CONFIG_CMD_CL then return end
+    LuctusOpenIngameConfig(LuctusIngameConfigGetAll(),false)
+end)
+
 net.Receive("luctus_ingame_config",function()
     local configTable = net.ReadTable()
-    LuctusOpenIngameConfig(configTable)
+    LuctusOpenIngameConfig(configTable,true)
 end)
 
 LuctusIngameConfigFrame = nil
-function LuctusOpenIngameConfig(configTable)
+function LuctusOpenIngameConfig(configTable,isServer)
     if IsValid(LuctusIngameConfigFrame) then LuctusIngameConfigFrame:Close() end
     LuctusIngameConfigFrame = vgui.Create("DFrame")
     LuctusIngameConfigFrame:SetTitle("Luctus' Ingame Config")
@@ -56,10 +62,14 @@ function LuctusOpenIngameConfig(configTable)
             row.name = name
             row.DataChanged = function(self,newvalue)
                 print("[luctus_config] updating value of",self.name)
-                net.Start("luctus_ingame_config")
-                    net.WriteString(self.name)
-                    net.WriteString(newvalue)
-                net.SendToServer()
+                if isServer then
+                    net.Start("luctus_ingame_config")
+                        net.WriteString(self.name)
+                        net.WriteString(newvalue)
+                    net.SendToServer()
+                else
+                    LuctusIngameConfigChange(self.name,newvalue,LocalPlayer())
+                end
             end
         end
     end
