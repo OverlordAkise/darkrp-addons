@@ -71,7 +71,7 @@ hook.Add("HUDPaint", "luctus_hud", function()
     draw.RoundedBox(0,startX+15,barY,maxBarSize,barHeight,backgroundCol)
     draw.RoundedBox(0,startX+15,barY,math.Clamp((ply:Armor()*maxBarSize)/ply:GetMaxArmor(),0,maxBarSize),barHeight,armorCol)
     --HP
-    draw.RoundedBox(0,startX+15,barY+18,maxBarSize,barHeight,color_white)
+    draw.RoundedBox(0,startX+15,barY+18,maxBarSize,barHeight,backgroundCol)
     draw.RoundedBox(0,startX+15,barY+18,math.Clamp((ply:Health()*maxBarSize)/ply:GetMaxHealth(),0,maxBarSize),barHeight,color_white)
     --Money
     draw.SimpleText(DarkRP.formatMoney(ply:getDarkRPVar("money")), "LucidHUDFont",startX+15,barY+32,color_white,TEXT_ALIGN_LEFT)
