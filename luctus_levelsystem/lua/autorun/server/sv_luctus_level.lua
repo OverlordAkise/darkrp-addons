@@ -20,9 +20,16 @@ function plymeta:setXP(xp)
 end
 
 function plymeta:addXP(amount)
-    local getxp = amount*LUCTUS_LEVEL_XP_MULTIPLIER
+    local getxp = amount
+    local mult = hook.Run("LuctusLevelMultXP",self,amount)
+    if tonumber(mult) then
+        getxp = getxp*mult
+    end
+    getxp = getxp*LUCTUS_LEVEL_XP_MULTIPLIER
+    
     local curXP = self:getXP() + getxp
     local curLevel = self:getLevel()
+    local oldLevel = curLevel
     DarkRP.notify(self,0,5,"You received "..getxp.." XP!")
     while curXP >= LuctusLevelRequiredXP(curLevel)  do
         curXP = curXP - LuctusLevelRequiredXP(curLevel)
@@ -32,6 +39,7 @@ function plymeta:addXP(amount)
     self:setXP(curXP)
     self:setLevel(curLevel)
     LuctusLevelSave(self)
+    hook.Run("LuctusLevelGained",self,getxp,curLevel-oldLevel)
 end
 
 plymeta.AddXP = plymeta.addXP
@@ -107,13 +115,13 @@ hook.Add("PlayerInitialSpawn","luctus_levelsystem",function(ply)
 end)
 
 hook.Add("PlayerDeath","luctus_levelsystem",function(ply,inflictor,attacker)
-    if attacker:IsPlayer() && IsValid(attacker) then
+    if attacker:IsPlayer() and IsValid(attacker) then
         attacker:addXP(LUCTUS_XP_KILL)
     end
 end)
 
 timer.Create("luctus_levelsystem",LUCTUS_XP_TIMER,0,function()
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         v:addXP(LUCTUS_XP_TIMER_XP)
     end
 end)
