@@ -71,7 +71,7 @@ hook.Add("LuctusLeaderboardAdd","darkrp_money",function()
         local res = sql.Query("SELECT DISTINCT rpname,wallet FROM darkrp_player ORDER BY wallet DESC LIMIT 20;")
         if res and res[1] then
             local tab = {}
-            for k,v in pairs(res) do
+            for k,v in ipairs(res) do
                 table.insert(tab,{v.rpname,v.wallet})
             end
             return tab
@@ -86,7 +86,7 @@ hook.Add("LuctusLeaderboardAdd","utime",function()
         local res = sql.Query("SELECT rpname,totaltime FROM utime INNER JOIN darkrp_player ON utime.player = darkrp_player.uid ORDER BY totaltime DESC LIMIT 20;")
         if res and res[1] then
             local tab = {}
-            for k,v in pairs(res) do
+            for k,v in ipairs(res) do
                 table.insert(tab,{v.rpname,string.NiceTime(tonumber(v.totaltime)).."/"..v.totaltime})
             end
             return tab
@@ -97,11 +97,11 @@ end)
 
 hook.Add("LuctusLeaderboardAdd","luctus_levelsystem",function()
     if not LuctusLevelLoad then return end
-    LuctusLeaderboardAdd("Highest level",function()
+    LuctusLeaderboardAdd("Highest ply level",function()
         local res = sql.Query("SELECT rpname,lvl FROM luctus_levelsystem INNER JOIN darkrp_player ON luctus_levelsystem.steamid64 = darkrp_player.uid ORDER BY lvl DESC LIMIT 20;")
         if res and res[1] then
             local tab = {}
-            for k,v in pairs(res) do
+            for k,v in ipairs(res) do
                 table.insert(tab,{v.rpname,v.lvl})
             end
             return tab
@@ -110,20 +110,30 @@ hook.Add("LuctusLeaderboardAdd","luctus_levelsystem",function()
     end)
 end)
 
-hook.Add("LuctusLeaderboardAdd","ch_atm",function()
-    if not CH_ATM then return end
-    LuctusLeaderboardAdd("Most bank $",function()
-        local res = sql.Query("SELECT amount,nick FROM ch_atm_accounts ORDER BY amount DESC LIMIT 20;")
+hook.Add("LuctusLeaderboardAdd","luctus_gangs",function()
+    if not LUCTUS_GANGS_CREATE_COST then return end
+    LuctusLeaderboardAdd("Highest gang level",function()
+        local res = sql.Query("SELECT name,level FROM luctus_gangs ORDER BY level DESC LIMIT 20;")
         if res and res[1] then
             local tab = {}
-            for k,v in pairs(res) do
-                table.insert(tab,{v.nick,v.amount})
+            for k,v in ipairs(res) do
+                table.insert(tab,{v.name,v.level})
+            end
+            return tab
+        end
+        return {}
+    end)
+    LuctusLeaderboardAdd("Highest gang money",function()
+        local res = sql.Query("SELECT name,money FROM luctus_gangs ORDER BY money DESC LIMIT 20;")
+        if res and res[1] then
+            local tab = {}
+            for k,v in ipairs(res) do
+                table.insert(tab,{v.name,v.money})
             end
             return tab
         end
         return {}
     end)
 end)
-
 
 print("[luctus_leaderboard] sv loaded")

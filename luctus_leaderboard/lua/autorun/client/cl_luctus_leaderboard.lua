@@ -87,8 +87,8 @@ function LuctusLeaderboardMenu(tab)
     
     leaderboardList = vgui.Create("DListView",mainPanel)
     leaderboardList:Dock(FILL)
-    leaderboardList:AddColumn("k")
-    leaderboardList:AddColumn("v")
+    leaderboardList:AddColumn("name")
+    leaderboardList:AddColumn("score")
     for k,v in pairs(leaderboardList.Columns) do
         v.Header:SetTextColor(accent_col)
         v.Header.Paint = function(self,w,h)
