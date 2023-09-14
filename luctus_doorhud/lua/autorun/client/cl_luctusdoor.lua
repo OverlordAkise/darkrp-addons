@@ -84,6 +84,7 @@ for i=1,#doorEnts do
       doorSubHeader = "Access: "..doorData.groupOwn
     elseif doorData.nonOwnable then
       doorHeader = doorData.title or ""
+      doorSubHeader = ""
     elseif doorData.teamOwn then
       doorHeader = doorData.title or "Team Door"
       doorSubHeader = "Access: "..table.Count(doorData.teamOwn).." job(s)"
