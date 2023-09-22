@@ -18,4 +18,11 @@ function LuctusLevelRequiredXP(lvl)
     return (5+(lvl*5))
 end
 
+--UI stuff
+--Show xp bar only if you press TAB
+--This changes the design from a thin bar at the top
+--to a bigger bar in the upper half of the screen
+LUCTUS_LEVEL_SHOW_TAB = true
+
+
 print("[luctus_levelsystem] config loaded")
