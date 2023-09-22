@@ -13,5 +13,3 @@ ENT.Model = "models/props_trainstation/trashcan_indoor001b.mdl"
 ENT.Freeze = false
 ENT.Spawnable = true
 ENT.AdminSpawnable = false
-
-ENT.HP = 50
