@@ -20,6 +20,7 @@ function plymeta:setXP(xp)
 end
 
 function plymeta:addXP(amount)
+    if LUCTUS_XP_DISABLE_WHILE_AFK and self:getDarkRPVar("AFK",false) then return end
     local getxp = amount
     local mult = hook.Run("LuctusLevelMultXP",self,amount)
     if tonumber(mult) then

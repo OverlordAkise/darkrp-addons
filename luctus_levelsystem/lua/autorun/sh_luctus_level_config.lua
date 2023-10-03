@@ -11,6 +11,8 @@ LUCTUS_XP_TIMER = 300
 LUCTUS_XP_TIMER_XP = 20
 --How many XP per player kill
 LUCTUS_XP_KILL = 5
+--Should you get XP if you are AFK
+LUCTUS_XP_DISABLE_WHILE_AFK = false
 
 --Function for calculating how many XP you need per level
 --Currently: Linear scaling
