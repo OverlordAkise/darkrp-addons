@@ -162,6 +162,7 @@ end
 -- just override this.
 --
 function GAM:GrabEarAnimation( ply )
+    if not plycache[ply] then return end
 	plycache[ply].ChatGestureWeight = plycache[ply].ChatGestureWeight || 0
 
 	-- Don't show this when we're playing a taunt!
