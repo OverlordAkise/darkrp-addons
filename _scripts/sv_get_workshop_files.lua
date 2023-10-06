@@ -17,15 +17,21 @@ function GetRecursiveWorkshopFiles(curfolder,base)
     if not file.Exists("_dump/"..curfolder,"DATA") then
         file.CreateDir("_dump/"..curfolder)
     end
-    for k,v in pairs(files) do
-        --print("v",string.find(v,".lua"))
-        if not string.find(v,".lua") then continue end
-        local err, errStr = pcall(function() file.Write("_dump/"..curfolder..v..".txt",file.Read(curfolder..v,base)) end)
-        if not err then print(errStr) end
-        
+    if files then
+        for k,v in pairs(files) do
+            --print("v",string.find(v,".lua"))
+            if not string.find(v,".lua") then continue end
+            local err, errStr = pcall(function() file.Write("_dump/"..curfolder..v..".txt",file.Read(curfolder..v,base)) end)
+            if not err then print(errStr) end
+            
+        end
+    else
+        print("ERROR:",curfolder,"no files found")
     end
-    for k,v in pairs(folders) do
-        GetRecursiveWorkshopFiles(curfolder..v.."/",base)
+    if folders then
+        for k,v in pairs(folders) do
+            GetRecursiveWorkshopFiles(curfolder..v.."/",base)
+        end
     end
 end
 
