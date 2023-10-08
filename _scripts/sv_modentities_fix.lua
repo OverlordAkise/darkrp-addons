@@ -10,24 +10,12 @@ local allowedRanks = {
     ["moderator"] = true,
 }
 
-hook.Add("PlayerInitialSpawn", "luctus_modentities", function()
-    if not GM and not GAMEMODE then
-        print("[luctus_modentities] Error: Couldn't load!")
-        return
+hook.Add("PlayerSpawnSENT","luctus_modentities",function(ply,class,info)
+    if allowedRanks[ply:GetUserGroup()] then
+        return true
     end
-    local function lcheckAdminSpawn(ply, configVar, errorStr)
-        if allowedRanks[ply:GetUserGroup()] then
-            return true
-        end
-        DarkRP.notify(ply, 1, 5, DarkRP.getPhrase("need_admin", DarkRP.getPhrase(errorStr) or errorStr))
-        return false
-    end
-
-    function GAMEMODE:PlayerSpawnSENT(ply, class)
-        return lcheckAdminSpawn(ply, "adminsents", "gm_spawnsent") and self.Sandbox.PlayerSpawnSENT(self, ply, class) and not ply:isArrested()
-    end
-    hook.Remove("PlayerInitialSpawn", "luctus_modentities")
-    print("[luctus_modentities] Successfully loaded!")
+    DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("need_admin", DarkRP.getPhrase("gm_spawnsent")))
+    return false
 end)
 
-print("[luctus_modentities] Loaded hook!")
+print("[luctus_modentities] sv loaded")
