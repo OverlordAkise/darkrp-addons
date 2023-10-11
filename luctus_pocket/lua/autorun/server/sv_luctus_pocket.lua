@@ -1,6 +1,14 @@
 --Luctus Pocket
 --Made by OverlordAkise
 
+LUCTUS_POCKET_WHITELIST = {
+    ["prop_physics"] = true,
+}
+
+hook.Add("canPocket","luctus_pocket",function(ply,ent)
+    if not IsValid(ent) or not LUCTUS_POCKET_WHITELIST[ent:GetClass()] then return false, "You can not pocket this!" end
+end)
+
 util.AddNetworkString("luctus_pocket")
 
 hook.Add("InitPostEntity","luctus_pocket",function()
