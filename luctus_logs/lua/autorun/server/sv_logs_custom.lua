@@ -235,6 +235,23 @@ if LUCTUS_RADIO_EXISTS then
     LuctusLogAddCategory("Radio")
 end
 
+--Luctus Raidhelper
+if LUCTUS_RAIDHELPER_JOBS then
+    hook.Add("LuctusRaidHelperAsk","luctus_log",function(ply,jobname,acceptNum)
+        LuctusLog("Raids",ply:Nick().."("..ply:SteamID()..") asked to start a raid as "..jobname.." ("..acceptNum..")")
+    end,-2)
+    hook.Add("LuctusRaidHelperStart","luctus_log",function(ply,jobname,members)
+        LuctusLog("Raids",ply:Nick().."("..ply:SteamID()..") started a raid as "..jobname.." with "..members.." people")
+    end,-2)
+    hook.Add("LuctusRaidHelperEnd","luctus_log",function(jobname,reason)
+        LuctusLog("Raids","Raid of "..jobname.." ended with reason: "..reason)
+    end,-2)
+    hook.Add("LuctusRaidHelperLeft","luctus_log",function(ply,jobname,reason)
+        LuctusLog("Raids",ply:Nick().."("..ply:SteamID()..") left the raid of "..jobname.." with reason: "..reason)
+    end,-2)
+    LuctusLogAddCategory("Raids")
+end
+
 --Luctus Jobbans
 if ulx and ulx.jobban then
     hook.Add("LuctusJobbanBan","luctus_log",function(steamid,jobname,newBanTime,ply)
