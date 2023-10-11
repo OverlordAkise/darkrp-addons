@@ -10,8 +10,12 @@ local allowedRanks = {
     ["moderator"] = true,
 }
 
+local allowedJobs = {
+    ["Citizen"] = true,
+}
+
 hook.Add("PlayerSpawnProp","luctus_modprops",function(ply,model)
-    if not allowedRanks[ply:GetUserGroup()] then return false end
+    if not allowedRanks[ply:GetUserGroup()] and not allowedJobs[team.GetName(ply:Team())] then return false end
 end)
 
 print("[luctus_adminonlyprops] sv loaded")
