@@ -140,6 +140,9 @@ hook.Add("PlayerSwitchWeapon","luctus_log_psw",function(ply, oldWeapon, newWeapo
 end)
 --]]
 
+hook.Add("InitPostEntity","luctus_log",function()
+    log_push("Server","Server started (InitPostEntity)")
+end,-2)
 hook.Add("playerAdverted","luctus_log_playerAdverted",function(ply, arguments, entity)
     if not IsValid(ply) then return end 
     log_push("PlayerSay",ply:Nick().."("..ply:SteamID()..") created a lawboard with text: "..arguments)
