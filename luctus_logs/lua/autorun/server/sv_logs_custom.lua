@@ -37,6 +37,12 @@ end
 --Wait for every addon to have loaded
 hook.Add("InitPostEntity","luctus_log_custom",function()
 
+
+--SCP, multiple jobs / things can log here
+if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
+    LuctusLogAddCategory("scp")
+end
+
 --Luctus AntiBanEvasion
 if LUCTUS_ABE_FAMILY_SHARING then
     hook.Add("LuctusAntiBanEvasionDetection","luctus_log",function(ply,level,message)
@@ -69,6 +75,22 @@ if LuctusPopupCreate then
         LuctusLog("Tickets",ply:Nick().."("..ply:SteamID()..") ticket was closed "..extraText)
     end,-2)
     LuctusLogAddCategory("Tickets")
+end
+
+--Luctus SCP026DE
+if LUCTUS_SCP026DE_INFECTED then
+    hook.Add("LuctusSCP026DEAdded","luctus_log",function(ply)
+        LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") has been infected by SCP-026-DE")
+    end,-2)
+    hook.Add("LuctusSCP026DERemoved","luctus_log",function(ply)
+        --LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") has been freed from SCP-026-DE")
+    end,-2)
+    hook.Add("LuctusSCP026DEKilled","luctus_log",function(ply,targetply)
+        LuctusLog("scp",targetply:Nick().."("..targetply:SteamID()..") has been killed by SCP-026-DE / "..ply:Nick().."("..ply:SteamID()..")")
+    end,-2)
+    hook.Add("LuctusSCP026DESpared","luctus_log",function(ply,targetply)
+        LuctusLog("scp",targetply:Nick().."("..targetply:SteamID()..") has been spared by SCP-026-DE / "..ply:Nick().."("..ply:SteamID()..")")
+    end,-2)
 end
 
 --Luctus Code
@@ -454,11 +476,6 @@ if hook.GetTable()["CanPlayerEnterVehicle"] and hook.GetTable()["CanPlayerEnterV
         LuctusLog("cuffs",ply:Nick().."("..ply:SteamID()..") handcuff-untied "..targetPly:Nick().."("..targetPly:SteamID()..")")
     end,-2)
     LuctusLogAddCategory("cuffs")
-end
-
---SCP, multiple jobs / things can log here
-if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
-    LuctusLogAddCategory("scp")
 end
 
 --GmodAdminSuite adminsits / billys admin sits
