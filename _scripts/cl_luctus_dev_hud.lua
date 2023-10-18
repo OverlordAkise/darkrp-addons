@@ -1,9 +1,9 @@
 --Luctus Debug HUD
 --Made by OverlordAkise
 
---search for entities with the 'search' console command
---example: search "class C_BaseEntity" func_door
---toggle close class display with 'close'
+--search for entities with the 'devsearch' console command
+--example: devsearch "class C_BaseEntity" func_door
+--toggle close class display with 'devclose'
 
 local netsPerSecond = 0
 local netsLastSecond = 0
