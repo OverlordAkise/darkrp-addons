@@ -127,14 +127,14 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   --surface.DrawLine(scrw/2, scrh/2, scrw/2+(mouseX*3), scrh/2+(mouseY*3) )
   
   if showCloseClasses then
-    for k,v in pairs(localEnts) do
+    for k,v in ipairs(localEnts) do
       local point = v:GetPos() + v:OBBCenter()
       local data2D = point:ToScreen()
       if ( not data2D.visible ) then continue end
       draw.DrawText(v:GetClass(),"Default", data2D.x, data2D.y)
     end
   end
-  for k,v in pairs(allEnts) do
+  for k,v in ipairs(allEnts) do
     if marked[v:GetClass()] or markAll then
       local point = v:GetPos() + v:OBBCenter()
       local data2D = point:ToScreen()
@@ -169,11 +169,12 @@ hook.Add("HUDPaint", "luctus_devtools", function()
   draw.DrawText("Wep ViewModel: "..(lp:GetActiveWeapon().ViewModel or "NIL"),"Default",Lwidth,lineheight())
   draw.DrawText("Distance: "..lp:GetPos():Distance(lp:GetEyeTrace().HitPos),"Default",Lwidth,lineheight())
   --if lp:GetEyeTrace().Entity and IsValid(lp:GetEyeTrace().Entity) then
-    local eye = lp:GetEyeTrace()
-    local ent = lp:GetEyeTrace().Entity
-    if math.Round(lp:GetAngles().p,2) >= 89 then
-        ent = lp
-    end
+  local eye = lp:GetEyeTrace()
+  local ent = eye.Entity
+  if math.Round(lp:GetAngles().p,2) >= 89 then
+    ent = lp
+  end
+  if IsValid(ent) then
     draw.DrawText("Entity","Default",Lwidth,lineheight(10),Color(0,0,255))
     draw.DrawText("Class: "..ent:GetClass(),"Default",Lwidth,lineheight())
     draw.DrawText("Model: "..ent:GetModel(),"Default",Lwidth,lineheight())
@@ -217,32 +218,32 @@ hook.Add("HUDPaint", "luctus_devtools", function()
     draw.DrawText("NetworkVar:","Default",Lwidth,lineheight(10),Color(0,255,255))
     if ent.GetNetworkVars and ent:GetNetworkVars() then
         for k,v in pairs(ent:GetNetworkVars()) do
-            draw.DrawText(k.." -> "..v,"Default",Lwidth,lineheight())
+            draw.DrawText(k.." -> "..tostring(v),"Default",Lwidth,lineheight())
         end
     end
-  --end
+  end
   
   --Details
   if not lp:KeyDown(IN_WALK) then return end
   
   draw.DrawText("incoming net/umsg from server","Default",scrw-80,scrh/2-210,COLOR_WHITE,TEXT_ALIGN_RIGHT)
-  for k,v in pairs(netMessages) do
+  for k,v in ipairs(netMessages) do
     draw.DrawText(v[3],"Default",scrw-10,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
     draw.DrawText(v[2],"Default",scrw-230,scrh/2-200+(k*10))
     draw.DrawText(v[1],"Default",scrw-280,scrh/2-200+(k*10))
   end
   draw.DrawText("ent added/removed from your PVS","Default",scrw-440,scrh/2-210,COLOR_WHITE,TEXT_ALIGN_CENTER)
-  for k,v in pairs(transmitAdded) do
+  for k,v in ipairs(transmitAdded) do
     draw.DrawText("+ "..v,"Default",scrw-320,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
   end
-  for k,v in pairs(transmitRemoved) do
+  for k,v in ipairs(transmitRemoved) do
     draw.DrawText("- "..v,"Default",scrw-490,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
   end
   draw.DrawText("ents created/removed","Default",scrw-800,scrh/2-210,COLOR_WHITE,TEXT_ALIGN_CENTER)
-  for k,v in pairs(entitiesAdded) do
+  for k,v in ipairs(entitiesAdded) do
     draw.DrawText("+ "..v,"Default",scrw-660,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
   end
-  for k,v in pairs(entitiesRemoved) do
+  for k,v in ipairs(entitiesRemoved) do
     draw.DrawText("- "..v,"Default",scrw-840,scrh/2-200+(k*10),COLOR_WHITE,TEXT_ALIGN_RIGHT)
   end
   --GC Details
@@ -277,7 +278,7 @@ hook.Add("PostDrawOpaqueRenderables", "HitboxRender", function()
   if not ants[1] then return end
   if markAll then ants = ents.GetAll() end
   
-  for k,ent in pairs(ants) do
+  for k,ent in ipairs(ants) do
     if not ent:IsValid() then return end
     if ent:GetHitBoxGroupCount() == nil then continue end
     for group=0, ent:GetHitBoxGroupCount() - 1 do
