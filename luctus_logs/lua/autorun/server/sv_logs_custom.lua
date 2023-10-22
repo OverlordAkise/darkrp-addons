@@ -198,6 +198,10 @@ if LUCTUS_BREACH_DELAY then
         if not IsValid(ply) or not IsValid(adminPly) then return end
         LuctusLog("Breach",adminPly:Nick().."("..adminPly:SteamID()..") approved breach request of "..ply:Nick().."("..ply:SteamID()..") as "..team.GetName(ply:Team()))
     end,-2)
+    hook.Add("LuctusBreachDenied","luctus_log",function(adminPly,ply)
+        if not IsValid(ply) or not IsValid(adminPly) then return end
+        LuctusLog("Breach",adminPly:Nick().."("..adminPly:SteamID()..") denied breach request of "..ply:Nick().."("..ply:SteamID()..") as "..team.GetName(ply:Team()))
+    end,-2)
     LuctusLogAddCategory("Breach")
 end
 
@@ -261,6 +265,12 @@ end
 if LUCTUS_RAIDHELPER_JOBS then
     hook.Add("LuctusRaidHelperAsk","luctus_log",function(ply,jobname,acceptNum)
         LuctusLog("Raids",ply:Nick().."("..ply:SteamID()..") asked to start a raid as "..jobname.." ("..acceptNum..")")
+    end,-2)
+    hook.Add("LuctusRaidHelperApproved","luctus_log",function(adminPly,raidLeader)
+        LuctusLog("Raids",adminPly:Nick().."("..adminPly:SteamID()..") has approved the raid of "..raidLeader:Nick().."("..raidLeader:SteamID()..") as "..team.GetName(raidLeader:Team()))
+    end,-2)
+    hook.Add("LuctusRaidHelperDenied","luctus_log",function(adminPly,raidLeader)
+        LuctusLog("Raids",adminPly:Nick().."("..adminPly:SteamID()..") has denied the raid of "..raidLeader:Nick().."("..raidLeader:SteamID()..") as "..team.GetName(raidLeader:Team()))
     end,-2)
     hook.Add("LuctusRaidHelperStart","luctus_log",function(ply,jobname,members)
         LuctusLog("Raids",ply:Nick().."("..ply:SteamID()..") started a raid as "..jobname.." with "..members.." people")
