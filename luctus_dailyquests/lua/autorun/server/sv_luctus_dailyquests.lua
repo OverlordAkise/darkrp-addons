@@ -19,7 +19,7 @@ timer.Create("luctus_dailyquests_daychange",180,0,function()
     if os.date("%Y-%m-%d") == LUCTUS_DAILYQUESTS_TODAY then return end
     print("[luctus_dailyquests] Day changed, refreshing quests for online players")
     for k,ply in pairs(player.GetAll()) do
-        LuctusQuestsLoadPlayer(ply)
+        LuctusDailyquestsLoadPlayer(ply)
     end
     LUCTUS_DAILYQUESTS_TODAY = os.date("%Y-%m-%d")
 end)
@@ -28,13 +28,13 @@ hook.Add("InitPostEntity","luctus_dailyquests_load_custom",function()
     hook.Run("LuctusDailyquestLoad")
 end)
 
-function LuctusQuestsAddQuest(name,minNeed,maxNeed)
+function LuctusDailyquestsAddQuest(name,minNeed,maxNeed)
     table.insert(LUCTUS_DAILYQUESTS_LIST,{name,minNeed,maxNeed})
 end
 
 hook.Add("PlayerInitialSpawn","luctus_dailyquests",function(ply)
     LUCTUS_DAILYQUESTS_CACHE[ply] = {}
-    LuctusQuestsLoadPlayer(ply)
+    LuctusDailyquestsLoadPlayer(ply)
 end)
 
 hook.Add("PlayerDisconnected","luctus_dailyquests",function(ply)
@@ -42,10 +42,10 @@ hook.Add("PlayerDisconnected","luctus_dailyquests",function(ply)
 end)
 
 net.Receive("luctus_dailyquests_syncall", function(len,ply)
-    LuctusQuestsSyncAll(ply)
+    LuctusDailyquestsSyncAll(ply)
 end)
 
-function LuctusQuestsGetRandom()
+function LuctusDailyquestsGetRandom()
     local quests = {}
     local tempList = table.Copy(LUCTUS_DAILYQUESTS_LIST)
     for i=1,LUCTUS_DAILYQUESTS_AMOUNT do
@@ -56,47 +56,47 @@ function LuctusQuestsGetRandom()
     return quests
 end
 
-function LuctusQuestsLoadPlayer(ply)
+function LuctusDailyquestsLoadPlayer(ply)
     local res = sql.QueryRow("SELECT * FROM luctus_dailyquests WHERE steamid="..sql.SQLStr(ply:SteamID()))
     if res==false then error(sql.LastError()) end
     if res then
         if res.date == LUCTUS_DAILYQUESTS_TODAY then
             LUCTUS_DAILYQUESTS_CACHE[ply] = util.JSONToTable(res.quests)
         else
-            LUCTUS_DAILYQUESTS_CACHE[ply] = LuctusQuestsGetRandom()
+            LUCTUS_DAILYQUESTS_CACHE[ply] = LuctusDailyquestsGetRandom()
         end
     else
-        LUCTUS_DAILYQUESTS_CACHE[ply] = LuctusQuestsGetRandom()
+        LUCTUS_DAILYQUESTS_CACHE[ply] = LuctusDailyquestsGetRandom()
     end
-    LuctusQuestsSaveQuests(ply)
+    LuctusDailyquestsSaveQuests(ply)
 end
 
-function LuctusQuestsSaveQuests(ply)
+function LuctusDailyquestsSaveQuests(ply)
     local res = sql.Query("REPLACE INTO luctus_dailyquests(steamid,date,quests) VALUES("..sql.SQLStr(ply:SteamID())..","..sql.SQLStr(LUCTUS_DAILYQUESTS_TODAY)..","..sql.SQLStr(util.TableToJSON(LUCTUS_DAILYQUESTS_CACHE[ply]))..")")
     if res==false then error(sql.LastError()) end
 end
 
-function LuctusQuestsHasActive(ply,name)
+function LuctusDailyquestsHasActive(ply,name)
     local q = LUCTUS_DAILYQUESTS_CACHE[ply][name]
     return q and q[1]<q[2] or false
 end
 
-function LuctusQuestsProgress(ply,name,raiseBy)
+function LuctusDailyquestsProgress(ply,name,raiseBy)
     raiseBy = raiseBy or 1
     local quest = LUCTUS_DAILYQUESTS_CACHE[ply][name]
     if not quest then return end
     local newValue = quest[1] + raiseBy
     LUCTUS_DAILYQUESTS_CACHE[ply][name][1] = newValue
-    LuctusQuestsSync(ply,name,newValue)
-    LuctusQuestsSaveQuests(ply)
+    LuctusDailyquestsSync(ply,name,newValue)
+    LuctusDailyquestsSaveQuests(ply)
     if newValue >= quest[2] then
         hook.Run("LuctusDailyquestsFinished",ply,name)
-        LuctusQuestsNotify(ply, "You have finished quest: "..name)
+        LuctusDailyquestsNotify(ply, "You have finished quest: "..name)
     end
 end
 
 
-function LuctusQuestsSyncAll(ply)
+function LuctusDailyquestsSyncAll(ply)
     net.Start("luctus_dailyquests_syncall")
         net.WriteInt(LUCTUS_DAILYQUESTS_AMOUNT,32)
         for name,quest in pairs(LUCTUS_DAILYQUESTS_CACHE[ply]) do
@@ -107,14 +107,14 @@ function LuctusQuestsSyncAll(ply)
     net.Send(ply)
 end
 
-function LuctusQuestsSync(ply,name,newValue)
+function LuctusDailyquestsSync(ply,name,newValue)
     net.Start("luctus_dailyquests_sync")
         net.WriteString(name)
         net.WriteInt(newValue,32)
     net.Send(ply)
 end
 
-function LuctusQuestsNotify(ply,text)
+function LuctusDailyquestsNotify(ply,text)
     ply:PrintMessage(3,text)
 end
 
