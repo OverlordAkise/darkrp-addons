@@ -18,7 +18,8 @@ LuctusLogRetainLogs = 3
 --Should logs be sent to a webserver?
 LuctusLogSendLogsToWeb = false
 --URL for the web logs
-LuctusLogWebUrl = "http://example.com:3100/loki/api/v1/push"
+--LuctusLogWebUrl = "http://example.com:3100/loki/api/v1/push"
+LuctusLogWebUrl = "http://example.com:8081/luctuslogs"
 --How many loglines until we send to webserver
 LuctusLogWebSendAmount = 100
 --Send logs in format for Grafana Loki , tested with loki-2.8.0
