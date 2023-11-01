@@ -1,6 +1,8 @@
 --Luctus Watchlist
 --Made by OverlordAkise
 
+--This addon uses SteamID64 !
+
 util.AddNetworkString("luctus_watchlist")
 
 if not file.Exists("watchlist","DATA") then
@@ -9,7 +11,7 @@ end
 
 function LuctusWatchlistTellAdmins(text)
     local plys = {}
-    for k,ply in ipairs(player.GetAll()) do
+    for k,ply in ipairs(player.GetHumans()) do
         if not ply:query("ulx watchlistget") then continue end
         table.insert(plys,ply)
     end
@@ -27,6 +29,16 @@ function LuctusWatchlistGet(steamid)
         return file.Read("watchlist/"..steamid..".txt","DATA")
     end
     return ""
+end
+
+function LuctusWatchlistDelete(steamid,ply)
+    file.Write("watchlist/"..steamid..".txt","")
+    local name = "console"
+    if IsValid(ply) then
+        name = ply:Nick().."("..ply:SteamID()..")"
+    end
+    LuctusWatchlistTellAdmins(name.." deleted the watchlist of "..steamid)
+    hook.Run("LuctusWatchlistDeleted",steamid,ply) --target,admin
 end
 
 function LuctusWatchlistSet(steamid,text,ply)

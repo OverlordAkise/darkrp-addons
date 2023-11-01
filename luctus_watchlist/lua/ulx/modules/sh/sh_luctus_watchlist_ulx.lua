@@ -5,7 +5,7 @@ local CATEGORY_NAME = "Utility"
 
 -- !watchlistset
 function ulx.watchlistset(calling_ply, target_ply, text)
-    LuctusWatchlistSet(target_ply:SteamID64(),text)
+    LuctusWatchlistSet(target_ply:SteamID64(),text,calling_ply)
 end
 local watchlistset = ulx.command( CATEGORY_NAME, "ulx watchlistset", ulx.watchlistset, "!watchlistset" )
 watchlistset:addParam{ type=ULib.cmds.PlayerArg }
@@ -15,13 +15,31 @@ watchlistset:help("Set the watchlist entry for a player")
 
 -- !watchlistsetid
 function ulx.watchlistsetid(calling_ply, steamid, text)
-    LuctusWatchlistSet(steamid,text)
+    LuctusWatchlistSet(steamid,text,calling_ply)
 end
 local watchlistsetid = ulx.command( CATEGORY_NAME, "ulx watchlistsetid", ulx.watchlistsetid, "!watchlistsetid" )
 watchlistsetid:addParam{ type=ULib.cmds.StringArg, hint="Steamid64" }
 watchlistsetid:addParam{ type=ULib.cmds.StringArg, hint="Reason", ULib.cmds.takeRestOfLine }
 watchlistsetid:defaultAccess( ULib.ACCESS_ADMIN )
 watchlistsetid:help("Set the watchlist entry for a player")
+
+-- !watchlistdelete
+function ulx.watchlistdelete(calling_ply, target_ply)
+    LuctusWatchlistDelete(target_ply:SteamID64(),calling_ply)
+end
+local watchlistdelete = ulx.command( CATEGORY_NAME, "ulx watchlistdelete", ulx.watchlistdelete, "!watchlistdelete" )
+watchlistdelete:addParam{ type=ULib.cmds.PlayerArg }
+watchlistdelete:defaultAccess( ULib.ACCESS_ADMIN )
+watchlistdelete:help("Delete a player's watchlist entry")
+
+-- !watchlistdeleteid
+function ulx.watchlistdeleteid(calling_ply, steamid)
+    LuctusWatchlistDelete(steamid,calling_ply)
+end
+local watchlistdeleteid = ulx.command( CATEGORY_NAME, "ulx watchlistdeleteid", ulx.watchlistdeleteid, "!watchlistdeleteid" )
+watchlistdeleteid:addParam{ type=ULib.cmds.StringArg, hint="Steamid64" }
+watchlistdeleteid:defaultAccess( ULib.ACCESS_ADMIN )
+watchlistdeleteid:help("Delete a player's watchlist entry")
 
 -- !watchlistget
 function ulx.watchlistget(calling_ply, target_ply)
