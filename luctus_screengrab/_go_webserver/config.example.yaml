@@ -1,0 +1,5 @@
+mysql: user:password@tcp(localhost:3306)/dbname
+port: 12345
+logfile: ./scene.log
+# v Where the screenshot gets sent to, will append `postpic` to this URL
+rooturl: https://luctus.at/scene/
