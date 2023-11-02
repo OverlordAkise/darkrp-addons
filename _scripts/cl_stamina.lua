@@ -60,7 +60,7 @@ function LuctusStaminaEdgeHUD()
 end
 
 hook.Add("InitPostEntity","luctus_stamina",function()
-    if EdgeHUD then
+    if EdgeHUD and EdgeHUD.LeftOffset then
         print("[luctus_stamina] edgehud found, loading design")
         hook.Add("HUDPaint","luctus_stamina",LuctusStaminaEdgeHUD)
     else
