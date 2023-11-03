@@ -34,130 +34,129 @@ SWEP.deactivateOnMove    = 0
 
 SWEP.window = nil
 
-function SWEP:DrawWorldModel()
-end
+function SWEP:DrawWorldModel() end
 
 function SWEP:PreDrawViewModel()
-  return true
+    return true
 end
 
 function SWEP:Initialize()
-  self:SetHoldType("normal")
+    self:SetHoldType("normal")
 end
 
 if CLIENT then
-  function SWEP:PrimaryAttack()
-  end
-  
-  function SWEP:SecondaryAttack()
-    if IsValid(self.window) then return end
-    self.window = vgui.Create("DFrame")
-    self.window:SetTitle("Emote Menu")
-    self.window:SetSize(200,300)
-    self.window:ShowCloseButton(false)
-    self.window:Center()
-    self.window:MakePopup()
-    function self.window:Paint(w,h)
-      draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
-      draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
-    end
+    function SWEP:PrimaryAttack() end
     
-    local closeButton = vgui.Create("DButton",self.window)
-    closeButton:SetPos(200-32,2)
-    closeButton:SetSize(30,20)
-    closeButton:SetText("X")
-    closeButton:SetTextColor( Color(255,0,0) )
-    closeButton.DoClick = function(s)
-      self.window:Close()
-    end
-    function closeButton:Paint(w,h)
-      draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
-      if (self.Hovered) then
-        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
-      end
-    end
-    
-    local helpText = vgui.Create("DLabel",self.window)
-    helpText:SetFont("Trebuchet18")
-    helpText:SetText("Select your emote!")
-    helpText:SetTextColor( Color(0, 195, 165) )
-    helpText:SetContentAlignment(5)
-    helpText:DockMargin(1,1,1,1)
-    helpText:Dock(TOP)
-    local DScrollPanel = vgui.Create( "DScrollPanel", self.window )
-    DScrollPanel:Dock( FILL )
-    
-    for k,v in pairs(AnimationList) do
-      local emotebutton = DScrollPanel:Add("DButton")
-      emotebutton:SetText(k)
-      emotebutton.key = k
-      emotebutton:DockMargin(1,1,1,1)
-      emotebutton:SetTextColor( Color(255, 255, 255) )
-      emotebutton:Dock(TOP)
-      emotebutton.DoClick = function(s)
-        net.Start("luctus_set_animation")
-          net.WriteString(s.key)
-        net.SendToServer()
-        self.window:Close()
-      end
-      function emotebutton:Paint(w,h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
-        if (self.Hovered) then
-          draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+    function SWEP:SecondaryAttack()
+        if IsValid(self.window) then return end
+        self.window = vgui.Create("DFrame")
+        self.window:SetTitle("Emote Menu")
+        self.window:SetSize(200,300)
+        self.window:ShowCloseButton(false)
+        self.window:Center()
+        self.window:MakePopup()
+        function self.window:Paint(w,h)
+            draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+            draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
         end
-      end
+
+        local closeButton = vgui.Create("DButton",self.window)
+        closeButton:SetPos(200-32,2)
+        closeButton:SetSize(30,20)
+        closeButton:SetText("X")
+        closeButton:SetTextColor( Color(255,0,0) )
+        closeButton.DoClick = function(s)
+        self.window:Close()
+        end
+        function closeButton:Paint(w,h)
+            draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+            if self.Hovered then
+                draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+            end
+        end
+
+        local helpText = vgui.Create("DLabel",self.window)
+        helpText:SetFont("Trebuchet18")
+        helpText:SetText("Select your emote!")
+        helpText:SetTextColor( Color(0, 195, 165) )
+        helpText:SetContentAlignment(5)
+        helpText:DockMargin(1,1,1,1)
+        helpText:Dock(TOP)
+        local DScrollPanel = vgui.Create("DScrollPanel", self.window)
+        DScrollPanel:Dock(FILL)
+
+        for name,v in pairs(LUCTUS_EMOTE_LIST) do
+            local emotebutton = DScrollPanel:Add("DButton")
+            emotebutton:SetText(name)
+            emotebutton.key = name
+            emotebutton:DockMargin(1,1,1,1)
+            emotebutton:SetTextColor(color_white)
+            emotebutton:Dock(TOP)
+            emotebutton.DoClick = function(s)
+                net.Start("luctus_set_animation")
+                    net.WriteString(s.key)
+                net.SendToServer()
+                self.window:Close()
+            end
+            function emotebutton:Paint(w,h)
+                draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+                if self.Hovered then
+                    draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+                end
+            end
+        end
     end
-  end
-  
-  function SWEP:DrawHUD()
-    local col = Color(100,100,100,240)
-    if LocalPlayer():GetNW2Bool("la_in_animation") then
-      col = Color(255,255,255,255)
+    
+    local col_inactive = Color(100,100,100,240)
+    local col_active = Color(255,255,255,255)
+    local col_black = Color(0,0,0,255)
+    function SWEP:DrawHUD()
+    local col = col_inactive
+        if LocalPlayer():GetNW2Bool("la_in_animation") then
+            col = col_active
+        end
+        draw.SimpleTextOutlined(LocalPlayer():GetNW2String("la_animation"), "DermaLarge", ScrW()/2, ScrH()*0.6, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 3, col_black)
     end
-    draw.SimpleTextOutlined(LocalPlayer():GetNW2String("la_animation"), "DermaLarge", ScrW()/2, ScrH()*0.6, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 3, Color(0,0,0,255))
-  end
   
-  function SWEP:OnRemove()
-    if IsValid(self.window) then self.window:Close() end
-  end
-  function SWEP:Holster()
-    if IsValid(self.window) then self.window:Close() end
-    return true
-  end
-  function SWEP:OnDrop()
-    if IsValid(self.window) then self.window:Close() end
-  end
-  
+    function SWEP:OnRemove()
+        if IsValid(self.window) then self.window:Close() end
+    end
+    function SWEP:Holster()
+        if IsValid(self.window) then self.window:Close() end
+        return true
+    end
+    function SWEP:OnDrop()
+        if IsValid(self.window) then self.window:Close() end
+    end
 end
 
-if SERVER then
-  function SWEP:PrimaryAttack()
-    ply = self.Owner
+if CLIENT then return end
+
+function SWEP:PrimaryAttack()
+    local ply = self:GetOwner()
 
     if not ply:GetNW2Bool("la_in_animation") then
-      if not ply:Crouching() and ply:GetVelocity():Length() < 5 and not ply:InVehicle() then
-        ToggleEmoteStatus(ply, true)
-      end
+        if not ply:Crouching() and ply:GetVelocity():Length() < 5 and not ply:InVehicle() then
+            ToggleEmoteStatus(ply, true)
+        end
     else
-      ToggleEmoteStatus(ply, false)
+        ToggleEmoteStatus(ply, false)
     end
-  end
+end
 
-  function SWEP:SecondaryAttack()
-  end
+function SWEP:SecondaryAttack() end
 
-  function SWEP:OnRemove()
+function SWEP:OnRemove()
     local ply = self.Owner
     ToggleEmoteStatus(ply, false)
-  end
+end
 
-  function SWEP:OnDrop()
+function SWEP:OnDrop()
     local ply = self.Owner
     ToggleEmoteStatus(ply, false)
-  end
+end
 
-  function SWEP:Holster()
+function SWEP:Holster()
     ToggleEmoteStatus(self.Owner, false)
     return true
-  end
 end
