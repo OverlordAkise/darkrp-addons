@@ -3,10 +3,13 @@
 
 local nodrawCache = {}
 timer.Create("luctus_proficiency_nodraw",1,0,function()
-    if not IsValid(LocalPlayer()) then return end
-    local mypos = LocalPlayer():GetPos()
+    nodrawCache = {}
+    local me = LocalPlayer()
+    if not IsValid(me) then return end
+    local mypos = me:GetPos()
     for k,ply in ipairs(player.GetHumans()) do
-        if mypos:Distance(ply:GetPos()) > 128 then
+        --print("ply",ply,mypos:Distance(ply:GetPos()))
+        if ply == me or mypos:Distance(ply:GetPos()) > 128 then
             nodrawCache[ply] = true
         end
     end
@@ -15,6 +18,14 @@ end)
 local function getLevel(ply)
     return math.floor(ply:GetNW2Int("luctus_proficiency",0)/LUCTUS_PROFICIENCY_XP_REQUIRED)
 end
+
+surface.CreateFont("luctus_prof", {
+    font = "Arial",
+    size = 90,
+    weight = 500,
+    shadow = true,
+    outline = true,
+})
 
 hook.Add("PostPlayerDraw","luctus_proficiency",function(ply)
     if nodrawCache[ply] then return end
@@ -32,8 +43,8 @@ hook.Add("PostPlayerDraw","luctus_proficiency",function(ply)
     pos = pos + (ang:Up() *-1)
     ang:RotateAroundAxis(ang:Forward(), -90)
 
-    cam.Start3D2D(pos,ang,0.2)
-        draw.SimpleTextOutlined(getLevel(ply),"Trebuchet24",0,0,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,color_black)
+    cam.Start3D2D(pos,ang,0.05)
+        draw.SimpleText(getLevel(ply),"luctus_prof",0,0,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
     cam.End3D2D()
 end)
 
