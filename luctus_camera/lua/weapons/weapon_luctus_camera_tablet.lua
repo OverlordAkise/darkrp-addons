@@ -42,8 +42,16 @@ function SWEP:Initialize()
     self:SetHoldType("slam")
 end
 
-function SWEP:Deploy() return true end
-function SWEP:Holster() return true end
+function SWEP:Deploy()
+    if SERVER then LuctusCameraActivate(self:GetOwner(),true) end
+    if CLIENT then hook.Add("ShouldDrawLocalPlayer","luctus_camera",function(ply) return true end) end
+    return true
+end
+function SWEP:Holster()
+    if SERVER then LuctusCameraActivate(self:GetOwner(),false) end
+    if CLIENT then hook.Remove("ShouldDrawLocalPlayer","luctus_camera") end
+    return true
+end
 function SWEP:OnRemove() return true end
 function SWEP:Think() end
 function SWEP:Reload() end
@@ -104,6 +112,9 @@ function SWEP:SwitchCamera(num)
     if not self.specIndex then self.specIndex = 1 end
     self.specIndex = (self.specIndex+num)%(#tab+1)
     self.specEntity = tab[self.specIndex]
+    net.Start("luctus_camera_pvs")
+        net.WriteEntity(self.specEntity)
+    net.SendToServer()
 end
 
 function SWEP:GetCameraEnts()

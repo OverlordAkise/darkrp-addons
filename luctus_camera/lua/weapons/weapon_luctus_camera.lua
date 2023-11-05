@@ -57,6 +57,7 @@ function SWEP:Holster()
     if SERVER then return true end
     hook.Remove("PostDrawOpaqueRenderables","luctus_camera_preview")
     hook.Remove("HUDPaint","luctus_camera_preview")
+    hook.Remove("ShouldDrawLocalPlayer","luctus_camera")
     return true
 end
 function SWEP:OnRemove() return true end
@@ -115,20 +116,22 @@ function SWEP:Reload()
     self.cd = CurTime()+0.3
     if self.Previewing then
         hook.Remove("HUDPaint","luctus_camera_preview")
+        hook.Remove("ShouldDrawLocalPlayer","luctus_camera")
         self.Previewing = false
     else
         hook.Add("HUDPaint","luctus_camera_preview",function()
-            old = DisableClipping(true)
+            --old = DisableClipping(true)
             ang = LocalPlayer():GetAimVector():GetNegated()
-            pos = LocalPlayer():GetEyeTrace().HitPos+ang
+            pos = LocalPlayer():GetEyeTrace().HitPos+ang*7
             render.RenderView( {
                 origin = pos,
                 angles = ang:Angle(),
                 x = ScrW()-640, y = 0,
                 w = 640, h = 360
             } )
-            DisableClipping(old)
+            --DisableClipping(old)
         end)
+        hook.Add("ShouldDrawLocalPlayer","luctus_camera",function(ply) return true end)
         self.Previewing = true
     end
 end
