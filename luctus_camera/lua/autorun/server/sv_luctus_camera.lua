@@ -45,7 +45,6 @@ function LuctusCameraSwitch(ply,num)
             net.WriteAngle(ang)
         end
     net.Send(ply)
-    print("[DEBUG_SV] camera send:",IsValid(ent),ent)
 end
 
 local cacheRefresh = 0

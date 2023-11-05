@@ -80,7 +80,6 @@ net.Receive("luctus_camera_pvs",function()
     local ent = net.ReadEntity()
     local vec = net.ReadVector()
     local ang = net.ReadAngle()
-    print("[DEBUG_CL] camera rec.:",isent,ent,vec,ang)
     if not isent then
         LUCTUS_CAMERA_ENT = nil
         LUCTUS_CAMERA_VEC = nil
