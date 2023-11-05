@@ -71,15 +71,43 @@ function SWEP:DrawWorldModel()
     self:DrawModel()
 end
 
+
+LUCTUS_CAMERA_ENT = nil
+LUCTUS_CAMERA_VEC = nil
+LUCTUS_CAMERA_ANG = nil
+net.Receive("luctus_camera_pvs",function()
+    local isent = net.ReadBool()
+    local ent = net.ReadEntity()
+    local vec = net.ReadVector()
+    local ang = net.ReadAngle()
+    print("[DEBUG_CL] camera rec.:",isent,ent,vec,ang)
+    if not isent then
+        LUCTUS_CAMERA_ENT = nil
+        LUCTUS_CAMERA_VEC = nil
+        LUCTUS_CAMERA_ANG = nil
+        return
+    end
+    if not IsValid(ent) then
+        LUCTUS_CAMERA_ENT = nil
+        LUCTUS_CAMERA_VEC = vec
+        LUCTUS_CAMERA_ANG = ang
+        return
+    end
+    LUCTUS_CAMERA_ENT = ent
+end)
+
 function SWEP:DrawHUD()
-    local ent = self.specEntity
+    local ent = LUCTUS_CAMERA_ENT
     draw.RoundedBox(0,98,48,ScrW()-196,ScrH()-96,color_accent)
     draw.RoundedBox(0,100,50,ScrW()-200,ScrH()-100,color_black)
-    if not IsValid(ent) then
+    if not IsValid(LUCTUS_CAMERA_ENT) and not LUCTUS_CAMERA_VEC then
         draw.DrawText("<NO VIDEO FEED>", "DermaLarge", ScrW()*0.5, ScrH()*0.5, color_white, TEXT_ALIGN_CENTER)
         return
     end
-    if ent:IsPlayer() then
+    if not IsValid(ent) then
+        ang = LUCTUS_CAMERA_ANG
+        pos = LUCTUS_CAMERA_VEC
+    elseif ent:IsPlayer() then
         ang = ent:GetAimVector():Angle()
         pos = ent:EyePos()+ent:GetAimVector()*5
     else
@@ -98,36 +126,13 @@ function SWEP:DrawHUD()
 end
 
 function SWEP:PrimaryAttack()
-    if SERVER then return end
-    self:SwitchCamera(-1)
+    if CLIENT then return end
+    LuctusCameraSwitch(self:GetOwner(),-1)
+    self:SetNextPrimaryFire(CurTime()+0.2)
 end
 
 function SWEP:SecondaryAttack()
-    if SERVER then return end
-    self:SwitchCamera(1)
-end
-
-function SWEP:SwitchCamera(num)
-    local tab = self:GetCameraEnts()
-    if not self.specIndex then self.specIndex = 1 end
-    self.specIndex = (self.specIndex+num)%(#tab+1)
-    self.specEntity = tab[self.specIndex]
-    net.Start("luctus_camera_pvs")
-        net.WriteEntity(self.specEntity)
-    net.SendToServer()
-end
-
-function SWEP:GetCameraEnts()
-    local tab = {}
-    if LUCTUS_CAMERA_BODYCAMS then
-        for k,ply in ipairs(player.GetAll()) do
-            if ply == LocalPlayer() then continue end
-            if not LUCTUS_CAMERA_BODYCAM_JOBS[team.GetName(ply:Team())] then continue end
-            table.insert(tab,ply)
-        end
-    end
-    for k,ent in ipairs(ents.FindByClass("luctus_camera")) do
-        table.insert(tab,ent)
-    end
-    return tab
+    if CLIENT then return end
+    LuctusCameraSwitch(self:GetOwner(),1)
+    self:SetNextSecondaryFire(CurTime()+0.2)
 end
