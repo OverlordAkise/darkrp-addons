@@ -33,6 +33,8 @@ local plyTranslateWeaponActivity = plymeta.TranslateWeaponActivity
 local plyGetMoveType = entmeta.GetMoveType
 local plyIsFlagSet = entmeta.IsFlagSet
 local plySetPlaybackRate = entmeta.SetPlaybackRate
+local entLookupSequence = entmeta.LookupSequence
+local plyInVehicle = plymeta.InVehicle
 
 
 function GAM:HandlePlayerJumping( ply, velocity )
@@ -106,12 +108,60 @@ function GAM:HandlePlayerSwimming()end
 
 function GAM:HandlePlayerLanding()end
 
-function GAM:HandlePlayerDriving()end
+function GAM:HandlePlayerDriving(ply)
+    if not plyInVehicle(ply) or not IsValid(ply:GetParent()) then return false end
+
+	local pVehicle = ply:GetVehicle()
+
+	if not pVehicle.HandleAnimation and pVehicle.GetVehicleClass then
+		local c = pVehicle:GetVehicleClass()
+		local t = list.Get("Vehicles")[c]
+		if t and t.Members and t.Members.HandleAnimation then
+			pVehicle.HandleAnimation = t.Members.HandleAnimation
+		else
+			pVehicle.HandleAnimation = true -- Prevent this if block from trying to assign HandleAnimation again.
+		end
+	end
+
+	if isfunction(pVehicle.HandleAnimation) then
+		local seq = pVehicle:HandleAnimation(ply)
+		if seq != nil then
+			plycache[ply].CalcSeqOverride = seq
+		end
+	end
+
+	if plycache[ply].CalcSeqOverride == -1 then -- pVehicle.HandleAnimation did not give us an animation
+		local class = pVehicle:GetClass()
+		if class == "prop_vehicle_jeep" then
+			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_jeep")
+		elseif class == "prop_vehicle_airboat" then
+			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_airboat")
+		elseif class == "prop_vehicle_prisoner_pod" then
+			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_pd")
+		else
+			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"sit_rollercoaster")
+		end
+	end
+
+	local use_anims = plycache[ply].CalcSeqOverride == entLookupSequence(ply,"sit_rollercoaster") or plycache[ply].CalcSeqOverride == entLookupSequence(ply,"sit")
+	if use_anims and ply:GetAllowWeaponsInVehicle() and IsValid(ply:GetActiveWeapon()) then
+		local holdtype = ply:GetActiveWeapon():GetHoldType()
+		if holdtype == "smg" then holdtype = "smg1" end
+
+		local seqid = entLookupSequence(ply,"sit_"..holdtype)
+		if seqid != -1 then
+			plycache[ply].CalcSeqOverride = seqid
+		end
+	end
+
+	return true
+end
 
 --[[---------------------------------------------------------
    Name: gamemode:UpdateAnimation()
    Desc: Animation updates (pose params etc) should be done here
 -----------------------------------------------------------]]
+--CL: 34->29ms
 function GAM:UpdateAnimation( ply, velocity, maxseqgroundspeed )
 	local len = velocity:Length()
 	local movement = 1.0
@@ -131,50 +181,33 @@ function GAM:UpdateAnimation( ply, velocity, maxseqgroundspeed )
 
 	plySetPlaybackRate(ply,rate)
 
-	-- We only need to do this clientside..
-	if ( CLIENT ) then
-		if ( ply:InVehicle() ) then
-			--
-			-- This is used for the 'rollercoaster' arms
-			--
-			local Vehicle = ply:GetVehicle()
-			local Velocity = Vehicle:GetVelocity()
-			local fwd = Vehicle:GetUp()
-			local dp = fwd:Dot( Vector( 0, 0, 1 ) )
-
-			ply:SetPoseParameter( "vertical_velocity", ( dp < 0 && dp || 0 ) + fwd:Dot( Velocity ) * 0.005 )
-
-			-- Pass the vehicles steer param down to the player
-			local steer = Vehicle:GetPoseParameter( "vehicle_steer" )
-			steer = steer * 2 - 1 -- convert from 0..1 to -1..1
-			if ( Vehicle:GetClass() == "prop_vehicle_prisoner_pod" ) then steer = 0 ply:SetPoseParameter( "aim_yaw", math.NormalizeAngle( ply:GetAimVector():Angle().y - Vehicle:GetAngles().y - 90 ) ) end
-			ply:SetPoseParameter( "vehicle_steer", steer )
-
-		end
+	if CLIENT then
 		GAM:GrabEarAnimation( ply )
 		GAM:MouthMoveAnimation( ply )
 	end
-
 end
 
 --
 -- If you don't want the player to grab his ear in your gamemode then
 -- just override this.
 --
+local plyIsPlayingTaunt = plymeta.IsPlayingTaunt
+local plyIsTyping = plymeta.IsTyping
+
 function GAM:GrabEarAnimation( ply )
     if not plycache[ply] then return end
-	plycache[ply].ChatGestureWeight = plycache[ply].ChatGestureWeight || 0
+	plycache[ply].ChatGestureWeight = plycache[ply].ChatGestureWeight or 0
 
 	-- Don't show this when we're playing a taunt!
-	if ( ply:IsPlayingTaunt() ) then return end
+	if plyIsPlayingTaunt(ply) then return end
 
-	if ( ply:IsTyping() ) then
+	if plyIsTyping(ply) then
 		plycache[ply].ChatGestureWeight = math.Approach( plycache[ply].ChatGestureWeight, 1, FrameTime() * 5.0 )
 	else
 		plycache[ply].ChatGestureWeight = math.Approach( plycache[ply].ChatGestureWeight, 0, FrameTime() * 5.0 )
 	end
 
-	if ( plycache[ply].ChatGestureWeight > 0 ) then
+	if plycache[ply].ChatGestureWeight > 0 then
 
 		ply:AnimRestartGesture( GESTURE_SLOT_VCD, ACT_GMOD_IN_CHAT, true )
 		ply:AnimSetGestureWeight( GESTURE_SLOT_VCD, plycache[ply].ChatGestureWeight )
@@ -186,20 +219,25 @@ end
 --
 -- Moves the mouth when talking on voicecom
 --
+local plyIsSpeaking = plymeta.IsSpeaking
+local entGetFlexIDByName = entmeta.GetFlexIDByName
+local plyVoiceVolume = plymeta.VoiceVolume --cl only
+local entSetFlexWeight = entmeta.SetFlexWeight
+
 function GAM:MouthMoveAnimation( ply )
 	local flexes = {
-		ply:GetFlexIDByName( "jaw_drop" ),
-		ply:GetFlexIDByName( "left_part" ),
-		ply:GetFlexIDByName( "right_part" ),
-		ply:GetFlexIDByName( "left_mouth_drop" ),
-		ply:GetFlexIDByName( "right_mouth_drop" )
+		entGetFlexIDByName(ply,"jaw_drop"),
+		entGetFlexIDByName(ply,"left_part"),
+		entGetFlexIDByName(ply,"right_part"),
+		entGetFlexIDByName(ply,"left_mouth_drop"),
+		entGetFlexIDByName(ply,"right_mouth_drop")
 	}
 
-	local weight = ply:IsSpeaking() && math.Clamp( ply:VoiceVolume() * 2, 0, 2 ) || 0
+	local weight = plyIsSpeaking(ply) and math.Clamp( plyVoiceVolume(ply) * 2, 0, 2 ) or 0
 
-	for k, v in ipairs( flexes ) do
+	for k,v in ipairs(flexes) do
 
-		ply:SetFlexWeight( v, weight )
+		entSetFlexWeight(ply,v,weight)
 
 	end
 
@@ -212,7 +250,7 @@ function GAM:CalcMainActivity( ply, velocity )
 	if plyOnGround(ply) and not plycache[ply].m_bWasOnGround then
         ply:AnimRestartGesture(GESTURE_SLOT_JUMP, ACT_LAND, true)
     end
-    if not (self:HandlePlayerJumping(ply,velocity) or self:HandlePlayerDucking(ply,velocity)) then
+    if not (self:HandlePlayerJumping(ply,velocity) or self:HandlePlayerDucking(ply,velocity) or self:HandlePlayerDriving(ply)) then
         local len2d = velocity:Length2DSqr()
         if len2d > 22500 then
             plycache[ply].CalcIdeal = ACT_MP_RUN
@@ -221,7 +259,7 @@ function GAM:CalcMainActivity( ply, velocity )
         end
     end
     plycache[ply].m_bWasOnGround = plyOnGround(ply)
-    plycache[ply].m_bWasNoclipping = plyGetMoveType(ply) == MOVETYPE_NOCLIP and not ply:InVehicle()
+    plycache[ply].m_bWasNoclipping = plyGetMoveType(ply) == MOVETYPE_NOCLIP and not plyInVehicle(ply)
     if plyGetMoveType(ply) == MOVETYPE_NOCLIP then
         plycache[ply].CalcIdeal = ACT_MP_STAND_IDLE
     end
