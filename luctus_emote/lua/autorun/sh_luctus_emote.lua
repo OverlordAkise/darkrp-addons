@@ -106,7 +106,7 @@ if CLIENT then
         end
     end
     
-    hook.Add("Tick", "luctus_emote_animations", function()
+    hook.Add("Think", "luctus_emote_animations", function()
         for k,ply in ipairs(player.GetHumans()) do
             local la_animation = ply:GetNW2String("la_animation")
 
