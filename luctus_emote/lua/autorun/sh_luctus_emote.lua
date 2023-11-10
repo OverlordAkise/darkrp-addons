@@ -106,18 +106,20 @@ if CLIENT then
         end
     end
     
-    hook.Add("PlayerTick", "luctus_emote_animations", function(ply)
-        local la_animation = ply:GetNW2String("la_animation")
+    hook.Add("Tick", "luctus_emote_animations", function()
+        for k,ply in ipairs(player.GetHumans()) do
+            local la_animation = ply:GetNW2String("la_animation")
 
-        if la_animation == "" then return end
-        if not ply.animationSWEPAngle then
-            ply.animationSWEPAngle = 0
-        end
+            if la_animation == "" then return end
+            if not ply.animationSWEPAngle then
+                ply.animationSWEPAngle = 0
+            end
 
-        if ply:GetNW2Bool("la_in_animation") then
-            applyAnimation(ply, 1, la_animation)
-        else
-            applyAnimation(ply, 0, la_animation)
+            if ply:GetNW2Bool("la_in_animation") then
+                applyAnimation(ply, 1, la_animation)
+            else
+                applyAnimation(ply, 0, la_animation)
+            end
         end
     end)
     print("[luctus_emotes] sh loaded")
@@ -130,7 +132,7 @@ util.AddNetworkString("luctus_set_animation")
 
 timer.Create("luctus_animations_reset_on_movement",0.3,0,function()
     for k,ply in ipairs(player.GetHumans()) do
-        if not ply:GetNW2Bool("la_in_animation",false) then return end
+        if not ply:GetNW2Bool("la_in_animation",false) then continue end
         if ply:GetVelocity():Length() > LUCTUS_EMOTE_MAXSPEED then
             ToggleEmoteStatus(ply, false)
         end
