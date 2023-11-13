@@ -110,7 +110,7 @@ if CLIENT then
         for k,ply in ipairs(player.GetHumans()) do
             local la_animation = ply:GetNW2String("la_animation")
 
-            if la_animation == "" then return end
+            if la_animation == "" then continue end
             if not ply.animationSWEPAngle then
                 ply.animationSWEPAngle = 0
             end
