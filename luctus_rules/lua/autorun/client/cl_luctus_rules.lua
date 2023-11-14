@@ -78,7 +78,7 @@ function LuctusRulesOpen(delayTillClose)
 end
 
 hook.Add("OnPlayerChat","luctus_openrules",function(ply,text,team,dead)
-    if ply == LocalPlayer() and text == CHATCOMMAND then
+    if ply == LocalPlayer() and text == LUCTUS_RULES_CHATCOMMAND then
         LuctusRulesOpen()
     end
 end)
