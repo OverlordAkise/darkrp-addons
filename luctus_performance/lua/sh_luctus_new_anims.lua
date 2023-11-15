@@ -136,7 +136,7 @@ function GAM:HandlePlayerDriving(ply)
 			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_jeep")
 		elseif class == "prop_vehicle_airboat" then
 			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_airboat")
-		elseif class == "prop_vehicle_prisoner_pod" then
+		elseif class == "prop_vehicle_prisoner_pod" and pVehicle:GetModel() == "models/vehicles/prisoner_pod_inner.mdl" then
 			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"drive_pd")
 		else
 			plycache[ply].CalcSeqOverride = entLookupSequence(ply,"sit_rollercoaster")
