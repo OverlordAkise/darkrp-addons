@@ -147,16 +147,20 @@ end
 function SWEP:SecondaryAttack() end
 
 function SWEP:OnRemove()
-    local ply = self.Owner
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
     ToggleEmoteStatus(ply, false)
 end
 
 function SWEP:OnDrop()
-    local ply = self.Owner
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
     ToggleEmoteStatus(ply, false)
 end
 
 function SWEP:Holster()
-    ToggleEmoteStatus(self.Owner, false)
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
+    ToggleEmoteStatus(ply, false)
     return true
 end
