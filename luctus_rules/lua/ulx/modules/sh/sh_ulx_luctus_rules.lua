@@ -4,7 +4,6 @@ if SERVER then
 end
 
 function ulx.forcerules(calling_ply,target_ply,timeToOpen,shouldClose)
-    print(calling_ply,target_ply,timeToOpen,shouldClose)
     net.Start("luctus_rules")
         net.WriteInt(shouldClose and -1 or timeToOpen,16)
     net.Send(target_ply)
