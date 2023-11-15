@@ -21,7 +21,6 @@ end
 
 hook.Add("PlayerDeath","luctus_weprefund",function(ply)
     ply.refundweps = {}
-    PrintTable(ply:GetWeapons())
     for k,wep in ipairs(ply:GetWeapons()) do
         table.insert(ply.refundweps,wep:GetClass())
     end
