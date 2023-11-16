@@ -55,6 +55,7 @@ end
 
 function SWEP:Holster()
     if SERVER then return true end
+    if self:GetOwner() ~= LocalPlayer() then return true end
     hook.Remove("PostDrawOpaqueRenderables","luctus_camera_preview")
     hook.Remove("HUDPaint","luctus_camera_preview")
     hook.Remove("ShouldDrawLocalPlayer","luctus_camera")
