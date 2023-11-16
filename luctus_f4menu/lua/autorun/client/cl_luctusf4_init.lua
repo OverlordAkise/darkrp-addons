@@ -5,20 +5,22 @@ luctusF4 = luctusF4 or {}
 luctusF4.curSkin = 1
 luctusF4.curItem = nil
 
-local defaultBlur = Color(10, 10, 10, 255)
-local defaultBlurOutline = Color(20, 20, 20, 255)
+
+--CONFIG START
+
+local extraButtons = {
+    ["Workshop"] = function() gui.OpenURL("https://steamcommunity.com/sharedfiles/") end,
+}
 
 local tabButtonHeight = 45
 local buttonSpacing = 4
 
-luctusF4.defaultCategoryColor = Color(0, 107, 0, 150)
-
-luctusF4.bgColor1 = Color(10, 10, 10, 80)
-
+local color_category_default = Color(0, 107, 0, 150)
+local color_bg = Color(10, 10, 10, 80)
 local white = Color(255, 255, 255, 255)
 local black = Color(0, 0, 0)
-local lblack = Color(0,0,0,253)
-local red = Color(0, 195, 165)
+local lblack = Color(20,20,20,253)
+local color_accent = Color(0, 195, 165)
 
 luctusF4.lang = {
     ['commands'] = 'Commands',
@@ -36,6 +38,8 @@ luctusF4.lang = {
     ['Cost'] = 'Cost',
     ['CatNotAvailable'] = 'The contents of this tab are not available for your job.',
 }
+
+--CONFIG END
 
 surface.CreateFont('edf_roboto24', {
     font = 'Roboto Regular',
@@ -82,13 +86,13 @@ end
 
 local function luctusPaintHover(self,w,h,bOutline,col)
     if not bOutline then
-        surface.SetDrawColor(red)
+        surface.SetDrawColor(color_accent)
         surface.DrawRect(0, 0, w, h)
     end
     surface.SetDrawColor(col and col or lblack)
     surface.DrawRect(1, 1, w - 2, h - 2)
     if self:IsHovered() then
-        self:SetTextColor(red)
+        self:SetTextColor(color_accent)
     else
         self:SetTextColor(white)
     end
@@ -97,16 +101,16 @@ end
 function luctusPrettifyScrollbar(el)
     function el:Paint() return end
     function el.btnGrip:Paint(w, h)
-        draw.RoundedBox(0,0,0,w,h,red)
-        draw.RoundedBox(0, 1, 1, w-2, h-2, defaultBlur)
+        draw.RoundedBox(0,0,0,w,h,color_accent)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, lblack)
     end
     function el.btnUp:Paint(w, h)
-        draw.RoundedBox(0,0,0,w,h,red)
-        draw.RoundedBox(0, 1, 1, w-2, h-2, defaultBlur)
+        draw.RoundedBox(0,0,0,w,h,color_accent)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, lblack)
     end
     function el.btnDown:Paint(w, h)
-        draw.RoundedBox(0,0,0,w,h,red)
-        draw.RoundedBox(0, 1, 1, w-2, h-2, defaultBlur)
+        draw.RoundedBox(0,0,0,w,h,color_accent)
+        draw.RoundedBox(0, 1, 1, w-2, h-2, lblack)
     end
 end
 
@@ -116,7 +120,7 @@ local function drawTabsPanel()
     tabsPanel:DockMargin(0, 0, 8, 0)
     tabsPanel:SetSize(180, luctusF4.mainFrame:GetTall())
     function tabsPanel:Paint(w,h)
-        draw.RoundedBox(0,0,0,w,h,luctusF4.bgColor1)
+        draw.RoundedBox(0,0,0,w,h,color_bg)
     end
 
     local tabsHeader = tabsPanel:Add('DLabel')
@@ -170,7 +174,7 @@ local function drawTabsPanel()
     end
   
     for i = 1, #tabs do
-        local tab = vgui.Create('DButton', tabButtonsPanel)
+        local tab = vgui.Create("DButton", tabButtonsPanel)
         tab:Dock(TOP)
         tab:DockMargin(buttonSpacing + 1, 0, buttonSpacing + 1, buttonSpacing)
         tab:SetTall(tabButtonHeight)
@@ -181,11 +185,11 @@ local function drawTabsPanel()
 
         function tab:Paint(w, h)
             if self:IsHovered() or luctusF4.rememberedTabId == self.id then
-                tab:SetTextColor(red)
+                tab:SetTextColor(color_accent)
             else
                 tab:SetTextColor(white)
             end
-            surface.SetDrawColor(red)
+            surface.SetDrawColor(color_accent)
             surface.DrawOutlinedRect(0, 0, w, h)
         end
 
@@ -195,6 +199,26 @@ local function drawTabsPanel()
             luctusF4.rememberedTabId = i
             buttonClickSound()
         end
+    end
+    
+    for name,func in pairs(extraButtons) do
+        local tab = vgui.Create("DButton", tabButtonsPanel)
+        tab:Dock(TOP)
+        tab:DockMargin(buttonSpacing + 1, 0, buttonSpacing + 1, buttonSpacing)
+        tab:SetText(name)
+        tab:SetTall(tabButtonHeight)
+        tab:SetFont('edf_roboto24')
+        tab:SetTextColor(white)
+        function tab:Paint(w, h)
+            if self:IsHovered() then
+                tab:SetTextColor(color_accent)
+            else
+                tab:SetTextColor(white)
+            end
+            surface.SetDrawColor(color_accent)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+        tab.DoClick = func
     end
   
     function luctusF4.returnTabsPanel()
@@ -284,10 +308,10 @@ local function drawMainPanel()
     rightPanel:DockMargin(0, 0, 0, 0)
 
     function rightPanel:Paint(w, h)
-        surface.SetDrawColor(defaultBlurOutline)
+        surface.SetDrawColor(black)
         surface.DrawOutlinedRect(0, 0, w, h)
 
-        surface.SetDrawColor(luctusF4.bgColor1)
+        surface.SetDrawColor(color_bg)
         surface.DrawRect(1, 1, w - 2, h - 2)
     end
   
@@ -476,7 +500,7 @@ hook.Add('ShowSpare2', 'luctus_f4_open', function()
 end)
 
 hook.Add('OnPlayerChat', 'luctus_f4_chat', function(ply, text)
-    if string.lower(text) == '!f4' then
+    if ply == LocalPlayer() and string.lower(text) == '!f4' then
         openF4MenuToggle()
     end
 end)
@@ -551,9 +575,10 @@ function luctusF4.openTab(name)
 
             categoryPanel.Header:SetTextColor(white)
             categoryPanel.Header:SetFont('edf_roboto20')
+            categoryPanel.Header.color = item.color
 
             function categoryPanel.Header:Paint(w, h)
-                local categoryColor = self.color or luctusF4.defaultCategoryColor
+                local categoryColor = self.color or color_category_default
 
                 surface.SetDrawColor(lblack)
                 surface.DrawOutlinedRect(0, 0, w, h)
@@ -623,7 +648,6 @@ function luctusF4.openTab(name)
             end
             buttonClickSound()
             if not self.lastClicked then self.lastClicked = 0 end
-            print(CurTime()-self.lastClicked)
             if CurTime()-self.lastClicked < 0.3 then
                 luctusF4.purchaseButton:DoClick()
             end
