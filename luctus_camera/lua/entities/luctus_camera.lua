@@ -27,6 +27,7 @@ function ENT:Initialize()
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
+        phys:SetMass(1000)
         phys:Sleep()
     end
 end
