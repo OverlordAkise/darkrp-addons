@@ -18,7 +18,7 @@ local remove_hudshoulddraw_weps = true
 --If your players are not able to spawn props
 --or if you don't need prop-protection then set this to true
 --This will disable fpp, saving you a lot of networking and CPU
-local remove_fpp = true
+local remove_fpp = false
 
 --If you don't use the darkrp inbuilt drugs then set this to true
 local remove_drugs = true
