@@ -87,7 +87,7 @@ end)
 
 --If player changes team update his character to that one too
 hook.Add("OnPlayerChangedTeam", "luctus_char_updatejob", function(ply, oldjob, newjob)
-    if not ply.IsChoosingChar  then
+    if not ply.IsChoosingChar then
         local jobcmd = LuctusGetCommandFromJob(newjob)
         local res = sql.Query("UPDATE luctus_char SET job = "..sql.SQLStr(jobcmd).." WHERE steamid = '"..ply:SteamID().."' and slot = "..ply.charCurSlot)
         if res == false then
@@ -109,6 +109,12 @@ net.Receive("luctus_char_play", function(len,ply)
         error(sql.LastError())
     end
     if not ProfileTable then return end
+    
+    --try to un-afk the player if he was too long inside the charselect menu
+    local unAFK = hook.GetTable()["playerUnArrested"] and hook.GetTable()["playerUnArrested"]["DarkRP_AFK"]
+    if unAFK then
+        unAFK(ply)
+    end
     
     ply:UnLock()
     if ply.IsChoosingChar then
