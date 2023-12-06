@@ -13,6 +13,7 @@ hook.Add("InitPostEntity","luctus_skills",function()
     local meta = FindMetaTable("Player")
     if not meta.getLevel then
         ErrorNoHaltWithStack("ERROR, No compatible leveling system installed! Skills not working!")
+        print("Compatible levelsystems are: luctus_levelsystem and vrondakis levelsystem")
     end
 end)
 
