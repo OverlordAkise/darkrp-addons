@@ -21,14 +21,17 @@ end
 function LuctusWbBalanceWeapon(class,weptab)
     if not isstring(class) then print("LuctusWbBalanceWeapon has non-string input") return end
     if not istable(weptab) then print("LuctusWbBalanceWeapon has non-table input") return end
-    print("---Balance weapon start",class)
+    --print("---Balance weapon start",class)
     local wep = weapons.GetStored(class)
-    if not wep then print("Couldn't find weapontable for "..class) return end
+    if not wep then
+        --print("Couldn't find weapontable for "..class)
+        return
+    end
     if not LUCTUS_BALANCE_RESET_TABLE[class] then
         LUCTUS_BALANCE_RESET_TABLE[class] = weapons.Get(class)
     end
     LuctusWbUpdateWeapon(wep,weptab)
-    print("---Balance weapon success",class)
+    --print("---Balance weapon success",class)
 end
 
 function LuctusWbResetWeapon(class)
