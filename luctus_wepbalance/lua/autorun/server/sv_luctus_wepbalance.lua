@@ -11,7 +11,11 @@ net.Receive("luctus_weaponbalance_one",function(len,ply)
     if not ply:IsAdmin() then return end
     local wepclass = net.ReadString()
     local weptable = LuctusWbReceiveTable()
-    LUCTUS_BALANCE_TABLE[wepclass] = weptable
+    if LUCTUS_BALANCE_TABLE[wepclass] then
+        table.Merge(LUCTUS_BALANCE_TABLE[wepclass],weptable)
+    else
+        LUCTUS_BALANCE_TABLE[wepclass] = weptable
+    end
     LuctusWbBalanceWeapon(wepclass,weptable)
     LuctusWbNetworkOne(wepclass,weptable)
     LuctusWbSave()
