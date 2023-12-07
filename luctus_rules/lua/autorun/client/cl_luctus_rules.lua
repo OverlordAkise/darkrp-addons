@@ -1,12 +1,6 @@
 --Luctus Rules
 --Made by OverlordAkise
 
-LUCTUS_RULES_RULES_URL = "https://luctus.at"
-LUCTUS_RULES_WINDOW_TITLE = "Rules"
-LUCTUS_RULES_CHATCOMMAND = "!rules"
-LUCTUS_RULES_OPEN_ON_JOIN = true
-
-
 local frame = nil
 --Close Button Top Right
 local function AddCloseButton(frame)
@@ -27,8 +21,13 @@ local function AddCloseButton(frame)
         end
     end
 end
-function LuctusRulesOpen(delayTillClose)
+function LuctusRulesOpen(delayTillClose,targetURL)
     if IsValid(frame) then return end
+    
+    if not targetURL then
+        targetURL = LUCTUS_RULES_RULES_URL
+    end
+    
     --Main Window
     frame = vgui.Create("DFrame")
     frame:SetSize(800,600)
@@ -56,12 +55,13 @@ function LuctusRulesOpen(delayTillClose)
     --For HTML:
     local MainPanel = vgui.Create("DHTML",frame)
     MainPanel:Dock(FILL)
-    MainPanel:OpenURL(LUCTUS_RULES_RULES_URL)
+    MainPanel:OpenURL(targetURL)
     --MainPanel:SetHTML(html_rules)
-    --local ctrls = vgui.Create( "DHTMLControls", frame )
-    --ctrls:Dock(TOP)
-    --ctrls:SetHTML( MainPanel )
-    --ctrls.AddressBar:SetText("https://luctus.at")
+    --[[
+    local ctrls = vgui.Create( "DHTMLControls", frame )
+    ctrls:Dock(TOP)
+    ctrls:SetHTML( MainPanel )
+    ctrls.AddressBar:SetText(targetURL)
     --]]
     
     if not delayTillClose or delayTillClose <= 0 then
@@ -78,8 +78,12 @@ function LuctusRulesOpen(delayTillClose)
 end
 
 hook.Add("OnPlayerChat","luctus_openrules",function(ply,text,team,dead)
-    if ply == LocalPlayer() and text == LUCTUS_RULES_CHATCOMMAND then
+    if ply ~= LocalPlayer() then return end
+    if text == LUCTUS_RULES_CHATCOMMAND then
         LuctusRulesOpen()
+    end
+    if text == LUCTUS_RULES_JOBCOMMAND then
+        LuctusRulesOpenJob(ply:Team())
     end
 end)
 
@@ -101,6 +105,24 @@ net.Receive("luctus_rules",function()
         return
     end
     LuctusRulesOpen(delay)
+end)
+
+--Job-additions
+
+function LuctusRulesOpenJob(plyteam)
+    local jobname = team.GetName(plyteam)
+    if LUCTUS_RULES_USE_ANCHORS then
+        LuctusRulesOpen(0,LUCTUS_RULES_RULES_URL.."#"..jobname)
+        return
+    end
+    if LUCTUS_RULES_JOB_URLS[jobname] then
+        LuctusRulesOpen(0,LUCTUS_RULES_JOB_URLS[jobname])
+    end
+end
+
+hook.Add("OnPlayerChangedTeam","luctus_rules_jobs",function(ply,before,after)
+    if not LUCTUS_RULES_JOB_ENABLED then return end
+    LuctusRulesOpenJob(after)
 end)
 
 
