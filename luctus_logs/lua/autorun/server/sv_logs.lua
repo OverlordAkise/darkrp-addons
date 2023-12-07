@@ -416,7 +416,11 @@ hook.Add("PlayerSpawnEffect","luctus_log_PlayerSpawnEffect",function(ply, model)
     if not IsValid(ply) then return end
     log_push("Spawned",ply:Nick().."("..ply:SteamID()..") spawned effect "..model)
 end,-2)
-hook.Add("WeaponEquip", "luctus_log_PlayerGiveSWEP", function(wep, owner)
+hook.Add("PlayerGiveSWEP", "luctus_log_PlayerGiveSWEP", function(owner, wepclass)
+    if not IsValid(owner) then return end
+    log_push("Weapons",owner:Nick().."("..owner:SteamID()..") gave themself a "..wepclass)
+end,-2)
+hook.Add("WeaponEquip", "luctus_log_WeaponEquip", function(wep, owner)
     if not IsValid(wep) or not IsValid(owner) then return end
     log_push("Weapons",owner:Nick().."("..owner:SteamID()..") picked up weapon "..wep:GetClass())
 end,-2)
