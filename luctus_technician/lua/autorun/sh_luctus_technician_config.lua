@@ -4,7 +4,9 @@
 
 --The name of the technician job, must be correct or the job won't work!
 LUCTUS_TECHNICIAN_JOBNAME = "Technician"
---Delay between things breaking
+--Should the technician job see broken objects through walls
+LUCTUS_TECHNICIAN_SEE_BROKEN_THROUGH_WALL = false
+--Delay between things breaking, in seconds
 LUCTUS_TECHNICIAN_BREAK_DELAY = 120
 --Reward (=money gained) is random between these 2 numbers:
 LUCTUS_TECHNICIAN_MIN_REWARD = 1000

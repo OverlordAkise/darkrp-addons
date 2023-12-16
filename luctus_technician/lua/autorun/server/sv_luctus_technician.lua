@@ -6,13 +6,13 @@ util.AddNetworkString("luctus_technician_togglehud")
 
 hook.Add("OnPlayerChangedTeam", "luctus_technician_timer", function(ply, beforeNum, afterNum)
     --switch to technician
-    if RPExtraTeams[afterNum].name == LUCTUS_TECHNICIAN_JOBNAME then
+    if team.GetName(afterNum) == LUCTUS_TECHNICIAN_JOBNAME then
         net.Start("luctus_technician_togglehud")
         net.WriteBool(true)
         net.Send(ply)
     end
     --switch from technician
-    if RPExtraTeams[beforeNum].name == LUCTUS_TECHNICIAN_JOBNAME then
+    if team.GetName(beforeNum) == LUCTUS_TECHNICIAN_JOBNAME then
         net.Start("luctus_technician_togglehud")
         net.WriteBool(false)
         net.Send(ply)
@@ -21,7 +21,7 @@ end)
 
 hook.Add("InitPostEntity", "luctus_technician_breaker", function()
     timer.Create("luctus_technician_breaker",LUCTUS_TECHNICIAN_BREAK_DELAY,0,function()
-        local ents = ents.FindByClass( "luctus_tec*" )
+        local ents = ents.FindByClass("luctus_tec*")
         local randomEnt = ents[math.random(#ents)]
         if randomEnt and IsValid(randomEnt) and not randomEnt:GetBroken() then
             randomEnt:SetBroken(true)
