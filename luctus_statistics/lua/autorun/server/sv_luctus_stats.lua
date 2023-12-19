@@ -12,6 +12,7 @@ hook.Add("PostGamemodeLoaded","luctus_statistics_init_db",function()
 end)
 
 hook.Add("postLoadCustomDarkRPItems","luctus_statistics_init_jobs",function()
+    print("[luctus_statistics] Checked database")
     local dbJobs = sql.Query("SELECT * FROM luctus_stat_jobs")
     local alreadyExistJobs = {}
     if not istable(dbJobs) then dbJobs = {} end
@@ -85,7 +86,7 @@ hook.Add("PlayerSay","luctus_statistics",function(ply,text,team)
     if text == LUCTUS_STATISTICS_COMMAND then
         if CurTime() > statcachetime then
             statcachetime = CurTime()+60
-            statcache = util.TableToJSON(sql.Query("SELECT * FROM luctus_stat_jobs"))
+            statcache = util.TableToJSON(sql.Query("SELECT * FROM luctus_stat_jobs") or {})
         end
         net.Start("luctus_statistics")
             net.WriteString(statcache)

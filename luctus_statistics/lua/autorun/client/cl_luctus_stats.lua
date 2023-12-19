@@ -3,6 +3,14 @@
 
 LUCTUS_STATS_FRAME = nil
 
+local function getActiveJobNames()
+    local t = {}
+    for k,v in ipairs(RPExtraTeams) do
+        t[v.name] = true
+    end
+    return t
+end
+
 net.Receive("luctus_statistics",function()
     local jsonTable = net.ReadString()
     local tab = util.JSONToTable(jsonTable)
@@ -43,7 +51,10 @@ net.Receive("luctus_statistics",function()
     liste:AddColumn( "#Joins" ):SetWidth(50)
     liste:AddColumn( "hours" ):SetWidth(50)
     
+    local jobs = getActiveJobNames()
+    
     for k,v in pairs(tab) do
+        if not jobs[v.jobname] then continue end
         liste:AddLine(v.jobname, v.changedToAmount, math.Round(v.playtime/60/60))
     end
 end)
