@@ -42,7 +42,7 @@ end
 luctus_weblogcache = {}
 local function log_push(cat,text)
     print("[luctus_logs] "..sql.SQLStr(text))
-    local res = sql.Query("INSERT INTO luctus_log( date, cat, msg ) VALUES( datetime('now') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
+    local res = sql.Query("INSERT INTO luctus_log( date, cat, msg ) VALUES( datetime('now','localtime') , "..sql.SQLStr(cat).." , "..sql.SQLStr(text)..") ")
     if res == false then
         ErrorNoHaltWithStack(sql.LastError())
         return
