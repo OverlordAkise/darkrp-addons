@@ -9,7 +9,7 @@ hook.Add("SpawnMenuOpen", "luctus_blockmenutabs", function()
             v.Tab:GetText() == language.GetPhrase("spawnmenu.category.dupes") or
             v.Tab:GetText() == language.GetPhrase("spawnmenu.category.saves")) then
             g_SpawnMenu.CreateMenu:CloseTab( v.Tab, true )
-            removeOldTables()
+            --removeOldTables()
         end
     end
 end)
