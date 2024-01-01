@@ -59,6 +59,39 @@ if LUCTUS_INGAME_CONFIG then
     LuctusLogAddCategory("Config")
 end
 
+--Luctus Amnestics
+if LUCTUS_AMNESTICS_LEVELS then
+    hook.Add("LuctusAmnestics","luctus_log",function(sending_ply,target_ply,amnestic_type)
+        LuctusLog("scp",string.format("%s(%s) has given amnestic type %s to %s(%s)",sending_ply:Nick(),sending_ply:SteamID(),amnestic_type,target_ply:Nick(),target_ply:SteamID()))
+    end,-2)
+end
+
+--Luctus SCP096
+if LUCTUS_SCP096_IMMUNE_JOBS then
+    hook.Add("LuctusSCP096UpdateHunted","luctus_log",function(ply,isHunted)
+        if isHunted then
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") is being hunted by SCP096.")
+        else
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") is not being hunted by SCP096 anymore.")
+        end
+    end,-2)
+    hook.Add("LuctusSCP096UpdateRage","luctus_log",function(ply,isTriggered)
+        if isTriggered then
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") enraged SCP096.")
+        else
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") ended rage of SCP096.")
+            --LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") died as SCP096, rage ended.")
+        end
+    end,-2)
+    hook.Add("LuctusSCP096Recontain","luctus_log",function(ply,isRecontained)
+        if isRecontained then
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") recontained SCP096 with a bag.")
+        else
+            LuctusLog("scp",ply:Nick().."("..ply:SteamID()..") removed the bag from SCP096.")
+        end
+    end,-2)
+end
+
 --Luctus Popups
 if LuctusPopupCreate then
     hook.Add("LuctusPopupCreated","luctus_log",function(ply,text)
