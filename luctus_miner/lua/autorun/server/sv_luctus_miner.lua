@@ -9,19 +9,19 @@ util.AddNetworkString("luctus_miner_get_pickaxe")
 
 function luctusMineCreateTable()
     local oreText = ""
-    for k,v in pairs(LUCTUS_MINER_ORES) do
+    for k,ore in ipairs(LUCTUS_MINER_ORES) do
         if k~=1 then oreText = oreText .. ", " end
-        oreText = oreText .. v["Name"] .. " INT DEFAULT 0"
+        oreText = oreText .. ore.Name .. " INT DEFAULT 0"
     end
     local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_mine(steamid TEXT, "..oreText..")")
     if res == false then
         error(sql.LastError())
     end
-    for k,v in pairs(LUCTUS_MINER_ORES) do
-        local res = sql.Query("ALTER TABLE luctus_mine ADD COLUMN "..v["Name"].." INT DEFAULT 0")
+    for k,ore in ipairs(LUCTUS_MINER_ORES) do
+        local res = sql.Query("ALTER TABLE luctus_mine ADD COLUMN "..ore.Name.." INT DEFAULT 0")
         --if false then column exists, which is a non-error case
         if res == nil then
-            print("[luctus_miner] New column '"..v["Name"].."' created!")
+            print("[luctus_miner] New column '"..ore.Name.."' created!")
         end
     end
     print("[luctus_miner] Database initialized!")
@@ -40,11 +40,11 @@ end)
 function LuctusMinerRandomOre(oresTable)
     local poolsize = 0
     for k,v in pairs(oresTable) do
-        poolsize = poolsize + v["DropPercent"]
+        poolsize = poolsize + v.DropPercent
     end
     local selection = math.random(1,poolsize*1.5)
     for k,v in pairs(oresTable) do
-        selection = selection - v["DropPercent"] 
+        selection = selection - v.DropPercent
         if selection <= 0 then
             return v
         end
@@ -89,9 +89,9 @@ end
 
 function LuctusMinerSavePlayer(ply)
     local sText = ""
-    for k,v in pairs(LUCTUS_MINER_ORES) do
+    for k,ore in ipairs(LUCTUS_MINER_ORES) do
         if k~=1 then sText = sText .. ", " end
-        sText = sText .. v["Name"] .. "=" .. ply.luctusOres[v["Name"]]
+        sText = sText .. ore.Name .. "=" .. ply.luctusOres[ore.Name]
     end
     local res = sql.Query("UPDATE luctus_mine SET "..sText.." WHERE steamid="..sql.SQLStr(ply:SteamID64()))
     if res == false then
@@ -101,22 +101,22 @@ function LuctusMinerSavePlayer(ply)
 end
 
 timer.Create("luctus_miner_savePlayerData",120,0,function()
-    for k,v in pairs(player.GetAll()) do
-        if v.lmine_needstosave then
-            LuctusMinerSavePlayer(v)
-            v.lmine_needstosave = false
+    for k,ply in ipairs(player.GetAll()) do
+        if ply.lmine_needstosave then
+            LuctusMinerSavePlayer(ply)
+            ply.lmine_needstosave = false
         end
     end
     --print("[luctus_miner] Player Data saved successfully by timer!")
 end)
 
 function LuctusMinerRandomNPCPrice(ent)
-    for k,v in pairs(LUCTUS_MINER_ORES) do
-        ent.SellTable[v["Name"]] = math.random(v["PriceMin"],v["PriceMax"])
+    for k,ore in ipairs(LUCTUS_MINER_ORES) do
+        ent.SellTable[ore.Name] = math.random(ore.PriceMin,ore.PriceMax)
     end
 end
 
-timer.Create("luctus_miner_randomNPCPrices",300,0,function()
+timer.Create("luctus_miner_randomNPCPrices",LUCTUS_MINER_RANDOM_TIMER,0,function()
     for k,ent in ipairs(ents.FindByClass("luctus_miner_npc")) do
         LuctusMinerRandomNPCPrice(ent)
     end
@@ -158,7 +158,10 @@ net.Receive("luctus_miner_npc",function(len,ply)
 end)
 
 net.Receive("luctus_miner_get_pickaxe", function(len,ply)
-    if ply:getJobTable().name == LUCTUS_MINER_JOBNAME then return end
+    if LUCTUS_MINER_JOBWHITELIST and not LUCTUS_MINER_JOBNAMES[team.GetName(ply:Team())] then return end
+    local npc = net.ReadEntity()
+    if not IsValid(npc) or not npc:GetClass() == "luctus_miner_npc" then return end
+    if npc:GetPos():Distance(ply:GetPos()) > 512 then return end
     ply:Give(LUCTUS_MINER_PICKAXE_CLASSNAME)
 end)
 
@@ -179,8 +182,8 @@ net.Receive("luctus_miner_craft",function(len,ply)
     end
     
     local item = LUCTUS_MINER_CRAFTABLES[sitem]
-    for k,v in pairs(item) do
-        if not ply.luctusOres[k] or ply.luctusOres[k] < tonumber(v) then
+    for oreName,amount in pairs(item) do
+        if not ply.luctusOres[oreName] or ply.luctusOres[oreName] < tonumber(amount) then
             DarkRP.notify(ply,1,5,"[Miner] You don't have enough resources for that!")
             return
         end

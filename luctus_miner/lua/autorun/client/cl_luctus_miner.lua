@@ -7,7 +7,7 @@ local lightDark = Color(40,40,40)
 local dark = Color(10,10,10)
 local buttonTextColor = Color(200,200,200)
 
-LUCTUS_MINER_SHOW_HUD = false
+LUCTUS_MINER_SHOW_HUD = LUCTUS_MINER_HUD_ALWAYSON
 LUCTUS_MINER_MY_ORES = LUCTUS_MINER_MY_ORES or {}
 
 hook.Add("InitPostEntity","luctus_miner_get",function()
@@ -29,24 +29,27 @@ net.Receive("luctus_miner_sync",function()
 end)
 
 hook.Add("OnContextMenuOpen","luctus_miner_hud_on",function()
+    if LUCTUS_MINER_HUD_ALWAYSON then return end
     LUCTUS_MINER_SHOW_HUD = true
 end)
 
 hook.Add("OnContextMenuClose","luctus_miner_hud_off",function()
+    if LUCTUS_MINER_HUD_ALWAYSON then return end
     LUCTUS_MINER_SHOW_HUD = false
 end)
 
 hook.Add("HUDPaint","luctus_miner_hud",function()
     if not LUCTUS_MINER_SHOW_HUD then return end
+    if LUCTUS_MINER_JOBWHITELIST and not LUCTUS_MINER_JOBNAMES[team.GetName(ply:Team())] then return end
     surface.SetDrawColor(0,0,0,200)
     surface.DrawRect(5, ScrH()/2, 145, (#LUCTUS_MINER_ORES+1) * 24)
     
     surface.SetFont("Trebuchet24")
     surface.SetTextPos(10,ScrH()/2)
     surface.SetDrawColor(255,255,255,255)
-    surface.DrawText("-Ore Inventory:")
+    surface.DrawText("-Ore Inventory-")
     
-    for k,v in pairs(LUCTUS_MINER_ORES) do
+    for k,v in ipairs(LUCTUS_MINER_ORES) do
         surface.SetTextColor(v.Color)
         surface.SetTextPos(10,ScrH()/2+k*24)
         surface.DrawText(v.Name..": "..LUCTUS_MINER_MY_ORES[v.Name])
@@ -168,7 +171,7 @@ net.Receive("luctus_miner_npc",function()
     local DScrollPanel = vgui.Create("DScrollPanel", MineNPCPanel)
     DScrollPanel:Dock(FILL)
 
-    for k,v in pairs(LUCTUS_MINER_ORES) do
+    for k,v in ipairs(LUCTUS_MINER_ORES) do
         local row = DScrollPanel:Add("DPanel")
         row:SetPos(0,(k-1)*25)
         row:SetSize(700,25)
@@ -221,6 +224,7 @@ net.Receive("luctus_miner_npc",function()
     pickaxeButton:SetText("Give me a pickaxe!")
     pickaxeButton.DoClick = function()
         net.Start("luctus_miner_get_pickaxe")
+            net.WriteEntity(npc)
         net.SendToServer()
         MineNPCPanel:Close()
     end
