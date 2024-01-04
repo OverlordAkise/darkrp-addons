@@ -188,15 +188,17 @@ net.Receive("luctus_miner_craft",function(len,ply)
             return
         end
     end
+    
+    for k,v in pairs(item) do
+        LuctusMinerGiveOre(ply,k,-1*v,true)
+    end
+    
     if IsWeapon(sitem) and not LUCTUS_MINER_USE_POCKET then
         ply:Give(sitem)
     else
         local ent = ents.Create(sitem)
         if not ent or not IsValid(ent) then return end
 
-        for k,v in pairs(item) do
-            LuctusMinerGiveOre(ply,k,-1*v,true)
-        end
         ent:SetPos(tableEnt:GetPos()+Vector(0,0,50))
         ent:Spawn()
         if LUCTUS_MINER_USE_POCKET then
