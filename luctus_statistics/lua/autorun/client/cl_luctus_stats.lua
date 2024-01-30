@@ -47,15 +47,15 @@ net.Receive("luctus_statistics",function()
     local liste = vgui.Create("DListView",LUCTUS_STATS_FRAME)
     liste:Dock(FILL)
     liste:SetMultiSelect(false)
-    liste:AddColumn( "Job" ):SetWidth(200)
-    liste:AddColumn( "#Joins" ):SetWidth(50)
-    liste:AddColumn( "hours" ):SetWidth(50)
+    liste:AddColumn("Job"):SetWidth(200)
+    liste:AddColumn("#Joins"):SetWidth(50)
+    liste:AddColumn("hours"):SetWidth(50)
     
     local jobs = getActiveJobNames()
     
-    for k,v in pairs(tab) do
+    for k,v in ipairs(tab) do
         if not jobs[v.jobname] then continue end
-        liste:AddLine(v.jobname, v.changedToAmount, math.Round(v.playtime/60/60))
+        liste:AddLine(v.jobname, tonumber(v.changedToAmount), math.Round(v.playtime/60/60))
     end
 end)
 
