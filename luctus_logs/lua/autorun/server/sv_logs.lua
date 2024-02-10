@@ -512,6 +512,9 @@ hook.Add("EntityTakeDamage","luctus_log_EntityTakeDamage",function(target, dmg)
     end
     log_push("Damage",dmg:GetAttacker():Nick().."("..dmg:GetAttacker():SteamID()..") damaged "..name.." for "..math.Round(dmg:GetDamage(),2).." with "..weapon)
 end,2)
+hook.Add("OnLuaError","luctus_logs_error",function(errStr, realmNum, stackTable, name, addonId)
+    log_push("Error","Error on "..realmNum.." // ["..name.." ("..addonId..")] "..errStr)
+end,-2)
 
 
 local ulx_noLogCommands = {
