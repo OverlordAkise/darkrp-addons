@@ -8,7 +8,11 @@ LUCTUS_DISCORD_ENDPOINT = "http://localhost:8080/discordrelay"
 --Discord webhook URL
 LUCTUS_DISCORD_WEBHOOK = "https://discord.com/api/webhooks/12345/abc123-_456"
 --Name/Tag to prepend with every message
-LUCTUS_DISCORD_TAG = "[istina] "
+LUCTUS_DISCORD_TAG = "[gmod] "
+--If ulx is installed, which commands should be logged to discord
+LUCTUS_DISCORD_ULX_CMDS = {
+    ["ulx noclip"] = true,
+}
 
 --Function on how to send the data to the endpoint
 --(Includes an anti-spam check)

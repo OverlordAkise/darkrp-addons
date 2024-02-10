@@ -110,5 +110,32 @@ hook.Add("LuctusJobranks","luctus_discord",function(uprankPly,targetPly,newJobNa
     LuctusDiscordSend(uprankPly:Nick().."("..uprankPly:SteamID()..") "..(isUpRank and "promoted" or "demoted").." "..targetPly:Nick().."("..targetPly:SteamID()..") to "..newJobName.."("..team.GetName(targetPly:Team())..")")
 end)
 
+--ULX commands (copied from luctus_logs)
+if ulx then
+    hook.Add(ULib.HOOK_COMMAND_CALLED or "ULibCommandCalled", "luctus_discord_notify", function(_ply,cmd,_args)
+        if (not _args) then return end
+        if ((#_args > 0 and not LUCTUS_DISCORD_ULX_CMDS[cmd .. " " .. _args[1]]) or not LUCTUS_DISCORD_ULX_CMDS[cmd]) then return end
+        local ply = ""
+        local steamid = ""
+        if (not IsValid(_ply)) then
+            ply = "console"
+            steamid = "console"
+        else
+            ply = _ply:Nick()
+            steamid = _ply:SteamID()
+        end
+        local argss = ""
+        if (#_args > 0) then
+            argss = " " .. table.concat(_args, " ")
+        end
+        LuctusDiscordSend(ply.."("..steamid..") used ulx command '"..cmd..argss.."'")
+    end)
+    --Log ban edits, which are not logged by the above
+    hook.Add(ULib.HOOK_USER_BANNED or "ULibPlayerBanned","luctus_discord_notify",function(steamid,t)
+        if not t.modified_admin then return end
+        LuctusDiscordSend(t.modified_admin.." edited the ulx-ban of "..steamid.." to "..string.NiceTime(t.unban-t.time).." for "..(t.reason))
+    end)
+end
+
 
 print("[luctus_discord] sv loaded!")
