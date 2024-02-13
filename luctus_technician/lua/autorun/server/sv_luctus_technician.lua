@@ -8,13 +8,13 @@ hook.Add("OnPlayerChangedTeam", "luctus_technician_timer", function(ply, beforeN
     --switch to technician
     if team.GetName(afterNum) == LUCTUS_TECHNICIAN_JOBNAME then
         net.Start("luctus_technician_togglehud")
-        net.WriteBool(true)
+            net.WriteBool(true)
         net.Send(ply)
     end
     --switch from technician
     if team.GetName(beforeNum) == LUCTUS_TECHNICIAN_JOBNAME then
         net.Start("luctus_technician_togglehud")
-        net.WriteBool(false)
+            net.WriteBool(false)
         net.Send(ply)
     end
 end)
@@ -30,6 +30,19 @@ hook.Add("InitPostEntity", "luctus_technician_breaker", function()
         end
     end)
     print("[luctus_technician] Timer created!")
+end)
+
+net.Receive("luctus_technician_repair",function(len,ply)
+    local ent = net.ReadEntity()
+    if not ent:GetBroken() then return end
+    if not IsValid(ent) or not ent.Base == "luctus_technician_base" then return end
+    if ply:GetPos():Distance(ent:GetPos()) > 512 then return end
+    --reward
+    ent:SetBroken(false)
+    local gainMoney = math.random(LUCTUS_TECHNICIAN_MIN_REWARD,LUCTUS_TECHNICIAN_MAX_REWARD)
+    DarkRP.notify(ply,3,5,"You repaired the object and got "..gainMoney.."$!")
+    ply:addMoney(gainMoney)
+    hook.Run("LuctusTechnicianRepaired",ply,ent)
 end)
 
 print("[luctus_technician] sv loaded")
