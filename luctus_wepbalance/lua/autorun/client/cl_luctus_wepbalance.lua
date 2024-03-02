@@ -50,8 +50,7 @@ function LuctusOpenBalanceMenu(wepclass)
         end
         attrlist:InvalidateLayout()
     end
-    
-    LuctusAddToBalanceList(attrlist,wep,{},"",LUCTUS_BALANCE_RESET_TABLE[wepclass])
+    LuctusAddToBalanceList(attrlist,wep,{},"",LUCTUS_BALANCE_RESET_TABLE[wepclass] or weapons.Get(wepclass))
     
     local savebtn = vgui.Create("DButton", wepframe)
     savebtn:Dock(BOTTOM)
