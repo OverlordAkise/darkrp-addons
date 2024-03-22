@@ -11,10 +11,10 @@ local function AddButtonToFrame(Frame)
     button:SetSize(180, 50)
     button:SetTextColor(Color(0, 195, 165))
     function button:Paint(w,h)
-      draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
-      if (self.Hovered) then
-        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
-      end
+        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+        if self.Hovered then
+            draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+        end
     end
 
     Frame.buttonCount = (Frame.buttonCount or 0) + 1
@@ -39,8 +39,8 @@ local function openMenu(setDoorOwnerAccess, doorSettingsAccess)
     Frame:MakePopup()
     Frame:ParentToHUD()
     function Frame:Paint(w,h)
-      draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
-      draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
+        draw.RoundedBox(0, 0, 0, w, h, Color(32, 34, 37))
+        draw.RoundedBox(0, 1, 1, w - 2, h - 2, Color(54, 57, 62))
     end
 
     function Frame:Think()
@@ -73,13 +73,13 @@ local function openMenu(setDoorOwnerAccess, doorSettingsAccess)
     CloseButton:SetSize(20,20)
     CloseButton:SetTextColor(Color(255,0,0))
     CloseButton.DoClick = function()
-      Frame:Close()
+        Frame:Close()
     end
     CloseButton.Paint = function(self,w,h)
-      draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
-      if (self.Hovered) then
-        draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
-      end
+        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+        if self.Hovered then
+            draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+        end
     end
 
     -- All the buttons
@@ -205,12 +205,11 @@ end
 
 hook.Add("PostGamemodeLoaded", "luctus_door_key_menu", function()
     
-  function DarkRP.openKeysMenu(um)
-      CAMI.PlayerHasAccess(LocalPlayer(), "DarkRP_SetDoorOwner", function(setDoorOwnerAccess)
-          CAMI.PlayerHasAccess(LocalPlayer(), "DarkRP_ChangeDoorSettings", fp{openMenu, setDoorOwnerAccess})
-      end)
-  end
-  net.Receive("KeysMenu", DarkRP.openKeysMenu)
-  print("[CL] LuctusDoor New Door/Key menu loaded!")
+    function DarkRP.openKeysMenu(um)
+        CAMI.PlayerHasAccess(LocalPlayer(), "DarkRP_SetDoorOwner", function(setDoorOwnerAccess)
+            CAMI.PlayerHasAccess(LocalPlayer(), "DarkRP_ChangeDoorSettings", fp{openMenu, setDoorOwnerAccess})
+        end)
+    end
+    net.Receive("KeysMenu", DarkRP.openKeysMenu)
+    print("[luctus_doorhud] cl loaded, overwritten door/key menu")
 end)
-
