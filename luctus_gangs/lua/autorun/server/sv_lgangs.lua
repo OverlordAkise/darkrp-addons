@@ -6,12 +6,9 @@ util.AddNetworkString("luctus_gang_menu")
 util.AddNetworkString("luctus_gang_members")
 util.AddNetworkString("luctus_gang_mhistory")
 
-LUCTUS_GANG_CACHE_BUFF_XP = {}
-LUCTUS_GANG_CACHE_BUFF_MN = {}
-LUCTUS_GANG_CACHE = {}
-
 local cd = {}
 timer.Create("luctus_gangs_cd_cleaner",60,0,function() cd = {} end)
+
 net.Receive("luctus_gangs", function(len,ply)
     if not cd[ply] then cd[ply] = CurTime() end
     if cd[ply] > CurTime() then
@@ -47,9 +44,6 @@ net.Receive("luctus_gangs", function(len,ply)
 end)
 
 function LuctusGangGetTable(name)
-    if LUCTUS_GANG_CACHE[name] then
-        return LUCTUS_GANG_CACHE[name]
-    end
     local res = sql.QueryRow("SELECT * FROM luctus_gangs WHERE name = "..sql.SQLStr(name))
     if res == false then
         error(sql.LastError())
@@ -57,7 +51,6 @@ function LuctusGangGetTable(name)
     if res == nil then
         return nil
     end
-    LUCTUS_GANG_CACHE[name] = res
     return res
 end
 
@@ -200,7 +193,7 @@ end
 
 function luctusKickGang(kicker,steamid)
     local ply = nil
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             ply = v
             break
@@ -237,8 +230,12 @@ function luctusGangMoneyHistory(ply)
     local gangname = ply:GetNW2String("gang","")
     if gangname == "" then return end
     local res = sql.Query("SELECT * FROM luctus_gangs_moneyhistory WHERE gang="..sql.SQLStr(gangname).." ORDER BY rowid DESC LIMIT 30")
-    if res == false or not res then
+    if res == false then
         error(sql.LastError())
+    end
+    if not res then
+        DarkRP.notify(ply,1,3,"There are no transactions yet!")
+        return
     end
     net.Start("luctus_gang_mhistory")
         net.WriteTable(res)
@@ -271,8 +268,6 @@ function luctusUpdateBuffs(ply,xp,money)
     if res == false then
         error(sql.LastError())
     end
-    LUCTUS_GANG_CACHE_BUFFS_XP[gangname] = xp
-    LUCTUS_GANG_CACHE_BUFFS_MN[gangname] = money
     DarkRP.notify(ply,0,5,"[gang] Buffs saved successfully")
 end
 
@@ -296,7 +291,7 @@ hook.Add("PlayerSay", "luctus_gangs_chat", function(ply,text,team)
     if text == "!gang" then
         if ply:GetNW2Int("gangrank",0) ~= 0 then
             net.Start("luctus_gang_menu")
-            net.WriteTable(LuctusGangGetTable(ply:GetNW2String("gang","")) or {})
+                net.WriteTable(LuctusGangGetTable(ply:GetNW2String("gang","")) or {})
             net.Send(ply)
         else
             DarkRP.notify(ply, 1, 4, "You are not in a gang! Either create one with '!creategang' or join one!")

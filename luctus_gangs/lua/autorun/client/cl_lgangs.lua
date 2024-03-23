@@ -36,10 +36,10 @@ hook.Add("HUDPaint","luctus_gangs_party",function()
         surface.SetDrawColor(0, 195, 165, 255)
         surface.DrawOutlinedRect(5,ScrH()/2-200+20,210,(#luctus_gang_members*20)+10,2)
         draw.RoundedBox(0,7,ScrH()/2-200+22,206,(#luctus_gang_members*20)+6,color_bg)
-        for k,v in pairs(luctus_gang_members) do
-            draw.DrawText(v:Nick(),"Trebuchet18",10,ScrH()/2-200+(k*20))
+        for k,ply in ipairs(luctus_gang_members) do
+            draw.DrawText(ply:Nick(),"Trebuchet18",10,ScrH()/2-200+(k*20))
             draw.RoundedBox(0,10,ScrH()/2-200+(k*20)+17,200,5,color_hud_hp_bg)
-            draw.RoundedBox(0,10,ScrH()/2-200+(k*20)+17,(v:Health()*200)/v:GetMaxHealth(),5,color_red)
+            draw.RoundedBox(0,10,ScrH()/2-200+(k*20)+17,(ply:Health()*200)/ply:GetMaxHealth(),5,color_red)
         end
     end
 end)
@@ -59,7 +59,7 @@ end)
 local creator_cache = {}
 function luctusGetCreator(steamid)
     if creator_cache[steamid] then return creator_cache[steamid] end
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             creator_cache[steamid] = v:Nick()
             return v:Nick()
