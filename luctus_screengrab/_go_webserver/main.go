@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	//Config file
-	"io/ioutil"
+	"os"
 	"sigs.k8s.io/yaml"
 	//"encoding/json"
 	//"net/http"
@@ -185,7 +185,7 @@ func SaveImage(pp PostPic, ip string) error {
 
 func main() {
 	fmt.Println("Starting!")
-	configfile, err := ioutil.ReadFile("./config.yaml")
+	configfile, err := os.ReadFile("./config.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -204,28 +204,38 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	gin.SetMode(gin.ReleaseMode)
 	InitDatabase(config.Mysql)
 	r := SetupRouter(logger)
-	r.SetTrustedProxies([]string{"127.0.0.1", "::1"})
+	err = r.SetTrustedProxies([]string{"127.0.0.1", "::1"})
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("Now listening on *:" + config.Port)
 	logger.Info("Starting server on *:" + config.Port)
-	r.Run("0.0.0.0:" + config.Port)
+	err = r.Run("0.0.0.0:" + config.Port)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func InitDatabase(conString string) {
 	var err error
 	db, err = sqlx.Open("mysql", conString)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	err = db.Ping()
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
-	db.Ping()
 
 	db.MustExec(`CREATE TABLE IF NOT EXISTS skeys(
     id SERIAL,
