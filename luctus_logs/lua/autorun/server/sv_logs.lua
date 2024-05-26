@@ -514,7 +514,7 @@ hook.Add("EntityTakeDamage","luctus_log_EntityTakeDamage",function(target, dmg)
 end,2)
 hook.Add("OnLuaError","luctus_logs_error",function(errStr, realm, stackTable, name, addonId)
     if not addonId then addonId = 0 end
-    log_push("Error","Error on "..realm.." // ["..name.." ("..addonId..")] "..errStr)
+    log_push("Error","Error on "..realm.." // ["..(name or "<n/a>").." ("..addonId..")] "..errStr)
 end,-2)
 
 
