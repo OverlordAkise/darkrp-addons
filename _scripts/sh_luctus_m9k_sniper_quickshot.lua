@@ -83,14 +83,17 @@ end
 
 LUCTUS_M9K_SNIPER_QUICKSHOT_LIST = {"m9k_aw50","m9k_barret_m82","m9k_m98b","m9k_svu","m9k_sl8","m9k_intervention","m9k_m24","m9k_psg1","m9k_remington7615p","m9k_dragunov","m9k_svt40","m9k_contender"}
 
-local m9kaw50 = weapons.GetStored("m9k_aw50")
-if not m9kaw50 then
-    ErrorNoHaltWithStack("ERROR: No M9k sniper found. This script only allows you to quick-shoot after sprinting with m9k snipers!")
-    return
-end
+--Load after all the other addons (m9k weapons)
+hook.Add("InitPostEntity","luctus_m9k_quickshot_sniper",function()
+    local m9kaw50 = weapons.GetStored("m9k_aw50")
+    if not m9kaw50 then
+        ErrorNoHaltWithStack("ERROR: No M9k sniper found. This script only allows you to quick-shoot after sprinting with m9k snipers!")
+        return
+    end
 
-for k,wep in ipairs(LUCTUS_M9K_SNIPER_QUICKSHOT_LIST) do
-    weapons.GetStored(wep)["IronSight"] = M9kIronSight
-end
+    for k,wep in ipairs(LUCTUS_M9K_SNIPER_QUICKSHOT_LIST) do
+        weapons.GetStored(wep)["IronSight"] = M9kIronSight
+    end
+end)
 
 print("[luctus_m9k_sniper_quickshot] sh loaded")
