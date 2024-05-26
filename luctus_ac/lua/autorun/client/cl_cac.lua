@@ -49,34 +49,32 @@ function concommand.Add(name,callback,autoComplete,helpText,flags)
 end
 
 function checkThat(name,src)
-  if type(name) != "string" then
-    return
-  end
-  name = string.lower(name)
-  if string.find(name,"aimbot") then
-    bestrafe(src.." / "..name)
-  end
-  if string.find(name,"wallhack") then
-    bestrafe(src.." / "..name)
-  end
-  if src ~= "hookAdd" then
-  	if string.find(name,"exploit") then
-  	  bestrafe(src.." / "..name)
-  	end
-  end
-  if string.find(name,"loki") then
-    bestrafe(src.." / "..name)
-  end
-  if string.find(name,"bhop") then
-    bestrafe(src.." / "..name)
-  end
-  if string.find(name,"spiritwalk") then
-    bestrafe(src.." / "..name)
-  end
-  if string.find(name,"lowkey") then
-    bestrafe(src.." / "..name)
-  end
-
+    if type(name) != "string" then return end
+    name = string.lower(name)
+    if string.find(name,"aimbot") then
+        bestrafe(src.." / "..name)
+    end
+    if string.find(name,"wallhack") then
+        bestrafe(src.." / "..name)
+    end
+    if src ~= "hookAdd" and string.find(name,"exploit") then
+        bestrafe(src.." / "..name)
+    end
+    if string.find(name,"loki") then
+        bestrafe(src.." / "..name)
+    end
+    if string.find(name,"bhop") then
+        bestrafe(src.." / "..name)
+    end
+    if string.find(name,"spiritwalk") then
+        bestrafe(src.." / "..name)
+    end
+    if string.find(name,"lowkey") then
+        bestrafe(src.." / "..name)
+    end
+    if src == "concommandAdd" and name == "book" then
+        bestrafe(src.." / "..name)
+    end
 end
 
 function bestrafe(text)
@@ -109,11 +107,11 @@ end
 timer.Create(""..math.random().."",0.1,0,DetectConVarChange)
 
 local function VerifyInfo(name, val)
-  if not name or not val then return end
-  netstart("luctusac_change")
-  writestring(name)
-  writestring(val)
-  netsendserver()
+    if not name or not val then return end
+    netstart("luctusac_change")
+    writestring(name)
+    writestring(val)
+    netsendserver()
 end
   
 ConVarCallback("sv_cheats", function(convar_name, value_old, value_new) VerifyInfo(convar_name,value_new) end)

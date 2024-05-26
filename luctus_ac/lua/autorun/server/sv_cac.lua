@@ -41,14 +41,14 @@ net.Receive("luctusac_change",function(len,ply)
     local convalue = net.ReadString()
     if convalue != GetConVar(conname):GetString() then
         print("[luctus_ac] Convar mismatch",ply:Nick(),ply:SteamID(),"->",conname,":",convalue)
-        LuctusAC_Punish(ply,0,"changing convars")
+        LuctusAC_Punish(ply,0,"changing convar "..conname.." to "..convalue)
     end
 end)
 
 net.Receive("luctusac_caught",function(len,ply)
     local reason = net.ReadString()
     print("[luctus_ac] Caught",ply:Nick(),ply:SteamID(),"->",reason)
-    LuctusAC_Punish(ply,0,"cheating")
+    LuctusAC_Punish(ply,0,reason)
 end)
 
 --anti net spam
