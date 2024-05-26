@@ -5,7 +5,10 @@
 --Optimizations: Less digits with the angles, replaced createmove with timer, menu for all emotes, net emote changer
 --Added: An HUD element that shows if you are currently in emote pose or not
 
-
+--Should it be allowed to bind emotes to keys?
+--Warning: This allows any user to emote whenever they want without the emote weapon
+--Bind example:  bind u "luctus_emote Comlink"
+LUCTUS_EMOTE_BINDABLE = false
 --How fast you can walk until your animation stops
 LUCTUS_EMOTE_MAXSPEED = 110
 --List of emotes that players can use
@@ -164,5 +167,22 @@ end)
 function ToggleEmoteStatus(ply, shouldAnimate)
     ply:SetNW2Bool("la_in_animation", shouldAnimate)
 end
+
+concommand.Add("luctus_emote", function(ply,cmd,args)
+    if not LUCTUS_EMOTE_BINDABLE then return end
+    local emoteName = args[1]
+    print("luctus_emote",ply,cmd,emoteName)
+    print(ply:GetNW2String("la_in_animation",false),ply:GetNW2String("la_animation",""))
+    if not IsValid(ply) then return end
+    if not emoteName or emoteName == "" then return end
+    if not LUCTUS_EMOTE_LIST[emoteName] then return end
+    if ply:GetNW2Bool("la_in_animation",false) and ply:GetNW2String("la_animation","") == emoteName then
+        ply:SetNW2Bool("la_in_animation",false)
+        return
+    end
+    ply:SetNW2String("la_old_animation",ply:GetNW2String("la_animation"))
+    ply:SetNW2String("la_animation", emoteName)
+    ply:SetNW2Bool("la_in_animation",true)
+end)
 
 print("[luctus_emotes] sh loaded")
