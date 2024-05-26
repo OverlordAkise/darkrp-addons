@@ -43,6 +43,17 @@ if string.StartWith(string.lower(engine.ActiveGamemode()),"scp") then
     LuctusLogAddCategory("scp")
 end
 
+--LuctusAC
+if LuctusAC_Punish then
+    hook.Add("LuctusAC","luctus_log",function(nick,steamid,length,msg)
+        LuctusLog("ac",nick.."("..steamid..") cheated: "..msg)
+    end)
+    hook.Add("LuctusACNetDetected","luctus_log",function(ply,msg)
+        LuctusLog("ac",ply:Nick().."("..ply:SteamID()..") tried to exploit "..msg)
+    end)
+    LuctusLogAddCategory("ac")
+end
+
 --Luctus AntiBanEvasion
 if LUCTUS_ABE_FAMILY_SHARING then
     hook.Add("LuctusAntiBanEvasionDetection","luctus_log",function(ply,level,message)
