@@ -19,6 +19,13 @@ function plymeta:addRPScore(s)
     self:setDarkRPVar("rpscore",self:getRPScore()+s)
 end
 
+function LuctusRPScoreAddOffline(steamid,amount)
+    local res = sql.Query("UPDATE luctus_rpscore SET rpscore = rpscore+"..amount.." WHERE steamid = "..sql.SQLStr(steamid))
+    if res == false then
+        ErrorNoHaltWithStack(sql.LastError())
+    end
+end
+
 function LuctusRPScoreSave(ply)
     local res = sql.Query("UPDATE luctus_rpscore SET rpscore = "..ply:getRPScore().." WHERE steamid = "..sql.SQLStr(ply:SteamID()))
     if res == false then
@@ -55,6 +62,36 @@ end)
 
 hook.Add("PlayerInitialSpawn","luctus_rpscore",function(ply)
     LuctusRPScoreLoad(ply)
+end)
+
+
+--Commands for whitelisted users
+hook.Add("PlayerSay","luctus_rpscore",function(ply,text)
+    if not LUCTUS_RPSCORE_ALLOWED_STEAMIDS[ply:SteamID()] then return end
+    if not string.StartsWith(text,LUCTUS_RPSCORE_USER_CMD) then return end
+    local split = string.Split(text," ")
+    local steamid = split[2]
+    local _amount = split[3]
+    if not _amount or _amount == "" or not tonumber(_amount) then
+        ply:PrintMessage(HUD_PRINTTALK,"[ERROR] Usage: "..LUCTUS_RPSCORE_USER_CMD.." STEAM_0:0:12345 3")
+        return
+    end
+    local amount = tonumber(_amount)
+    if not steamid or steamid == "" or not string.match(steamid,"^STEAM_%d:%d:%d+$") then
+        ply:PrintMessage(HUD_PRINTTALK,"[ERROR] Usage: "..LUCTUS_RPSCORE_USER_CMD.." STEAM_0:0:12345 3")
+        return
+    end
+    local target = player.GetBySteamID(steamid)
+    if target then
+        target:addRPScore(amount)
+        LuctusRPScoreSave(target)
+        hook.Run("LuctusRPScoreAdd",target,amount,ply)
+    else
+        LuctusRPScoreAddOffline(steamid,amount)
+        hook.Run("LuctusRPScoreAddID",steamid,amount,ply)
+    end
+    ply:PrintMessage(HUD_PRINTTALK,"RP-Score successfully saved!")
+    return ""
 end)
 
 print("[luctus_rpscore] sv loaded")

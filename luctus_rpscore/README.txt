@@ -10,3 +10,11 @@ Functions:
 ply:getRPScore()
 ply:setRPScore()
 ply:addRPScore()
+
+Hooks:
+
+hook.Run("LuctusRPScoreSet",ply,amount,adminPly)
+hook.Run("LuctusRPScoreAdd",ply,amount,adminPly)
+hook.Run("LuctusRPScoreAddID",steamid,amount,adminPly)
+
+Warning: The above adminPly can be nil

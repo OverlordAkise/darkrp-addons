@@ -7,11 +7,12 @@ local CATEGORY_NAME = "RPScore"
 function ulx.setrpscore( calling_ply, target_ply, amount )
     target_ply:setRPScore(math.floor(amount))
     LuctusRPScoreSave(target_ply)
+    hook.Run("LuctusRPScoreSet",target_ply,amount,calling_ply)
     ulx.fancyLogAdmin( calling_ply, true, "#A set the RP-Score of #T to #s", target_ply, amount )
 end
 local setrpscore = ulx.command( CATEGORY_NAME, "ulx setrpscore", ulx.setrpscore, "!setrpscore" )
 setrpscore:addParam{ type=ULib.cmds.PlayerArg }
-setrpscore:addParam{ type=ULib.cmds.NumArg, min=0, max=1000000, default=5, hint="RP-Score" }
+setrpscore:addParam{ type=ULib.cmds.NumArg, min=-1000, max=1000, default=5, hint="RP-Score" }
 setrpscore:defaultAccess( ULib.ACCESS_SUPERADMIN )
 setrpscore:help( "Set the RP-Score of a player." )
 
@@ -19,25 +20,24 @@ setrpscore:help( "Set the RP-Score of a player." )
 function ulx.addrpscore( calling_ply, target_ply, amount )
     target_ply:addRPScore(amount)
     LuctusRPScoreSave(target_ply)
+    hook.Run("LuctusRPScoreAdd",target_ply,amount,calling_ply)
     ulx.fancyLogAdmin( calling_ply, true, "#A added #T #s RP-Score", target_ply, amount )
 end
 local addrpscore = ulx.command( CATEGORY_NAME, "ulx addrpscore", ulx.addrpscore, "!addrpscore" )
 addrpscore:addParam{ type=ULib.cmds.PlayerArg }
-addrpscore:addParam{ type=ULib.cmds.NumArg, min=0, max=1000000, default=5, hint="RP-Score" }
+addrpscore:addParam{ type=ULib.cmds.NumArg, min=-1000, max=1000, default=5, hint="RP-Score" }
 addrpscore:defaultAccess( ULib.ACCESS_SUPERADMIN )
 addrpscore:help( "Give RP-Score to a player." )
 
 -- !addrpscoreid
 function ulx.addrpscoreid( calling_ply, steamid, amount )
-    local res = sql.Query("UPDATE luctus_rpscore SET rpscore = rpscore+"..amount.." WHERE steamid = "..sql.SQLStr(steamid))
-    if res == false then
-        ErrorNoHaltWithStack(sql.LastError())
-    end
+    LuctusRPScoreAddOffline(steamid,amount)
+    hook.Run("LuctusRPScoreAddID",steamid,amount,calling_ply)
     ulx.fancyLogAdmin( calling_ply, true, "#A added #s #s RP-Score", steamid, amount )
 end
 local addrpscoreid = ulx.command( CATEGORY_NAME, "ulx addrpscoreid", ulx.addrpscoreid, "!addrpscoreid" )
 addrpscoreid:addParam{ type=ULib.cmds.StringArg, hint="STEAM_0:0:12345678" }
-addrpscoreid:addParam{ type=ULib.cmds.NumArg, min=0, max=1000000, default=5, hint="RP-Score" }
+addrpscoreid:addParam{ type=ULib.cmds.NumArg, min=-1000, max=1000, default=5, hint="RP-Score" }
 addrpscoreid:defaultAccess( ULib.ACCESS_SUPERADMIN )
 addrpscoreid:help( "Give RP-Score to a player." )
 
