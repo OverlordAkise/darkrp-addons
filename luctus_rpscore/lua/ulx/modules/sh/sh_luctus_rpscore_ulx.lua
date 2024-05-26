@@ -7,7 +7,7 @@ local CATEGORY_NAME = "RPScore"
 function ulx.setrpscore( calling_ply, target_ply, amount )
     target_ply:setRPScore(math.floor(amount))
     LuctusRPScoreSave(target_ply)
-    ulx.fancyLogAdmin( calling_ply, "#A set the RP-Score of #T to #s", target_ply, amount )
+    ulx.fancyLogAdmin( calling_ply, true, "#A set the RP-Score of #T to #s", target_ply, amount )
 end
 local setrpscore = ulx.command( CATEGORY_NAME, "ulx setrpscore", ulx.setrpscore, "!setrpscore" )
 setrpscore:addParam{ type=ULib.cmds.PlayerArg }
@@ -19,7 +19,7 @@ setrpscore:help( "Set the RP-Score of a player." )
 function ulx.addrpscore( calling_ply, target_ply, amount )
     target_ply:addRPScore(amount)
     LuctusRPScoreSave(target_ply)
-    ulx.fancyLogAdmin( calling_ply, "#A added #T #s RP-Score", target_ply, amount )
+    ulx.fancyLogAdmin( calling_ply, true, "#A added #T #s RP-Score", target_ply, amount )
 end
 local addrpscore = ulx.command( CATEGORY_NAME, "ulx addrpscore", ulx.addrpscore, "!addrpscore" )
 addrpscore:addParam{ type=ULib.cmds.PlayerArg }
@@ -33,7 +33,7 @@ function ulx.addrpscoreid( calling_ply, steamid, amount )
     if res == false then
         ErrorNoHaltWithStack(sql.LastError())
     end
-    ulx.fancyLogAdmin( calling_ply, "#A added #s #s RP-Score", steamid, amount )
+    ulx.fancyLogAdmin( calling_ply, true, "#A added #s #s RP-Score", steamid, amount )
 end
 local addrpscoreid = ulx.command( CATEGORY_NAME, "ulx addrpscoreid", ulx.addrpscoreid, "!addrpscoreid" )
 addrpscoreid:addParam{ type=ULib.cmds.StringArg, hint="STEAM_0:0:12345678" }
