@@ -82,4 +82,22 @@ hook.Add("PlayerDisconnected","luctus_ac_cleanup",function(ply)
     LUCTUS_AC_NETBANNED[ply] = nil
 end)
 
-print("[luctus_ac] Serverside loaded!")
+--Small "menu check" bonanza
+local function netKick(msg,ply)
+    print("[WARNING] "..ply:Nick().."("..ply:SteamID()..") tried to send an exploit net message: "..msg)
+    hook.Run("LuctusACNetDetected",ply,msg)
+    ply:Kick("suspicion of exploiting")
+end
+
+local net_msg_list = {
+    "update_store_freebodygroupr",
+    "announcementadmin",
+    "StandPose_Server",
+}
+
+for k,msg in ipairs(net_msg_list) do
+    util.AddNetworkString(msg)
+    net.Receive(msg,function(len,ply) netKick(msg,ply) end)
+end
+
+print("[luctus_ac] sv loaded")
