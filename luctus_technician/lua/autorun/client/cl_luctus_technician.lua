@@ -109,10 +109,10 @@ net.Receive("luctus_technician_repair",function()
             function endFrame:Paint(w,h)
                 draw.RoundedBox(0,0,0,w,h,Color(20,20,20,240))
                 draw.SimpleTextOutlined("Repair successful!","DermaLarge",w/2,h/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP,1,color_black)
-                net.Start("luctus_technician_repair")
-                    net.WriteEntity(ent)
-                net.SendToServer()
             end
+            net.Start("luctus_technician_repair")
+                net.WriteEntity(ent)
+            net.SendToServer()
         else
             surface.PlaySound("buttons/button4.wav")
         end
