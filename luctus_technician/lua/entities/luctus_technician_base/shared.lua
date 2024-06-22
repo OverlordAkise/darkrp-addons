@@ -14,11 +14,11 @@ ENT.Freeze = false
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
+ENT.Hitpoints = 200
+
 function ENT:SetupDataTables()
-    self:NetworkVar( "Bool", 0, "Broken" )
-    self:NetworkVar( "Bool", 1, "Status" )
+    self:NetworkVar("Bool", 0, "Broken")
     if SERVER then
         self:SetBroken(false)
-        self:SetStatus(true)
     end
 end

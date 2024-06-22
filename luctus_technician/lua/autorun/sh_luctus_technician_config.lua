@@ -8,6 +8,8 @@ LUCTUS_TECHNICIAN_JOBNAME = "Technician"
 LUCTUS_TECHNICIAN_SEE_BROKEN_THROUGH_WALL = false
 --Delay between things breaking, in seconds
 LUCTUS_TECHNICIAN_BREAK_DELAY = 120
+--How much health does the entity have, if "killed" it will be broken
+LUCTUS_TECHNICIAN_ENT_HEALTH = 200
 --Reward (=money gained) is random between these 2 numbers:
 LUCTUS_TECHNICIAN_MIN_REWARD = 1000
 LUCTUS_TECHNICIAN_MAX_REWARD = 2000
