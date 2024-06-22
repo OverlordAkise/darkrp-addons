@@ -6,12 +6,15 @@ util.AddNetworkString("luctus_camera_pvs")
 LUCTUS_CAMERA_ACTIVE = LUCTUS_CAMERA_ACTIVE or {}
 LUCTUS_CAMERA_POS = LUCTUS_CAMERA_POS or {}
 
+LUCTUS_CAMERA_IS_OFFLINE = false
+
 function LuctusCameraActivate(ply,status)
     LUCTUS_CAMERA_ACTIVE[ply] = status
 end
 
 --Or else you won't see players:
 hook.Add("SetupPlayerVisibility","luctus_camera",function(ply)
+    if LUCTUS_CAMERA_IS_OFFLINE then return end
     if not LUCTUS_CAMERA_ACTIVE[ply] then return end
     local pos = LUCTUS_CAMERA_POS[ply]
     if not pos then return end
@@ -19,6 +22,12 @@ hook.Add("SetupPlayerVisibility","luctus_camera",function(ply)
 end)
 
 function LuctusCameraSwitch(ply,num)
+    if LUCTUS_CAMERA_IS_OFFLINE then
+        net.Start("luctus_camera_pvs")
+            net.WriteBool(true)
+        net.Send(ply)
+        return
+    end
     local tab = LuctusCameraGetEnts(ply)
     if not ply.specIndex then ply.specIndex = 1 end
     ply.specIndex = (ply.specIndex+num)%(#tab+1)
@@ -32,6 +41,7 @@ function LuctusCameraSwitch(ply,num)
     
     
     net.Start("luctus_camera_pvs")
+        net.WriteBool(false)--Is system offline?
         if not IsValid(ent) then
             net.WriteBool(false)
         elseif ent:IsPlayer() then

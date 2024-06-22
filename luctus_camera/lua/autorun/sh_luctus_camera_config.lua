@@ -11,5 +11,9 @@ LUCTUS_CAMERA_BODYCAM_JOBS = {
     ["Citizen"] = true,
     ["Security"] = true,
 }
+--Text if the end of the cameras was reached
+LUCTUS_CAMERA_TEXT_IF_NO_CAMERA_FOUND = "<NO VIDEO FEED>"
+--Text if the camera system is offline
+LUCTUS_CAMERA_TEXT_IF_OFFLINE = "<SYSTEM OFFLINE>"
 
 print("[luctus_camera] config loaded")

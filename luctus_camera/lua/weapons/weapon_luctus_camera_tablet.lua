@@ -71,11 +71,34 @@ function SWEP:DrawWorldModel()
     self:DrawModel()
 end
 
+function SWEP:PrimaryAttack()
+    if CLIENT then return end
+    LuctusCameraSwitch(self:GetOwner(),-1)
+    self:SetNextPrimaryFire(CurTime()+0.2)
+end
+
+function SWEP:SecondaryAttack()
+    if CLIENT then return end
+    LuctusCameraSwitch(self:GetOwner(),1)
+    self:SetNextSecondaryFire(CurTime()+0.2)
+end
+
+if SERVER then return end
 
 LUCTUS_CAMERA_ENT = nil
 LUCTUS_CAMERA_VEC = nil
 LUCTUS_CAMERA_ANG = nil
+LUCTUS_CAMERA_TEXT = ""
 net.Receive("luctus_camera_pvs",function()
+    local isoffline = net.ReadBool()
+    if isoffline then
+        LUCTUS_CAMERA_ENT = nil
+        LUCTUS_CAMERA_VEC = nil
+        LUCTUS_CAMERA_ANG = nil
+        LUCTUS_CAMERA_TEXT = LUCTUS_CAMERA_TEXT_IF_OFFLINE
+        return
+    end
+    LUCTUS_CAMERA_TEXT = LUCTUS_CAMERA_TEXT_IF_NO_CAMERA_FOUND
     local isent = net.ReadBool()
     local ent = net.ReadEntity()
     local vec = net.ReadVector()
@@ -100,7 +123,7 @@ function SWEP:DrawHUD()
     draw.RoundedBox(0,98,48,ScrW()-196,ScrH()-96,color_accent)
     draw.RoundedBox(0,100,50,ScrW()-200,ScrH()-100,color_black)
     if not IsValid(LUCTUS_CAMERA_ENT) and not LUCTUS_CAMERA_VEC then
-        draw.DrawText("<NO VIDEO FEED>", "DermaLarge", ScrW()*0.5, ScrH()*0.5, color_white, TEXT_ALIGN_CENTER)
+        draw.DrawText(LUCTUS_CAMERA_TEXT, "DermaLarge", ScrW()*0.5, ScrH()*0.5, color_white, TEXT_ALIGN_CENTER)
         return
     end
     if not IsValid(ent) then
@@ -122,16 +145,4 @@ function SWEP:DrawHUD()
     })
     draw.DrawText("< Leftclick", "Trebuchet24", 120, ScrH()-100, color_white, TEXT_ALIGN_LEFT)
     draw.DrawText("Rightclick >", "Trebuchet24", ScrW()-100-20, ScrH()-100, color_white, TEXT_ALIGN_RIGHT)
-end
-
-function SWEP:PrimaryAttack()
-    if CLIENT then return end
-    LuctusCameraSwitch(self:GetOwner(),-1)
-    self:SetNextPrimaryFire(CurTime()+0.2)
-end
-
-function SWEP:SecondaryAttack()
-    if CLIENT then return end
-    LuctusCameraSwitch(self:GetOwner(),1)
-    self:SetNextSecondaryFire(CurTime()+0.2)
 end
