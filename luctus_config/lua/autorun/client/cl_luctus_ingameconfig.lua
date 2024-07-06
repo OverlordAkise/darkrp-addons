@@ -3,13 +3,36 @@
 
 hook.Add("OnPlayerChat","luctus_ingame_config",function(ply,text,isteam,isdead)
     if ply ~= LocalPlayer() then return end
+    if not ply:IsSuperAdmin() then return end
     if text ~= LUCTUS_INGAME_CONFIG_CMD_CL then return end
     LuctusOpenIngameConfig(LuctusIngameConfigGetAll(),false)
 end)
 
 net.Receive("luctus_ingame_config",function()
-    local configTable = net.ReadTable()
-    LuctusOpenIngameConfig(configTable,true)
+    LuctusOpenIngameConfig(net.ReadTable(),true)
+end)
+
+net.Receive("luctus_ingame_config_cl",function()
+    local category = net.ReadString()
+    local variable = net.ReadString()
+    local value = net.ReadType()
+    LuctusIngameConfigSet(variable,value,category)
+end)
+
+
+hook.Add("InitPostEntity", "luctus_ingame_config_cl_init", function()
+    net.Start("luctus_ingame_config_cl_sync")
+    net.SendToServer()
+end)
+net.Receive("luctus_ingame_config_cl_sync",function()
+    local msgLen = net.ReadUInt(16)
+    local compMsg = net.ReadData(msgLen)
+    local confTab = util.JSONToTable(util.Decompress(compMsg))
+    for cat,varVal in pairs(confTab) do
+        for var,val in pairs(varVal) do
+            LuctusIngameConfigSet(var,val,cat)
+        end
+    end
 end)
 
 LuctusIngameConfigFrame = nil
@@ -51,7 +74,7 @@ function LuctusOpenIngameConfig(configTable,isServer)
     end
     
     local DProperties = vgui.Create("DProperties", LuctusIngameConfigFrame)
-    DProperties:Dock( FILL )
+    DProperties:Dock(FILL)
 
     for category,data in pairs(configTable) do
         for name,value in pairs(data) do
@@ -61,18 +84,17 @@ function LuctusOpenIngameConfig(configTable,isServer)
             row.category = category
             row.name = name
             row.DataChanged = function(self,newvalue)
-                print("[luctus_config] updating value of",self.name)
                 if isServer then
                     net.Start("luctus_ingame_config")
-                        net.WriteString(self.name)
-                        net.WriteString(newvalue)
-                    net.SendToServer()
                 else
-                    LuctusIngameConfigChange(self.name,newvalue,LocalPlayer())
+                    net.Start("luctus_ingame_config_cl")
                 end
+                    net.WriteString(self.name)
+                    net.WriteString(newvalue)
+                net.SendToServer()
             end
         end
     end
 end
 
-print("[luctus_config] CL loaded!")
+print("[luctus_config] cl loaded")

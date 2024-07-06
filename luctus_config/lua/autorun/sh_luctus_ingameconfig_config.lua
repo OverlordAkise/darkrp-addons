@@ -24,8 +24,8 @@ LUCTUS_INGAME_CONFIG_SV["Debug"] = {
     "LUCTUS_MONITOR_DEBUG",
 }
 ---------
-LUCTUS_INGAME_CONFIG_CL["Gang"] = {
-    "LUCTUS_GANGS_PARTY_HUD",
+LUCTUS_INGAME_CONFIG_CL["Charsystem"] = {
+    "LUCTUS_CHAR_WELCOMEMSG",
 }
 
 print("[luctus_config] config loaded")
