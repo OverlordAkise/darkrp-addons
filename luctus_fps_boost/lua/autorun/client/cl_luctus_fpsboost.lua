@@ -3,17 +3,26 @@
 
 CreateClientConVar("luctus_enable_multicore", "0", true, false, "Automatically enables multicore upon joining the server")
 
-local function luctusEnableMulticore()
+function LuctusEnableMulticore()
     RunConsoleCommand("gmod_mcore_test", "1")
-    RunConsoleCommand("mat_queue_mode", "-1")
+    RunConsoleCommand("mat_queue_mode", "-1") --default
     RunConsoleCommand("cl_threaded_bone_setup", "1")
     RunConsoleCommand("cl_threaded_client_leaf_system", "1")
     RunConsoleCommand("r_threaded_client_shadow_manager", "1")
-    RunConsoleCommand("r_threaded_particles", "1")
+    RunConsoleCommand("r_threaded_particles", "1") --default
     RunConsoleCommand("r_threaded_renderables", "1")
-    RunConsoleCommand("r_queued_ropes", "1")
-    RunConsoleCommand("studio_queue_mode", "1")
+    RunConsoleCommand("r_queued_ropes", "1") --default
+    RunConsoleCommand("studio_queue_mode", "1") --default
     RunConsoleCommand("luctus_enable_multicore","1")
+end
+
+function LuctusDisableMulticore()
+    RunConsoleCommand("gmod_mcore_test", "0")
+    RunConsoleCommand("cl_threaded_bone_setup", "0")
+    RunConsoleCommand("cl_threaded_client_leaf_system", "0")
+    RunConsoleCommand("r_threaded_client_shadow_manager", "0")
+    RunConsoleCommand("r_threaded_renderables", "0")
+    RunConsoleCommand("luctus_enable_multicore","0")
 end
 
 local function OpenMulticoreWindow()
@@ -66,7 +75,7 @@ local function OpenMulticoreWindow()
     end
     btn_yes:SetTextColor( Color(255, 255, 255) )
     btn_yes.DoClick = function()
-        luctusEnableMulticore()
+        LuctusEnableMulticore()
         window:Remove()
         surface.PlaySound( "garrysmod/ui_click.wav" )
         chat.AddText("Multicore Rendering successfully enabled!")
@@ -86,7 +95,7 @@ local function OpenMulticoreWindow()
     end
     btn_no:SetTextColor( Color(255, 255, 255) )
     btn_no.DoClick = function()
-        RunConsoleCommand("luctus_enable_multicore","0")
+        LuctusDisableMulticore()
         window:Remove()
         surface.PlaySound( "garrysmod/ui_click.wav" )
         LocalPlayer():ChatPrint( "Multicore Rendering not enabled." )
@@ -98,7 +107,7 @@ hook.Add("InitPostEntity","luctus_open_fps",function()
         if GetConVar("luctus_enable_multicore"):GetString() != "1" then
             OpenMulticoreWindow()
         else
-            luctusEnableMulticore()
+            LuctusEnableMulticore()
             chat.AddText("Multicore Rendering automatically enabled!")
             print("[luctus_fps] Multicore Rendering automatically enabled!")
         end
