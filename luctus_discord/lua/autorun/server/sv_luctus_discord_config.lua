@@ -9,9 +9,11 @@ LUCTUS_DISCORD_ENDPOINT = "http://localhost:8080/discordrelay"
 LUCTUS_DISCORD_WEBHOOK = "https://discord.com/api/webhooks/12345/abc123-_456"
 --Name/Tag to prepend with every message
 LUCTUS_DISCORD_TAG = "[gmod] "
---If ulx is installed, which commands should be logged to discord
-LUCTUS_DISCORD_ULX_CMDS = {
-    ["ulx noclip"] = true,
+--If ulx/sam is installed, which commands should be logged to discord
+--SAM commands only need the command itself, ULX needs to have "ulx " infront of it
+LUCTUS_DISCORD_ADMIN_CMDS = {
+    ["ulx noclip"] = true, --ulx example
+    ["slap"] = true, --sam example
 }
 
 --Function on how to send the data to the endpoint
@@ -23,7 +25,7 @@ function LuctusDiscordSend(message)
         failed = function(failMessage)
             print("[luctus_discord] FAILED TO SEND MESSAGE!")
             print("[luctus_discord]",os.date("%H:%M:%S - %d/%m/%Y",os.time()))
-            ErrorNoHaltWithStack(failMessage)
+            -- ErrorNoHaltWithStack(failMessage)
         end,
         success = function(httpcode,body,headers)
             --nothing yet

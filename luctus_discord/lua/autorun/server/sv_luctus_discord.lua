@@ -114,7 +114,7 @@ end)
 if ulx then
     hook.Add(ULib.HOOK_COMMAND_CALLED or "ULibCommandCalled", "luctus_discord_notify", function(_ply,cmd,_args)
         if (not _args) then return end
-        if ((#_args > 0 and not LUCTUS_DISCORD_ULX_CMDS[cmd .. " " .. _args[1]]) or not LUCTUS_DISCORD_ULX_CMDS[cmd]) then return end
+        if ((#_args > 0 and not LUCTUS_DISCORD_ADMIN_CMDS[cmd .. " " .. _args[1]]) or not LUCTUS_DISCORD_ADMIN_CMDS[cmd]) then return end
         local ply = ""
         local steamid = ""
         if (not IsValid(_ply)) then
@@ -134,6 +134,19 @@ if ulx then
     hook.Add(ULib.HOOK_USER_BANNED or "ULibPlayerBanned","luctus_discord_notify",function(steamid,t)
         if not t.modified_admin then return end
         LuctusDiscordSend(t.modified_admin.." edited the ulx-ban of "..steamid.." to "..string.NiceTime(t.unban-t.time).." for "..(t.reason))
+    end)
+end
+
+if sam then
+    hook.Add("SAM.RanCommand", "luctus_discord_notify", function(ply, cmd_name, args, cmd, result)
+        if not LUCTUS_DISCORD_ADMIN_CMDS[cmd_name] then return end
+        local ply = "console"
+        local steamid = "console"
+        if IsValid(ply) then
+            ply = ply:Nick()
+            steamid = ply:SteamID()
+        end
+        LuctusDiscordSend(ply.."("..steamid..") used sam command '"..cmd_name.." "..table.concat(args," ").."'")
     end)
 end
 
