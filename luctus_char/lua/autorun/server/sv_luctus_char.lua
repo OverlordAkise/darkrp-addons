@@ -20,6 +20,7 @@ hook.Add("InitPostEntity", "luctus_char_dbinit",LuctusCharDBInit)
 hook.Add("postLoadCustomDarkRPItems", "luctus_char_disablejobs", function()
     function DarkRP.storeMoney(ply, amount)
         if ply.IsChoosingChar then return end
+        if ply:IsBot() then return end
         sql.Query("UPDATE luctus_char SET money = "..amount.." WHERE steamid = "..sql.SQLStr(ply:SteamID()).." AND slot = "..ply.charCurSlot)
     end
 end)
