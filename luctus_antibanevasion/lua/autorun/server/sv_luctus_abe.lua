@@ -31,6 +31,10 @@ end)
 
 function LuctusAbeEcho(level,ply,message)
     print("[banevasion]",message)
+    if LUCTUS_ABE_IMMUNE_IDS[ply:SteamID()] then
+        print("[banevasion] ... but player is immune")
+        return
+    end
     hook.Run("LuctusAntiBanEvasionDetection",ply,level,message)
     if level == 1 then
         ply:Kick()
