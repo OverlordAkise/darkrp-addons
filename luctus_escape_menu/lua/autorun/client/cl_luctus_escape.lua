@@ -41,11 +41,9 @@ function draw.Blur(panel, amount)
     end
 end
 
-hook.Add("PreRender", "luctus_escape_menu", function()
-    if input.IsKeyDown(KEY_ESCAPE) and gui.IsGameUIVisible() then
-        gui.HideGameUI()
-        ToggleEscapeMenu()
-    end
+hook.Add("OnPauseMenuShow", "luctus_escape_menu", function()
+    ToggleEscapeMenu()
+    return false
 end)
 
 function ToggleEscapeMenu()
@@ -93,4 +91,4 @@ function ToggleEscapeMenu()
     end
 end
 
-print("[luctus_escape] cl loaded!")
+print("[luctus_escape] cl loaded")
