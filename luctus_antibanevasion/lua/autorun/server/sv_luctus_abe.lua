@@ -39,9 +39,14 @@ function LuctusAbeEcho(level,ply,message)
     if level == 1 then
         ply:Kick()
     elseif level >= 2 then
-        RunConsoleCommand("ulx", "banid", ply:SteamID(), "0", "Trying to circumvent a ban.")
+        if ulx then
+            RunConsoleCommand("ulx", "banid", ply:SteamID(), "0", "Trying to circumvent a ban.")
+        elseif sam then
+            RunConsoleCommand("sam", "banid", ply:SteamID(), "0", "Trying to circumvent a ban.")
+        end
+        ply:Kick() --if ulx not installed
     end
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         if LUCTUS_ABE_NOTIFGROUPS[v:GetUserGroup()] then
             v:PrintMessage(3,"[banevasion] "..message)
         end
@@ -60,9 +65,16 @@ function LuctusAbeCheckFamilySharing(ply)
 end
 
 function LuctusAbeCheckFamilyBan(sid,ply)
-    local ban = ULib.bans[sid]
-    if ban then
-        LuctusAbeEcho(LUCTUS_ABE_FAMILY_SHARING_BAN,ply,"The Family-Shared Owner SteamID of player "..ply:SteamName().." ("..ply:SteamID()..") is banned, so also banning this player. (Banned SID: "..sid..")")
+    if ULib then
+        if ULib.bans[sid] then
+            LuctusAbeEcho(LUCTUS_ABE_FAMILY_SHARING_BAN,ply,"The Family-Shared Owner-SteamID of player "..ply:SteamName().." ("..ply:SteamID()..") is banned (Banned ulx SID: "..sid..")")
+        end
+    end
+    if sam then
+        sam.player.is_banned(sid, function(isBanned,steamid)
+            if not isBanned then return end
+            LuctusAbeEcho(LUCTUS_ABE_FAMILY_SHARING_BAN,ply,"The Family-Shared Owner-SteamID of player "..ply:SteamName().." ("..ply:SteamID()..") is banned (Banned sam SID: "..sid..")")
+        end)
     end
 end
 
