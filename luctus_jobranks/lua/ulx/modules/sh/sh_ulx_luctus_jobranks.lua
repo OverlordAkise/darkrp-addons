@@ -36,7 +36,7 @@ function ulx.jobrankid(calling_ply, steamid, jobcommand, rankid)
     if not luctus_jobranks[jobname] then return end
     if not luctus_jobranks[jobname][rankid] then return end
     
-    LuctusJobranksSet(steamid,jobcommand,rankid)
+    luctusJobranksSave(steamid,jobcommand,rankid)
     ulx.fancyLogAdmin(calling_ply, false, "#A set the jobrank of #s on job #s to #s", steamid, jobcommand, rankid)
 end
 local jobrankid = ulx.command("Jobrank", "ulx jobrankset", ulx.jobrankid, "!jobrankset", true, false, true)
