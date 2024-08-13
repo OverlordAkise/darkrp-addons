@@ -18,7 +18,7 @@ function newHTTP(tab)
         sucSrc = debugGetinfo(tab.success)
     end
     print("[HTTP ]",tab.method,tab.URL,sucSrc)
-    HTTP(tab)
+    oldHTTP(tab)
 end
 
 function newFetch(url,succFunc,failFunc,headers)
