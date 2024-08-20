@@ -18,4 +18,4 @@ hook.Add("loadCustomDarkRPItems", "luctus_nick_overwrite", function()
     PLAYER.Nick = PLAYER.Name
 end)
 
-print("[luctus_jobranks] sh loaded!")
+print("[luctus_jobranks] sh loaded")

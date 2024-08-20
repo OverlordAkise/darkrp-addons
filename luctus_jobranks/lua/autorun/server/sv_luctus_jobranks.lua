@@ -220,4 +220,4 @@ hook.Add("playerGetSalary", "luctus_jobranks_salary", function(player, amount)
     return false, "Payday! You received $" .. player:getDarkRPVar("salary") .. "!", player:getDarkRPVar("salary")
 end)
 
-print("[luctus_jobranks] sv loaded!")
+print("[luctus_jobranks] sv loaded")

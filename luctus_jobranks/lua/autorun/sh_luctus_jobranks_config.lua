@@ -8,7 +8,12 @@ luctus_jobranks = {}
 LUCTUS_JOBRANKS_RANKUP_CMD = "!promote"
 LUCTUS_JOBRANKS_RANKDOWN_CMD = "!demote"
 --ADMIN commands (!apromote, !ademote) are managed via ULX
---
+
+--Enable HUD element in the top right
+LUCTUS_JOBRANKS_HUD_ENABLED = true
+
+
+
 
 --Explanation:
 
@@ -45,4 +50,4 @@ luctus_jobranks["Medic"] = luctus_jobranks["Hobo"]
 
 --CONFIG END HERE
 
-print("[luctus_jobranks] Config loaded!")
+print("[luctus_jobranks] config loaded")
