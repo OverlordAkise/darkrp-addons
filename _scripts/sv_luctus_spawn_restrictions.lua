@@ -4,13 +4,13 @@
 --This script lets you restrict what entities / weapons a player is allowed to spawn / pickup
 
 --List of restricted ents and weapons
-LUCTUS_RESTRICTED_ENTS_WEPS = {
+local LUCTUS_RESTRICTED_ENTS_WEPS = {
     ["m9k_acr"] = true,
     ["sent_ball"] = true,
 }
 
 --Which usergroups/ranks are allowed to spawn these anyways
-LUCTUS_RESTRICTED_WHITELIST_RANKS = {
+local LUCTUS_RESTRICTED_WHITELIST_RANKS = {
     ["superadmin"] = true,
     ["admin"] = true,
 }

@@ -3,18 +3,19 @@
 
 --by default the cuffs addon creates unnecessary server load
 
-
+local vector_cache1 = Vector(0,0,20)
+local vector_cache2 = Vector(0,0,5)
 hook.Add("InitPostEntity","luctus_cuffs",function()
 
 hook.Add("Think", "Cuffs ForceJump CleanupTieHooks", function()
 	for _,v in ipairs(player.GetHumans()) do
 		if not v.Cuff_ForceJump then continue end
         if not v:OnGround() then continue end
-        
-        local tr = util.TraceLine( {start = v:GetPos(), endpos = v:GetPos()+Vector(0,0,20), filter = v} )
+        local plygetpos = v:GetPos()
+        local tr = util.TraceLine( {start = plygetpos, endpos = plygetpos+vector_cache1, filter = v} )
         if tr.Hit then continue end
         
-        v:SetPos(v:GetPos()+Vector(0,0,5) )
+        v:SetPos(plygetpos+vector_cache2 )
         
         v.Cuff_ForceJump = nil
 	end

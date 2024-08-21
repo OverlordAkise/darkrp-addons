@@ -6,11 +6,11 @@
 --New Features: DarkRP Chatmodes with tab (OOC and ADVERT), Chat History with Arrow keys
 
 
-LUCTUS_CHAT_BOXTITLE = "My Cool Server" --GetHostName()
+local LUCTUS_CHAT_BOXTITLE = "My Cool Server" --GetHostName()
 
-LUCTUS_CHAT_USE_TIMESTAMPS = true
+local LUCTUS_CHAT_USE_TIMESTAMPS = true
 
-LUCTUS_CHAT_MSG_FADETIME = 10
+local LUCTUS_CHAT_MSG_FADETIME = 10
 
 
 local color_accent_line = Color(0, 195, 165)
