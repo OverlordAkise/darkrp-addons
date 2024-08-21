@@ -5,6 +5,7 @@
 
 local accent_color = Color(0, 195, 165)
 local background_color = Color(0,0,0,230)
+local color_white = Color(255,255,255,255)
 
 local xPos = ScrW()-170
 local yPos = 20
