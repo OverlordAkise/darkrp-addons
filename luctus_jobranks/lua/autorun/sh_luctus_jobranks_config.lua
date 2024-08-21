@@ -11,6 +11,8 @@ LUCTUS_JOBRANKS_RANKDOWN_CMD = "!demote"
 
 --Enable HUD element in the top right
 LUCTUS_JOBRANKS_HUD_ENABLED = true
+--Text for the HUD "hierarchy", %d will be replaced with current rank ID and max rank ID
+LUCTUS_JOBRANKS_HUD_TEXT_HIERARCHY = "Hierarchy: %d/%d"
 
 
 
