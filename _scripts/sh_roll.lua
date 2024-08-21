@@ -14,7 +14,7 @@ hook.Add("PostGamemodeLoaded","luctus_roll",function()
         local function roll_cmd(ply, args)
             local DoSay = function()
                 if GAMEMODE.Config.alltalk then
-                    for k,target in pairs(player.GetAll()) do
+                    for k,target in ipairs(player.GetAll()) do
                         DarkRP.talkToPerson(target, team.GetColor(ply:Team()), ply:Nick()..roll_message..math.random(1,100)..".")
                     end
                 else

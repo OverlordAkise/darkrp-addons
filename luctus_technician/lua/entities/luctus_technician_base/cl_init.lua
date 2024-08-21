@@ -1,12 +1,17 @@
 include("shared.lua")
 
+local vector_cache = Vector(1,0,0)
+local color_cache1 = Color( 255, 20, 20, 255 )
+local color_cache2 = Color( 20, 255, 20, 255 )
+local color_black = Color( 0, 0, 0, 255 )
+
 function ENT:Draw()
     self:DrawModel()
     local lp = LocalPlayer()
     if self:GetPos():DistToSqr(lp:GetPos()) > 300*300 then return end
     if RPExtraTeams[lp:Team()].name ~= LUCTUS_TECHNICIAN_JOBNAME then return end
     local a = Angle(0,0,0)
-    a:RotateAroundAxis(Vector(1,0,0),90)
+    a:RotateAroundAxis(vector_cache1,90)
     a.y = lp:GetAngles().y - 90
     local va,vb = self:GetModelBounds()
     local height = vb.z
@@ -14,9 +19,9 @@ function ENT:Draw()
     --self:BoundingRadius()
     cam.Start3D2D(self:GetPos() + Vector(0,0,10+height), a , 0.074)
     if self:GetBroken() then
-        draw.SimpleTextOutlined("BROKEN","TechnicianText", 0, -40, Color( 255, 20, 20, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1,Color( 0, 0, 0, 255 ))
+        draw.SimpleTextOutlined("BROKEN","TechnicianText", 0, -40, color_cache1, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1,color_black)
     else
-        draw.SimpleTextOutlined("OK","TechnicianText", 0, -40, Color( 20, 255, 20, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1,Color( 0, 0, 0, 255 ))
+        draw.SimpleTextOutlined("OK","TechnicianText", 0, -40, color_cache2, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1,color_black)
     end
     cam.End3D2D()
 end

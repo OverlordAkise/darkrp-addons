@@ -12,7 +12,7 @@ hook.Add("InitPostEntity","luctus_radio_init",function()
         local players = player.GetHumans()
         for _, ply in ipairs(players) do
             lradioHear[ply] = {}
-            for kk,ply2 in pairs(player.GetAll()) do
+            for kk,ply2 in ipairs(player.GetAll()) do
                 if not ply.lradioOn or not ply2.lradioOn or ply.lradioFrequency != ply2.lradioFrequency then continue end
                 if IsValid(ply2:GetActiveWeapon()) and ply2:GetActiveWeapon():GetClass() == "luctus_radio" then
                     lradioHear[ply][ply2] = true

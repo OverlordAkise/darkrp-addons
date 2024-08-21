@@ -14,8 +14,8 @@ local yellow = Color(200,200,0,200)
 local red = Color(200,0,0,200)
 
 function LuctusStaminaHUD()
-    local curWidth = (staminaCur*ScrW())/staminaMax
     local w = ScrW()
+    local curWidth = (staminaCur*w)/staminaMax
     if curWidth == w then return end
     local col = green
     if curWidth/w < 0.66 then

@@ -1,6 +1,12 @@
+local allowedRanks = {
+    ["superadmin"] = true,
+    ["admin"] = true,
+}
+
 hook.Add("SpawnMenuOpen", "luctus_blockmenutabs", function()
-    if LocalPlayer():IsAdmin() then return end
+    if allowedRanks[LocalPlayer():GetUserGroup()] then return end
     for k, v in pairs( g_SpawnMenu.CreateMenu.Items ) do
+        if not IsValid(v) then continue end 
         if (v.Tab:GetText() == language.GetPhrase("spawnmenu.category.npcs") or
             v.Tab:GetText() == language.GetPhrase("spawnmenu.category.entities") or
             v.Tab:GetText() == language.GetPhrase("spawnmenu.category.weapons") or

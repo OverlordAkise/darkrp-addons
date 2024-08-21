@@ -129,7 +129,7 @@ function luctusDeleteGang(ply)
         error(sql.LastError())
     end
     --Delete current members live on server
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         if v:GetNW2String("gang","") == gangname then
             v:SetNW2String("gang","")
             v:SetNW2Int("gangrank",0)
@@ -149,7 +149,7 @@ end
 function luctusInviteGang(invitator,steamid)
     local ply = nil
     local gang = invitator:GetNW2String("gang","")
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             ply = v
             break
