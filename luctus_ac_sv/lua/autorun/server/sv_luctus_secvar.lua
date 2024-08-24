@@ -24,13 +24,7 @@ local list = {
     ["debug.getinfo"] = debug.getinfo,
 }
 
-local function alert(name,is,should)
-    lErrorNoHaltWithStack("[secvar] WARNING: "..name.." function was overwritten!")
-    lprint("[secvar] is/should",is,should,ldebugGetinfo(is).source)
-    lprint("[secvar] Please contact your dev")
-end
-
-function SecVarReset()
+local function lSecVarReset()
     lprint("[secvar] Overwriting...")
     print = list["print"]
     Msg = list["Msg"]
@@ -48,10 +42,20 @@ function SecVarReset()
     debug.getinfo = list["debug.getinfo"]
     lprint("[secvar] Overwritten.")
 end
-local lSecVarReset = SecVarReset
+SecVarReset = lSecVarReset
+
+local function alert(name,is,should)
+    lErrorNoHaltWithStack("[secvar] WARNING: "..name.." function was overwritten!")
+    lprint("[secvar] is/should",is,should,ldebugGetinfo(is).source)
+    lprint("[secvar] Please contact your dev, tryint to autofix by overwritting...")
+    lSecVarReset()
+end
+
+
+
 
 --gen: lprint\("$1",list["$1"],$1,ldebugGetinfo\($1\).source\)
-function SecVarPrint()
+local function lSecVarPrint()
     lprint("[secvar] infos start")
     lprint("print",list["print"],print,ldebugGetinfo(print).source)
     lprint("Msg",list["Msg"],Msg,ldebugGetinfo(Msg).source)
@@ -69,7 +73,7 @@ function SecVarPrint()
     lprint("debug.getinfo",list["debug.getinfo"],debug.getinfo,ldebugGetinfo(debug.getinfo).source)
     lprint("[secvar] infos end")
 end
-local lSecVarPrint = SecVarPrint
+SecVarPrint = lSecVarPrint
 
 --gen: if list["$1"] ~= $1 then alert\("$1",$1,list["$1"]\) end
 local function VerifyVariables()
