@@ -1,8 +1,8 @@
 --Luctus HUD
 --Made by OverlordAkise
 
-surface.CreateFont( "LucidHUDFont", { font = "Consolas", size = 18, weight = 0 } )
-surface.CreateFont( "LucidAmmoFont", { font = "Consolas", size = 48, weight = 0 } )
+surface.CreateFont( "LucidHUDFont", { font = "Roboto", size = 18, weight = 0 } )
+surface.CreateFont( "LucidAmmoFont", { font = "Roboto", size = 48, weight = 0 } )
 
 local health_icon = Material( "icon16/heart.png" )
 local shield_icon = Material( "icon16/shield.png" )
@@ -83,7 +83,7 @@ hook.Add( "HUDPaint", "luctus_hud", function()
         avatar:SetModel(ply:GetModel())
         avatar:ParentToHUD()
         avatar.Think = function(self)
-            if wep:IsValid() and wep:GetClass() == "gmod_camera" then
+            if IsValid(wep) and wep:GetClass() == "gmod_camera" then
                 self:Remove()
             end
             if curJob ~= ply:Team() then
@@ -133,7 +133,7 @@ hook.Add( "HUDPaint", "luctus_hud", function()
         CreateImageIcon(cup_icon, 104, startY + 130, color_white)
     end
     --weapon
-    if wep:IsValid() then
+    if IsValid(wep) then
         local wep_name = wep:GetPrintName() or wep:GetClass() or "Unbekannt"
         local ammo_type = wep:GetPrimaryAmmoType()
         if ammo_type == -1 then
@@ -163,7 +163,7 @@ hook.Add( "HUDPaint", "luctus_hud", function()
     end
     --lockdown
     if GetGlobalBool("DarkRP_LockDown") then
-        local cin = math.Clamp(math.abs(math.sin(CurTime()/5) * ScrW()),0,ScrW()-100)
+        local cin = math.Clamp(math.abs(math.sin(CurTime()/5) * scrw),0,scrw-100)
         draw.DrawNonParsedText("LOCKDOWN", "Trebuchet24", cin, scrh-25, featureCol, TEXT_ALIGN_LEFT)
     end
     --arrested
