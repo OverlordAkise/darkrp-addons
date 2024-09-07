@@ -7,7 +7,6 @@ local lightDark = Color(40,40,40)
 local dark = Color(10,10,10)
 local buttonTextColor = Color(200,200,200)
 
-LUCTUS_MINER_SHOW_HUD = LUCTUS_MINER_HUD_ALWAYSON
 LUCTUS_MINER_MY_ORES = LUCTUS_MINER_MY_ORES or {}
 
 hook.Add("InitPostEntity","luctus_miner_get",function()
@@ -23,38 +22,42 @@ end)
 net.Receive("luctus_miner_sync",function()
     local name = net.ReadString()
     local newValue = net.ReadUInt(16)
-    notification.AddLegacy((newValue-LUCTUS_MINER_MY_ORES[name]).." "..name, NOTIFY_GENERIC, 3)
+    notification.AddLegacy(Format("+%d %s",(newValue-LUCTUS_MINER_MY_ORES[name]),name), NOTIFY_GENERIC, 3)
     surface.PlaySound("buttons/lightswitch2.wav")
     LUCTUS_MINER_MY_ORES[name] = newValue
 end)
 
-hook.Add("OnContextMenuOpen","luctus_miner_hud_on",function()
-    if LUCTUS_MINER_HUD_ALWAYSON then return end
-    LUCTUS_MINER_SHOW_HUD = true
-end)
+if LUCTUS_MINER_HUD_ALWAYSON then
+    hook.Add("HUDPaint","luctus_miner_hud",LuctusMinerHUD)
+else
+    hook.Add("OnContextMenuOpen","luctus_miner_hud_on",function()
+        hook.Add("HUDPaint","luctus_miner_hud",LuctusMinerHUD)
+    end)
 
-hook.Add("OnContextMenuClose","luctus_miner_hud_off",function()
-    if LUCTUS_MINER_HUD_ALWAYSON then return end
-    LUCTUS_MINER_SHOW_HUD = false
-end)
+    hook.Add("OnContextMenuClose","luctus_miner_hud_off",function()
+        hook.Remove("HUDPaint","luctus_miner_hud")
+    end)
+end
 
-hook.Add("HUDPaint","luctus_miner_hud",function()
-    if not LUCTUS_MINER_SHOW_HUD then return end
-    if LUCTUS_MINER_JOBWHITELIST and not LUCTUS_MINER_JOBNAMES[team.GetName(ply:Team())] then return end
+
+function LuctusMinerHUD()
+    if LUCTUS_MINER_JOBWHITELIST and not LUCTUS_MINER_JOBNAMES[team.GetName(LocalPlayer():Team())] then return end
+    local scrh2 = ScrH()/2
     surface.SetDrawColor(0,0,0,200)
-    surface.DrawRect(5, ScrH()/2, 145, (#LUCTUS_MINER_ORES+1) * 24)
+    surface.DrawRect(5, scrh2, 145, (#LUCTUS_MINER_ORES+1) * 24)
     
     surface.SetFont("Trebuchet24")
-    surface.SetTextPos(10,ScrH()/2)
+    surface.SetTextPos(10,scrh2)
     surface.SetDrawColor(255,255,255,255)
+    surface.SetTextColor(255,255,255,255)
     surface.DrawText("-Ore Inventory-")
     
     for k,v in ipairs(LUCTUS_MINER_ORES) do
         surface.SetTextColor(v.Color)
-        surface.SetTextPos(10,ScrH()/2+k*24)
+        surface.SetTextPos(10,scrh2+k*24)
         surface.DrawText(v.Name..": "..LUCTUS_MINER_MY_ORES[v.Name])
     end
-end)
+end
 
 function LuctusMinerGetName(ent)
     if not ent or ent == "" then return "<ERR>" end
@@ -68,15 +71,15 @@ end
 
 local function CreateCloseButton(parent)
     local parent_x, parent_y = parent:GetSize()
-    local CloseButton = vgui.Create( "DButton", parent )
-    CloseButton:SetPos( parent_x-31, 1 )
-    CloseButton:SetSize( 30, 30 )
+    local CloseButton = vgui.Create("DButton", parent)
+    CloseButton:SetPos(parent_x-31, 1)
+    CloseButton:SetSize(30, 30)
     CloseButton:SetText("X")
     CloseButton:SetTextColor(Color(255,0,0))
     CloseButton.DoClick = function()
         parent:Close()
     end
-    CloseButton.Paint = function(self, w, h)
+    function CloseButton:Paint(w, h)
         draw.RoundedBox(0, 0, 0, w, h, dark)
         if self.Hovered then
             draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
@@ -121,7 +124,7 @@ net.Receive("luctus_miner_craft",function()
     local DScrollPanel = vgui.Create( "DScrollPanel", MineCraftPanel )
     DScrollPanel:Dock(FILL)
 
-    for k,v in pairs(LUCTUS_MINER_CRAFTABLES) do
+    for entName,oreNeeded in pairs(LUCTUS_MINER_CRAFTABLES) do
         local row = DScrollPanel:Add("DPanel")
         row:Dock(TOP)
         row:SetPaintBackground(false)
@@ -134,14 +137,14 @@ net.Receive("luctus_miner_craft",function()
         label:Dock(LEFT)
         label:SetSize(200,25)
         label:DockMargin(20,0,0,0)
-        label:SetText(LuctusMinerGetName(k))
+        label:SetText(LuctusMinerGetName(entName))
 
         local rLabel = vgui.Create("DLabel",row)
         rLabel:Dock(LEFT)
         rLabel:SetSize(200,25)
         local rText = ""
-        for kk,vv in pairs(v) do
-            rText = rText .. " " .. kk .. " " .. vv .. " ,"
+        for oreName,amount in pairs(oreNeeded) do
+            rText = rText .. " " .. oreName .. " " .. amount .. " ,"
         end
         rText = string.sub(rText,1,#rText-1)
         rLabel:SetText(rText)
@@ -153,7 +156,7 @@ net.Receive("luctus_miner_craft",function()
         button:DockMargin(10,0,20,0)
         button.DoClick = function()
             net.Start("luctus_miner_craft")
-                net.WriteString(k)
+                net.WriteString(entName)
                 net.WriteEntity(npc)
             net.SendToServer()
         end
@@ -212,7 +215,7 @@ net.Receive("luctus_miner_npc",function()
                 num = math.Round(tonumber(text))
             end
             net.Start("luctus_miner_npc")
-                net.WriteInt(num,16)
+                net.WriteUInt(num,16)
                 net.WriteString(v.Name)
                 net.WriteEntity(npc)
             net.SendToServer()

@@ -18,9 +18,9 @@ ENT.AdminSpawnable = true
 if SERVER then 
     function ENT:Initialize()
         self:SetModel(self.Model)
-        self:PhysicsInit( SOLID_VPHYSICS )
-        self:SetMoveType( MOVETYPE_VPHYSICS )
-        self:SetSolid( SOLID_VPHYSICS )
+        self:PhysicsInit(SOLID_VPHYSICS)
+        self:SetMoveType(MOVETYPE_VPHYSICS)
+        self:SetSolid(SOLID_VPHYSICS)
         self:SetUseType(SIMPLE_USE)
         local phys = self:GetPhysicsObject()
         if phys:IsValid() then
@@ -28,12 +28,11 @@ if SERVER then
         end
     end
     
-    function ENT:Use(activator, caller)
-        if activator:IsPlayer() then
-            net.Start("luctus_miner_craft")
-                net.WriteEntity(self)
-            net.Send(activator)
-        end
+    function ENT:Use(ply, caller)
+        if not ply:IsPlayer() then return end
+        net.Start("luctus_miner_craft")
+            net.WriteEntity(self)
+        net.Send(ply)
     end
     
 else
@@ -49,7 +48,6 @@ else
         a.y = LocalPlayer():GetAngles().y - 90
         cam.Start3D2D(self:GetPos() + Vector(0,0,60), a, 0.074)
             draw.RoundedBox(8,-105,-75,210,75,color_bg)
-            
             surface.SetDrawColor(color_bg)
             draw.NoTexture()
             surface.DrawPoly(tri)

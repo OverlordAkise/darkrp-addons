@@ -7,27 +7,13 @@ util.AddNetworkString("luctus_miner_npc")
 util.AddNetworkString("luctus_miner_craft")
 util.AddNetworkString("luctus_miner_get_pickaxe")
 
-function luctusMineCreateTable()
-    local oreText = ""
-    for k,ore in ipairs(LUCTUS_MINER_ORES) do
-        if k~=1 then oreText = oreText .. ", " end
-        oreText = oreText .. ore.Name .. " INT DEFAULT 0"
-    end
-    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_mine(steamid TEXT, "..oreText..")")
+hook.Add("InitPostEntity","luctus_miner_database",function()
+    local res = sql.Query("CREATE TABLE IF NOT EXISTS luctus_miner(steamid TEXT, ores TEXT)")
     if res == false then
-        error(sql.LastError())
-    end
-    for k,ore in ipairs(LUCTUS_MINER_ORES) do
-        local res = sql.Query("ALTER TABLE luctus_mine ADD COLUMN "..ore.Name.." INT DEFAULT 0")
-        --if false then column exists, which is a non-error case
-        if res == nil then
-            print("[luctus_miner] New column '"..ore.Name.."' created!")
-        end
+        ErrorNoHaltWithStack(sql.LastError())
     end
     print("[luctus_miner] Database initialized!")
-end
-
-luctusMineCreateTable() --PostGamemodeLoaded
+end)
 
 net.Receive("luctus_miner_sync_all",function(len,ply)
     if ply.luctusMinerSynced then return end
@@ -37,13 +23,13 @@ net.Receive("luctus_miner_sync_all",function(len,ply)
     net.Send(ply)
 end)
 
-function LuctusMinerRandomOre(oresTable)
-    local poolsize = 0
-    for k,v in pairs(oresTable) do
-        poolsize = poolsize + v.DropPercent
-    end
-    local selection = math.random(1,poolsize*1.5)
-    for k,v in pairs(oresTable) do
+local orePoolSize = 0
+for k,v in ipairs(LUCTUS_MINER_ORES) do
+    orePoolSize = orePoolSize + v.DropPercent
+end
+function LuctusMinerGetRandomOre()
+    local selection = math.random(1,orePoolSize*1.5)
+    for k,v in ipairs(LUCTUS_MINER_ORES) do
         selection = selection - v.DropPercent
         if selection <= 0 then
             return v
@@ -58,56 +44,40 @@ end)
 
 function LuctusMinerLoadPlayer(ply)
     ply.luctusOres = {}
-    local res = sql.Query("SELECT * FROM luctus_mine WHERE steamid="..sql.SQLStr(ply:SteamID64()))
+    for k,ore in ipairs(LUCTUS_MINER_ORES) do
+        ply.luctusOres[ore.Name] = 0
+    end
+    local res = sql.QueryValue("SELECT ores FROM luctus_miner WHERE steamid="..sql.SQLStr(ply:SteamID64()))
     if res == false then
         error(sql.LastError())
     end
-    if res == nil then
-        --not in db yet, so insert here
-        local rres = sql.Query("INSERT INTO luctus_mine(steamid) VALUES("..sql.SQLStr(ply:SteamID64())..")")
+    if res == nil then --not in db yet, so insert here
+        local rres = sql.Query("INSERT INTO luctus_miner(steamid,ores) VALUES("..sql.SQLStr(ply:SteamID64())..",'{}')")
         if rres == false then
             error(sql.LastError())
         end
-        if rres == nil then
-            print("[luctus_miner] Data for player "..ply:Nick().." was created!")
-            LuctusMinerLoadPlayer(ply) --Should be only one recursion
-            return
-        end
-    end
-    local tempOres = res[1]
-    for k,v in pairs(tempOres) do
-        if k == "steamid" then continue end
-        local nr = tonumber(v)
-        if not nr then 
-            ply.luctusOres[k] = 0
-        else
-            ply.luctusOres[k] = nr
+    else
+        local tab = util.JSONToTable(res)
+        for name,amount in pairs(tab) do
+            ply.luctusOres[name] = amount
         end
     end
     print("[luctus_miner] Successfully loaded player data for "..ply:Nick())
 end
 
 function LuctusMinerSavePlayer(ply)
-    local sText = ""
-    for k,ore in ipairs(LUCTUS_MINER_ORES) do
-        if k~=1 then sText = sText .. ", " end
-        sText = sText .. ore.Name .. "=" .. ply.luctusOres[ore.Name]
-    end
-    local res = sql.Query("UPDATE luctus_mine SET "..sText.." WHERE steamid="..sql.SQLStr(ply:SteamID64()))
+    local res = sql.Query("UPDATE luctus_miner SET ores="..sql.SQLStr(util.TableToJSON(ply.luctusOres)).." WHERE steamid="..sql.SQLStr(ply:SteamID64()))
     if res == false then
-        error(sql.LastError())
+        ErrorNoHaltWithStack(sql.LastError())
     end
-    --print("[luctus_miner] Successfully saved player "..ply:Nick().."!")
 end
 
+local plyNeedsSaving = {}
 timer.Create("luctus_miner_savePlayerData",120,0,function()
-    for k,ply in ipairs(player.GetAll()) do
-        if ply.lmine_needstosave then
-            LuctusMinerSavePlayer(ply)
-            ply.lmine_needstosave = false
-        end
+    for ply,v in pairs(plyNeedsSaving) do
+        LuctusMinerSavePlayer(ply)
     end
-    --print("[luctus_miner] Player Data saved successfully by timer!")
+    plyNeedsSaving = {}
 end)
 
 function LuctusMinerRandomNPCPrice(ent)
@@ -116,15 +86,15 @@ function LuctusMinerRandomNPCPrice(ent)
     end
 end
 
-timer.Create("luctus_miner_randomNPCPrices",LUCTUS_MINER_RANDOM_TIMER,0,function()
+timer.Create("luctus_miner_randomizeNPCPrices",LUCTUS_MINER_RANDOM_TIMER,0,function()
     for k,ent in ipairs(ents.FindByClass("luctus_miner_npc")) do
         LuctusMinerRandomNPCPrice(ent)
     end
 end)
 
 function LuctusMinerGiveRandomOre(ply)
-    ply.lmine_needstosave = true
-    local randomOre = LuctusMinerRandomOre(LUCTUS_MINER_ORES)
+    plyNeedsSaving[ply] = true
+    local randomOre = LuctusMinerGetRandomOre()
     if randomOre and randomOre.Name then 
         local name = randomOre["Name"]
         LuctusMinerGiveOre(ply,name,1)
@@ -132,37 +102,41 @@ function LuctusMinerGiveRandomOre(ply)
 end
 
 function LuctusMinerGiveOre(ply,ore,amount,dontNotify)
-    ply.lmine_needstosave = true
+    plyNeedsSaving[ply] = true
     ply.luctusOres[ore] = ply.luctusOres[ore] + amount
     if dontNotify then return end
     net.Start("luctus_miner_sync")
         net.WriteString(ore)
         net.WriteUInt(ply.luctusOres[ore],16)
     net.Send(ply)
+    hook.Run("LuctusMinerOreGained",ply,ore,amount)
 end
 
 net.Receive("luctus_miner_npc",function(len,ply)
-    local num = net.ReadInt(16)
+    local num = net.ReadUInt(16)
     local ore = net.ReadString()
     local npc = net.ReadEntity()
-    if not IsValid(npc) then return end
-    if num < 1 then return end
-    if num > ply.luctusOres[ore] then return end
+    if not IsValid(npc) or not npc:GetClass() == "luctus_miner_npc" or not npc.SellTable[ore] or num > ply.luctusOres[ore] then return end
 
     ply:addMoney(npc.SellTable[ore]*num)
     LuctusMinerGiveOre(ply,ore,-1*num)
     DarkRP.notify(ply,3,5,"[Miner] You sold your ore for "..(npc.SellTable[ore]*num).."$!")
     LuctusMinerSavePlayer(ply)
     npc:EmitSound("ambient/levels/labs/coinslot1.wav")
-    hook.Run("LuctusMinerSold",ply,ore,num)
+    hook.Run("LuctusMinerSold",ply,ore,num,npc.SellTable[ore]*num)
 end)
 
 net.Receive("luctus_miner_get_pickaxe", function(len,ply)
     if LUCTUS_MINER_JOBWHITELIST and not LUCTUS_MINER_JOBNAMES[team.GetName(ply:Team())] then return end
     local npc = net.ReadEntity()
-    if not IsValid(npc) or not npc:GetClass() == "luctus_miner_npc" then return end
-    if npc:GetPos():Distance(ply:GetPos()) > 512 then return end
+    if not IsValid(npc) or not npc:GetClass() == "luctus_miner_npc" or npc:GetPos():Distance(ply:GetPos()) > 512 then return end
     ply:Give(LUCTUS_MINER_PICKAXE_CLASSNAME)
+end)
+
+--Some servers forget this
+hook.Add("canDropWeapon","luctus_miner_dont_drop_crowbar",function(ply, weapon)
+    if not IsValid(weapon) then return end
+    if weapon:GetClass() == "weapon_crowbar" then return false end
 end)
 
 local function IsWeapon(class)
@@ -175,7 +149,7 @@ net.Receive("luctus_miner_craft",function(len,ply)
     local sitem = net.ReadString()
     local tableEnt = net.ReadEntity()
     if not LUCTUS_MINER_CRAFTABLES[sitem] then return end
-    if not tableEnt or not IsValid(tableEnt) or tableEnt:GetPos():Distance(ply:GetPos()) > 500 then return end
+    if not tableEnt or not IsValid(tableEnt) or not tableEnt:GetClass() == "luctus_miner_craft" or tableEnt:GetPos():Distance(ply:GetPos()) > 500 then return end
     if LUCTUS_MINER_USE_POCKET and (#ply:getPocketItems() >= GAMEMODE.Config.pocketitems) then
         DarkRP.notify(ply,1,5,"[Miner] Please make room in your pocket!")
         return 

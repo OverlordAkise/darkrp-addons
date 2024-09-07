@@ -27,9 +27,9 @@ if CLIENT then return end
 
 function ENT:Initialize()
     self:SetModel(self.Model)
-    self:PhysicsInit( SOLID_VPHYSICS )
-    self:SetMoveType( MOVETYPE_VPHYSICS )
-    self:SetSolid( SOLID_VPHYSICS )
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
     local phys = self:GetPhysicsObject()
     if phys:IsValid() then
         phys:Wake()
@@ -37,17 +37,18 @@ function ENT:Initialize()
     self:SetOreHP(LUCTUS_MINER_ROCK_HP)
 end
 
-function ENT:Use(activator, caller) return end
+function ENT:Use() end
 
 function ENT:Think() end
 
 function ENT:OnTakeDamage(damage)
-    if not IsValid(damage:GetAttacker()) or not damage:GetAttacker():IsPlayer() then return end
-    if damage:GetAttacker():GetActiveWeapon():GetClass() != LUCTUS_MINER_PICKAXE_CLASSNAME then return end
+    local ply = damage:GetAttacker()
+    if not IsValid(ply) or not ply:IsPlayer() then return end
+    if ply:GetActiveWeapon():GetClass() != LUCTUS_MINER_PICKAXE_CLASSNAME then return end
     self:SetOreHP(self:GetOreHP() - 10)
-    if math.random(1,100) < LUCTUS_MINER_OREPERCENT then return end
-    LuctusMinerGiveRandomOre(damage:GetAttacker())
-    --PrintMessage(HUD_PRINTTALK, randomOre["Name"])
+    if math.random(1,100) >= LUCTUS_MINER_OREPERCENT then
+        LuctusMinerGiveRandomOre(ply)
+    end
     if self:GetOreHP() > 0 then return end
     self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
     self:SetNoDraw(true)
@@ -56,5 +57,6 @@ function ENT:OnTakeDamage(damage)
         self:SetNoDraw(false)
         self:SetOreHP(LUCTUS_MINER_ROCK_HP)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
+        hook.Run("LuctusMinerRockRespawned",self)
     end)
 end

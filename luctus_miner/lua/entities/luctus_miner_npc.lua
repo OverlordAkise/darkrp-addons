@@ -29,9 +29,6 @@ function ENT:Initialize()
     self:SetBloodColor(BLOOD_COLOR_RED)
     self:SetSolid(SOLID_BBOX)
     self:SetUseType(SIMPLE_USE)
-  
-    local p = self:GetPos()
-    self:SetPos(p)
 
     local phys = self:GetPhysicsObject()
     if phys:IsValid() then
@@ -41,13 +38,12 @@ function ENT:Initialize()
     LuctusMinerRandomNPCPrice(self)
 end
 
-function ENT:Use(activator, caller)
-    if activator:IsPlayer() then
-        net.Start("luctus_miner_npc")
-            net.WriteEntity(self)
-            net.WriteTable(self.SellTable)
-        net.Send(activator)
-    end
+function ENT:Use(ply, caller)
+    if not ply:IsPlayer() then return end
+    net.Start("luctus_miner_npc")
+        net.WriteEntity(self)
+        net.WriteTable(self.SellTable)
+    net.Send(ply)
 end
 
 if SERVER then return end
