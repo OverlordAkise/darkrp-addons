@@ -57,8 +57,8 @@ local color_scrollbar_grip = Color(56,56,56)
 
 
 
-surface.CreateFont("LuctusScoreFontBig", {font = "Verdana", size = 35, weight = 800, antialias = true, bold = true })
-surface.CreateFont("LuctusScore", {font = "Verdana", size = 18, weight = 900, antialias = true, bold = true })
+surface.CreateFont("LuctusScoreTitle", {font = "Arial", size = 35, weight = 800})
+surface.CreateFont("LuctusScore", {font = "Arial", size = 20, weight = 2000})
 
 local function CreateScoreboard()
     if ScoreFrame then ScoreFrame:Close() end
@@ -73,19 +73,20 @@ local function CreateScoreboard()
     function ScoreFrame:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,color_border)
         draw.RoundedBox(0,1,1,w-2,h-2,color_background)
-        draw.DrawText("Name", "LuctusScore", 51, 77, color_white)
-        draw.DrawText("Job", "LuctusScore", 331, 77, color_white)
-        draw.DrawText("Rank", "LuctusScore", 509, 77, color_white)
-        draw.DrawText("Kills", "LuctusScore", 750, 77, color_white)
-        draw.DrawText("Deaths", "LuctusScore", 810, 77, color_white)
-        draw.DrawText("Ping", "LuctusScore", 890, 77, color_white)
-        draw.DrawText(LUCTUS_SCOREBOARD_NAME, "LuctusScoreFontBig", w / 2, 5, color_white, TEXT_ALIGN_CENTER)
-        draw.DrawText("There are currently " .. #player.GetAll() .. " player(s) online.", "LuctusScore", w/2, h-21, color_white, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Name", "LuctusScore", 50, 77, color_white)
+        draw.SimpleText("Job", "LuctusScore", 330, 77, color_white)
+        draw.SimpleText("Rank", "LuctusScore", 510, 77, color_white)
+        draw.SimpleText("Kills", "LuctusScore", 750, 77, color_white)
+        draw.SimpleText("Deaths", "LuctusScore", 810, 77, color_white)
+        draw.SimpleText("Ping", "LuctusScore", 890, 77, color_white)
+        draw.SimpleText(LUCTUS_SCOREBOARD_NAME, "LuctusScoreTitle", w / 2, 5, color_white, TEXT_ALIGN_CENTER)
+        draw.SimpleText("There are currently " .. #player.GetAll() .. " player(s) online.", "LuctusScore", w/2, h-21, color_white, TEXT_ALIGN_CENTER)
     end
-
-    local website = vgui.Create("DLabel", ScoreFrame)
+    
     surface.SetFont("LuctusScore")
     local offsetX, offsetY = surface.GetTextSize(LUCTUS_SCOREBOARD_WEBSITE)
+    
+    local website = vgui.Create("DLabel", ScoreFrame)
     website:SetPos(ScoreFrame:GetWide() / 2 - (offsetX/2), 45)
     website:SetSize(offsetX, offsetY)
     website:SetFont("LuctusScore")
@@ -97,16 +98,16 @@ local function CreateScoreboard()
         gui.OpenURL(LUCTUS_SCOREBOARD_WEBSITE)
     end
 
-    ScoreFrame.PlayerList = vgui.Create("DPanelList", ScoreFrame)
-    ScoreFrame.PlayerList:SetSize(ScoreFrame:GetWide()-20, ScoreFrame:GetTall()-130)
-    ScoreFrame.PlayerList:SetPos(10, 110)
-    ScoreFrame.PlayerList:SetSpacing(2)
-    ScoreFrame.PlayerList:EnableVerticalScrollbar(true)
+    local PlayerList = vgui.Create("DPanelList", ScoreFrame)
+    PlayerList:SetSize(ScoreFrame:GetWide()-20, ScoreFrame:GetTall()-130)
+    PlayerList:SetPos(10, 110)
+    PlayerList:SetSpacing(2)
+    PlayerList:EnableVerticalScrollbar(true)
 
-    function ScoreFrame.PlayerList:Paint(w,h)
+    function PlayerList:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,color_plylist)
     end
-    local sbar = ScoreFrame.PlayerList.VBar
+    local sbar = PlayerList.VBar
     function sbar:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,color_scrollbar)
     end
@@ -119,23 +120,25 @@ local function CreateScoreboard()
     function sbar.btnGrip:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,color_scrollbar_grip)
     end
-
+    
+    local rowHeightHalf = 15
     for k,ply in ipairs(player.GetAll()) do
-        local item = vgui.Create("DLabel", ScoreFrame.PlayerList)
+        local item = vgui.Create("DLabel", PlayerList)
+        item:SetText("")
         local rowCol = k%2==0 and color_plylist_even or color_plylist_uneven
-        item:SetSize(ScoreFrame.PlayerList:GetWide()-70, 30)
+        item:SetSize(PlayerList:GetWide()-70, rowHeightHalf*2)
         item:SetCursor("hand")
 
         function item:Paint(w,h)
             if not IsValid(ply) then item:Remove() return end
             draw.RoundedBox(0,0,0,w,h,rowCol)
             local ugrp = ply:GetUserGroup()
-            draw.DrawText(ply:Nick(), "LuctusScore", 40, 4, color_white)
-            draw.DrawText(ply:getDarkRPVar("job"), "LuctusScore", 320, 4, team.GetColor(ply:Team()))
-            draw.DrawText(cgroups[ugrp] and cgroups[ugrp][1] or ugrp, "LuctusScore", 500, 4, cgroups[ugrp] and cgroups[ugrp][2] or color_white)
-            draw.DrawText(ply:Frags(), "LuctusScore", 739, 4, color_white)
-            draw.DrawText(ply:Deaths(), "LuctusScore", 799, 4, color_white)
-            draw.DrawText(ply:Ping(), "LuctusScore", 879, 4, color_white)
+            draw.SimpleText(ply:Nick(), "LuctusScore", 40, rowHeightHalf, color_white,0,1)
+            draw.SimpleText(ply:getDarkRPVar("job"), "LuctusScore", 320, rowHeightHalf, team.GetColor(ply:Team()),0,1)
+            draw.SimpleText(cgroups[ugrp] and cgroups[ugrp][1] or ugrp, "LuctusScore", 500, rowHeightHalf, cgroups[ugrp] and cgroups[ugrp][2] or color_white,0,1)
+            draw.SimpleText(ply:Frags(), "LuctusScore", 740, rowHeightHalf, color_white,0,1)
+            draw.SimpleText(ply:Deaths(), "LuctusScore", 800, rowHeightHalf, color_white,0,1)
+            draw.SimpleText(ply:Ping(), "LuctusScore", 880, rowHeightHalf, color_white,0,1)
         end
         function item:DoRightClick()
             if IsValid(Inspect) then
@@ -164,15 +167,14 @@ local function CreateScoreboard()
         mute:SetSize(16,16)
         mute:SetPos(item:GetWide() + 35, 7)
         mute:SetImage(ply:IsMuted() and "icon16/sound_mute.png" or "icon16/sound.png")
-
         function mute:DoClick()
             if not ply:IsMuted() then ply:SetMuted(true) else ply:SetMuted(false) end
             mute:SetImage(ply:IsMuted() and "icon16/sound_mute.png" or "icon16/sound.png")
         end
 
-        ScoreFrame.PlayerList:AddItem(item)
+        PlayerList:AddItem(item)
     end
-    ScoreFrame:SlideDown(0.2) 
+    ScoreFrame:SlideDown(0.1) 
 end
 
 
@@ -185,7 +187,7 @@ end)
 hook.Add("ScoreboardHide", "luctus_hide_scoreboard", function()
     IsClosing = true
     if IsValid(ScoreFrame) then 
-        ScoreFrame:SlideUp(0.2) 
+        ScoreFrame:SlideUp(0.1) 
         gui.EnableScreenClicker(false)
     end
     if IsValid(Inspect) then Inspect:Remove() end
@@ -196,10 +198,10 @@ end)
 local function repairScoreboard()
     hook.Remove("ScoreboardShow", "FAdmin_scoreboard")
     hook.Remove("ScoreboardHide", "FAdmin_scoreboard")
-    timer.Simple(3,function()
-        hook.Remove("ScoreboardShow", "FAdmin_scoreboard")
-        hook.Remove("ScoreboardHide", "FAdmin_scoreboard")
-    end)
+    -- timer.Simple(3,function()
+        -- hook.Remove("ScoreboardShow", "FAdmin_scoreboard")
+        -- hook.Remove("ScoreboardHide", "FAdmin_scoreboard")
+    -- end)
 end
 
 hook.Add("OnGamemodeLoaded", "luctus_override_FAdmin_scoreboard", repairScoreboard)
