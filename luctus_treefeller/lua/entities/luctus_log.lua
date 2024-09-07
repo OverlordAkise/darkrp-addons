@@ -17,58 +17,41 @@ ENT.Freeze = true
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 
-ENT.sellprice = 100
-
-if LUCTUS_TREE_LOG_SELLPRICE then
-  ENT.sellprice = LUCTUS_TREE_LOG_SELLPRICE
-end
-
-ENT.selltext = "[E] Sell for "..ENT.sellprice.."€"
-
-if LUCTUS_TREE_LOG_TEXT then
-  ENT.selltext = string.Replace(LUCTUS_TREE_LOG_TEXT,"$SELLPRICE$",ENT.sellprice)
-end
-
-ENT.soldtext = "You got "..ENT.sellprice.."$ by selling wood."
-
-if LUCTUS_TREE_LOG_SOLD_TEXT then
-  ENT.soldtext = string.Replace(LUCTUS_TREE_LOG_SOLD_TEXT,"$SELLPRICE$",ENT.sellprice)
-end
-
-
-function ENT:Draw()
-  self:DrawModel()
-  local p = self:GetPos()
-  local dist = p:Distance(LocalPlayer():GetPos())
-
-  if (dist > 125) then return end
-  p.z = p.z + 45
-  local ang = self:GetAngles()
-  ang:RotateAroundAxis(self:GetAngles():Forward(), 90)
-  ang:RotateAroundAxis(self:GetAngles():Up(), 90)
-  cam.Start3D2D(p, Angle(0, LocalPlayer():EyeAngles().y - 90, 90), 0.4)
-    draw.SimpleTextOutlined(self.selltext, "Trebuchet24", 0, 0, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0,0,0,255))
-  cam.End3D2D()
-end
-
-if SERVER then
-  function ENT:Initialize()
-    self:SetModel(self.Model)
-    self:PhysicsInit( SOLID_VPHYSICS )
-    self:SetMoveType( MOVETYPE_VPHYSICS )
-    self:SetSolid( SOLID_VPHYSICS )
-    local phys = self:GetPhysicsObject()
-    if (phys:IsValid()) then
-      phys:Wake()
+if CLIENT then
+    surface.CreateFont("LuctusTreefellerLog",{font="Arial",size=60,weight=2000})
+    local color_white = Color(255,255,255,255)
+    local color_black = Color(0,0,0,255)
+    function ENT:Draw()
+        self:DrawModel()
+        local p = self:GetPos()
+        if p:Distance(LocalPlayer():GetPos()) > 256 then return end
+        p.z = p.z + 10
+        local eyeAng = LocalPlayer():EyeAngles()
+        p = p + eyeAng:Forward()*-1*10
+        cam.Start3D2D(p, Angle(0, eyeAng.y - 90, 90), 0.1)
+            draw.SimpleTextOutlined(string.format(LUCTUS_TREEFELLER_LOG_TEXT,LUCTUS_TREEFELLER_LOG_SELLPRICE),"LuctusTreefellerLog",0,0,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP,1,color_black)
+        cam.End3D2D()
     end
-  end
+    return
+end
+
+function ENT:Initialize()
+    self:SetModel(self.Model)
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
+    local phys = self:GetPhysicsObject()
+    if phys:IsValid() then
+        phys:Wake()
+    end
+end
    
-  function ENT:Think()
-  end
+function ENT:Think() end
   
-  function ENT:Use( act, call )
-    act:addMoney(self.sellprice)
-    DarkRP.notify(act, 2, 3, self.soldtext)
+function ENT:Use(ply)
+    if not IsValid(ply) or not ply:IsPlayer() then return end
+    ply:addMoney(LUCTUS_TREEFELLER_LOG_SELLPRICE)
+    DarkRP.notify(ply, 2, 3, string.format(LUCTUS_TREEFELLER_LOG_SOLD_TEXT,LUCTUS_TREEFELLER_LOG_SELLPRICE))
+    hook.Run("LuctusTreefellerLogSold",self,LUCTUS_TREEFELLER_LOG_SELLPRICE)
     self:Remove()
-  end
 end

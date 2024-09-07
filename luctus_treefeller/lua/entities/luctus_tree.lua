@@ -17,64 +17,50 @@ ENT.Freeze = true
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 
-ENT.HP = 100
-ENT.RespawnTime = 120
-ENT.logcount = 3
-
-if LUCTUS_TREE_RESPAWNTIME then
-  ENT.RespawnTime = LUCTUS_TREE_RESPAWNTIME
-end
-
-if LUCTUS_TREE_LOG_COUNT then
-  ENT.logcount = LUCTUS_TREE_LOG_COUNT
-end
-
 function ENT:SetupDataTables()
-  self:NetworkVar("Int", 1, "HP")
+    self:NetworkVar("Int", 1, "HP")
 end
 
-if SERVER then
-  function ENT:Initialize()
+if CLIENT then return end
+
+function ENT:Initialize()
     self:SetModel(self.Model)
-    self:PhysicsInit( SOLID_VPHYSICS )
-    self:SetMoveType( MOVETYPE_VPHYSICS )
-    self:SetSolid( SOLID_VPHYSICS )
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
     local phys = self:GetPhysicsObject()
-    if (phys:IsValid()) then
-      phys:Wake()
+    if phys:IsValid() then
+        phys:Wake()
     end
-    self:SetHP(self.HP)
-  end
-   
-  function ENT:Use( activator, caller )
-      return
-  end
-   
-  function ENT:Think()
-  end
-  
-  function ENT:OnTakeDamage(damage)
-    if IsValid(damage:GetAttacker()) and damage:GetAttacker():IsPlayer() and damage:GetAttacker():GetActiveWeapon():GetClass() == "weapon_luctus_axe" then
-      self:SetHP(self:GetHP() - 20)
-      if self:GetHP() <= 0 then
-        self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-        self:SetNoDraw(true)
-        self:SpawnLogs()
-        timer.Simple(60,function()
-          if not IsValid(self) then return end
-          self:SetNoDraw(false)
-          self:SetHP(self.HP)
-          self:SetCollisionGroup(COLLISION_GROUP_NONE)
-        end)
-      end
+    self:SetHP(LUCTUS_TREEFELLER_TREE_HEALTH)
+end
+
+function ENT:Use() end
+function ENT:Think()end
+
+function ENT:OnTakeDamage(damage)
+    local ply = damage:GetAttacker()
+    if not IsValid(ply) or not ply:IsPlayer() or not IsValid(ply:GetActiveWeapon()) or not ply:GetActiveWeapon():GetClass() == "weapon_luctus_axe" then return end
+    self:SetHP(self:GetHP()-LUCTUS_TREEFELLER_AXE_DAMAGE)
+    if self:GetHP() > 0 then return end
+    
+    self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+    self:SetNoDraw(true)
+    self:SpawnLogs()
+    timer.Simple(LUCTUS_TREEFELLER_TREE_RESPAWNTIME,function()
+        if not IsValid(self) then return end
+        self:SetNoDraw(false)
+        self:SetHP(LUCTUS_TREEFELLER_TREE_HEALTH)
+        self:SetCollisionGroup(COLLISION_GROUP_NONE)
+        self:EmitSound("items/battery_pickup.wav")
+        hook.Run("LuctusTreefellerTreeRespawned",self)
+    end)
+end
+
+function ENT:SpawnLogs()
+    for i=1,LUCTUS_TREEFELLER_LOG_COUNT do
+        local ent = ents.Create("luctus_log")
+        ent:SetPos(self:GetPos()+Vector(0,0,i*60))
+        ent:Spawn()
     end
-  end
-  
-  function ENT:SpawnLogs()
-    for i=1,self.logcount do
-      local ent = ents.Create("luctus_log")
-      ent:SetPos(self:GetPos()+Vector(0,0,i*60))
-      ent:Spawn()
-    end
-  end
 end

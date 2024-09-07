@@ -18,4 +18,4 @@ TEAM_WOODCUTTER = DarkRP.createJob("Woodcutter", {
     category = "Other",
 })
 
-print("[luctus_treefeller] SH DRP Module loaded!")
+print("[luctus_treefeller] job loaded")

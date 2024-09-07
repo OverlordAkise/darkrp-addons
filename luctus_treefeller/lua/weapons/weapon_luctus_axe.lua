@@ -48,50 +48,37 @@ SWEP.WElements = {
 }
 
 function SWEP:PrimaryAttack()
-  self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
-  self.Owner:SetAnimation(PLAYER_ATTACK1)
-  
-  self.Weapon:SetNextPrimaryFire( CurTime() + 1 )
-  
-  --Taken from TTT knife:
-  if not IsValid(self:GetOwner()) then return end
+    
+    local owner = self:GetOwner()
+    self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+    owner:SetAnimation(PLAYER_ATTACK1)
 
-  self:GetOwner():LagCompensation(true)
-  local spos = self:GetOwner():GetShootPos()
-  local sdest = spos + (self:GetOwner():GetAimVector() * 70)
-  local kmins = Vector(1,1,1) * -10
-  local kmaxs = Vector(1,1,1) * 10
-  local tr = util.TraceHull({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
-  if not IsValid(tr.Entity) then
-    tr = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
-  end
+    self.Weapon:SetNextPrimaryFire(CurTime() + 1)
+    
+    if not IsValid(owner) then return end
+    owner:LagCompensation(true)
+    local spos = owner:GetShootPos()
+    local dpos = spos + (self:GetOwner():GetAimVector() * 100)
+    local tr = util.TraceHull({start=spos, endpos=dpos, filter=self:GetOwner(), mask=MASK_SHOT_HULL, mins=Vector(-10,-10,-10), maxs=Vector(10,10,10)})
 
-  local hitEnt = tr.Entity
-  if IsValid(hitEnt) then
-    if hitEnt:GetClass() == "luctus_tree" then
-      self:EmitSound("physics/wood/wood_plank_break"..math.random(1,4)..".wav")
-    else
-      self:EmitSound("Weapon_Crowbar.Melee_HitWorld")
+    local hitEnt = tr.Entity
+    if not IsValid(hitEnt) then
+        self:EmitSound("Weapon_Crowbar.Single",75,100,0.3)
+        return
     end
-  else
-    self:EmitSound("Weapon_Crowbar.Single")
-  end
-  if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
-    local dmg = DamageInfo()
-    dmg:SetDamage(self.Primary.Damage)
-    dmg:SetAttacker(self:GetOwner())
-    dmg:SetInflictor(self.Weapon or self)
-    dmg:SetDamageForce(self:GetOwner():GetAimVector() * 500)
-    dmg:SetDamagePosition(self:GetOwner():GetPos())
-    dmg:SetDamageType(DMG_SLASH)
-
-    hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
-  end
-  self:GetOwner():LagCompensation(false)
+    
+    if hitEnt:GetClass() == "luctus_tree" then
+        self:EmitSound("physics/wood/wood_plank_break"..math.random(1,4)..".wav",75,100,0.5)
+    else
+        self:EmitSound("Weapon_Crowbar.Melee_HitWorld",75,100,0.1)
+    end
+    if SERVER then
+        hitEnt:TakeDamage(LUCTUS_TREEFELLER_AXE_DAMAGE,owner,owner)
+    end
+    owner:LagCompensation(false)
 end
 
-function SWEP:SecondaryAttack()
-end
+function SWEP:SecondaryAttack() end
 
 
 
