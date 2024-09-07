@@ -14,7 +14,7 @@ surface.CreateFont("luctus_door_text", {
 })
 
 local doorCache = {}
-local doorEnts = {}
+local doorEnts = {} --door entities near you
 
 --cache
 local color_white = Color(255,255,255,255)
@@ -30,8 +30,48 @@ for i=1,#doorEnts do
     local displayData = doorCache[door]
     if not displayData then continue end
     local doorAngles = door:GetAngles()
+
+    cam.Start3D2D(door:LocalToWorld(displayData.CanvasPos1),displayData.DrawAngles + doorAngles,displayData.scale)
+        draw.SimpleText(displayData.doorHeader,"luctus_door_title",displayData.canvasWidth / 2,0,color_white, TEXT_ALIGN_CENTER)
+        draw.SimpleText(displayData.doorSubHeader,"luctus_door_text",displayData.canvasWidth / 2,50,color_white, TEXT_ALIGN_CENTER)
+        for i = 1,#displayData.extraText do
+            draw.SimpleText(displayData.extraText[i],"luctus_door_text",displayData.canvasWidth / 2,90 + i * 20,color_white, TEXT_ALIGN_CENTER)
+        end
+    cam.End3D2D()
   
-    --Text stuff
+    cam.Start3D2D(door:LocalToWorld(displayData.CanvasPos2),displayData.DrawAngles + Angle(doorAngles.pitch,doorAngles.yaw,-doorAngles.roll) + Angle(0,180,0),displayData.scale)
+    draw.SimpleText(displayData.doorHeader,"luctus_door_title",displayData.canvasWidth / 2,0,color_white, TEXT_ALIGN_CENTER)
+    draw.SimpleText(displayData.doorSubHeader,"luctus_door_text",displayData.canvasWidth / 2,50,color_white, TEXT_ALIGN_CENTER)
+    for i = 1,#displayData.extraText do
+        draw.SimpleText(displayData.extraText[i],"luctus_door_text",displayData.canvasWidth / 2,90 + i * 20,color_white, TEXT_ALIGN_CENTER)
+    end
+    cam.End3D2D()
+  
+end
+end)
+
+
+--Set doors which should be drawn by hook above
+timer.Create("luctus_doors_finder",0.3,0,function()
+    if not IsValid(LocalPlayer()) then return end
+    doorEnts = {}
+    local entities = ents.FindInSphere(LocalPlayer():EyePos(),250)
+    for i = 1,#entities do
+        local curEnt = entities[i]
+        if curEnt:isKeysOwnable() and curEnt:GetClass() ~= "prop_dynamic" and not curEnt:GetNoDraw() then
+            table.insert(doorEnts,curEnt)
+            --if door hasn't been set up:
+            if not doorCache[curEnt] then
+                luctusDoorSetup(curEnt)
+            end
+            --always update door text
+            luctusDoorCacheText(curEnt)
+        end
+    end
+end)
+
+--Generate door text, owner, buyable, etc.
+function luctusDoorCacheText(door)
     local doorData = door:getDoorData()
     local doorHeader = "FOR SALE"
     local doorSubHeader = "PRESS F2 TO BUY"
@@ -88,50 +128,14 @@ for i=1,#doorEnts do
             end
         end
     end
-  
-    doorHeader = string.Left(doorHeader,25)
-    doorSubHeader = string.Left(doorSubHeader,35)
-
-    cam.Start3D2D(door:LocalToWorld(displayData.CanvasPos1),displayData.DrawAngles + doorAngles,displayData.scale)
-        draw.SimpleText(doorHeader,"luctus_door_title",displayData.canvasWidth / 2,0,color_white, TEXT_ALIGN_CENTER)
-        draw.SimpleText(doorSubHeader,"luctus_door_text",displayData.canvasWidth / 2,50,color_white, TEXT_ALIGN_CENTER)
-        for i = 1,#extraText do
-            draw.SimpleText(extraText[i],"luctus_door_text",displayData.canvasWidth / 2,90 + i * 20,color_white, TEXT_ALIGN_CENTER)
-        end
-    cam.End3D2D()
-  
-    cam.Start3D2D(door:LocalToWorld(displayData.CanvasPos2),displayData.DrawAngles + Angle(doorAngles.pitch,doorAngles.yaw,-doorAngles.roll) + Angle(0,180,0),displayData.scale)
-    draw.SimpleText(doorHeader,"luctus_door_title",displayData.canvasWidth / 2,0,color_white, TEXT_ALIGN_CENTER)
-    draw.SimpleText(doorSubHeader,"luctus_door_text",displayData.canvasWidth / 2,50,color_white, TEXT_ALIGN_CENTER)
-    for i = 1,#extraText do
-        draw.SimpleText(extraText[i],"luctus_door_text",displayData.canvasWidth / 2,90 + i * 20,color_white, TEXT_ALIGN_CENTER)
-    end
-    cam.End3D2D()
-  
+    
+    doorCache[door].doorHeader = string.Left(doorHeader,25)
+    doorCache[door].doorSubHeader = string.Left(doorSubHeader,35)
+    doorCache[door].extraText = extraText
 end
-end)
 
---hook.Remove("PostDrawOpaqueRenderables","luctus_doorhud_draw")
---hook.Remove("PreDrawEffects","luctus_doorhud_draw")
-
---Set doors which should be drawn by hook above
-timer.Create("luctus_doors_finder",0.3,0,function()
-    if not IsValid(LocalPlayer()) then return end
-    doorEnts = {}
-    local entities = ents.FindInSphere(LocalPlayer():EyePos(),250)
-    for i = 1,#entities do
-        local curEnt = entities[i]
-        if curEnt:isKeysOwnable() and curEnt:GetClass() ~= "prop_dynamic" and not curEnt:GetNoDraw() then
-            table.insert(doorEnts,curEnt)
-            --if door hasn't been set up:
-            if not doorCache[curEnt] then
-                luctusSetupDoor(curEnt)
-            end
-        end
-    end
-end)
-
-function luctusSetupDoor(door)
+--Generate text position, angle, etc.
+function luctusDoorSetup(door)
     local OBBCenter = door:OBBCenter()
     local size = door:OBBMins() - door:OBBMaxs()
     size = Vector(math.abs(size.x),math.abs(size.y),math.abs(size.z))
@@ -156,16 +160,17 @@ function luctusSetupDoor(door)
       offset = Vector(size.x / 2,util.TraceLine(traceTbl).Fraction * (size.y / 2) + 1,0)
       canvasWidth = size.x / scale
     end
+    
+    
 
-    displayData = {
+    doorCache[door] = {
         DrawAngles = DrawAngles,
         CanvasPos1 = OBBCenter - offset + heightOffset,
         CanvasPos2 = OBBCenter + offset + heightOffset,
         scale = scale,
         canvasWidth = canvasWidth,
-        start = traceTbl.start
+        start = traceTbl.start,
     }
-    doorCache[door] = displayData
 end
 
 --Disable standard door info
