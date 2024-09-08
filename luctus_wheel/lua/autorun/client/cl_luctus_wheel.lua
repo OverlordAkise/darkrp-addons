@@ -38,12 +38,14 @@ local dontDraw = {["CHudWeaponSelection"] = true}
 hook.Add("HUDShouldDraw","luctus_wheel",function(name)
     if LUCTUS_WHEEL_MENU and dontDraw[name] then return false end
 end)
--- hook.Remove("StartCommand", "StartCommandExample")
+
+local cd = 0
 hook.Add("CreateMove","luctus_wheel",function(cmd)
-    if cmd:GetMouseWheel() ~= 0 and LUCTUS_WHEEL_MENU then
-        LuctusWheelScroll(cmd:GetMouseWheel())
+    local mWheel = cmd:GetMouseWheel()
+    if mWheel ~= 0 and LUCTUS_WHEEL_MENU and cd < CurTime() then
+        LuctusWheelScroll(mWheel)
         surface.PlaySound("UI/buttonrollover.wav")
-        cmd:SetMouseWheel(0)
+        cd = CurTime()+0.1
     end
     if not cmd:KeyDown(IN_USE) then
         LUCTUS_WHEEL_USE_DELAY = false
@@ -72,6 +74,7 @@ hook.Add("CreateMove","luctus_wheel",function(cmd)
         end
     end
 end,-1)
+
 function LuctusWheelOpenMenu(ent)
     LUCTUS_WHEEL_ACTIVE_PANEL = 1
     local list = LUCTUS_WHEEL_CLASS_FUNCS[ent:GetClass()]
