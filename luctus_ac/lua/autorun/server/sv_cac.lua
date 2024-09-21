@@ -21,10 +21,10 @@ end)
 --bantime length = minutes
 function LuctusAC_Punish(ply, length, pMessage)
     print("[luctus_ac] Banning",ply:Nick(),ply:SteamID(),"(time:",length,") for",pMessage)
-    if STEAMID_WHITELIST[ply:SteamID()] then {
+    if STEAMID_WHITELIST[ply:SteamID()] then
         print("[luctus_ac] ...but he is immune")
         return
-    }
+    end
     if not IsValid(ply) then return end
     if ply.isAlreadyBanned then return end
     ply.isAlreadyBanned = true
