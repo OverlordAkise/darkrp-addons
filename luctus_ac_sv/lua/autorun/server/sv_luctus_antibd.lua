@@ -6,6 +6,11 @@
 
 local ENABLED = true
 
+--Please keep the list of good Sources minimal
+local goodSource = {
+    ["addons/test/lua/autorun/sh_testing.lua:24"] = true,
+}
+
 local lprint = print
 local lErrorNoHaltWithStack = ErrorNoHaltWithStack
 local debugGetinfo = debug.getinfo
@@ -22,6 +27,9 @@ local function IsBadSourceInCall()
     for i=1,50 do
         local tab = debugGetinfo(i)
         if not tab or not tab.short_src then continue end
+        if goodSource[tab.short_src..":"..tab.currentline] then
+            return false
+        end
         if badSources[tab.short_src] then
             return true
         end
