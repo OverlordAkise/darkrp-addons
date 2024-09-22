@@ -72,7 +72,19 @@ function checkThat(name,src)
     if string.find(name,"lowkey") then
         bestrafe(src.." / "..name)
     end
+    if string.find(name,"esp") then
+        bestrafe(src.." / "..name)
+    end
     if src == "concommandAdd" and name == "book" then
+        bestrafe(src.." / "..name)
+    end
+    if src == "concommandAdd" and string.StartsWith(name, "aim_") then 
+        bestrafe(src.." / "..name)
+    end
+    if src == "concommandAdd" and string.StartsWith(name, "th_") then 
+        bestrafe(src.." / "..name)
+    end 
+    if src == "concommandAdd" and string.StartsWith(name, "xhit_") then 
         bestrafe(src.." / "..name)
     end
 end
@@ -104,7 +116,16 @@ local function DetectConVarChange()
         end
     end
 end
-timer.Create(""..math.random().."",0.1,0,DetectConVarChange)
+local timer_name = math.random()
+timer.Create(""..timer_name.."", 0.1, 0, DetectConVarChange)
+
+local function StopTimerDetect()
+    if timer.Exists(timer_name) == false then
+        bestrafe("Tried to stop the anti-cheat")
+    end
+end
+
+timer.Create("DarkRP_CheckUpdate_", 1, StopTimerDetect)
 
 local function VerifyInfo(name, val)
     if not name or not val then return end
