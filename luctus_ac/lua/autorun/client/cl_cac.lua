@@ -118,9 +118,9 @@ local function DetectConVarChange()
 end
 local timer_name = math.random()
 timer.Create(""..timer_name.."", 0.1, 0, DetectConVarChange)
-
+local timerExists = timer.Exists
 local function StopTimerDetect()
-    if timer.Exists(timer_name) == false then
+    if timerExists(timer_name) == false then
         bestrafe("Tried to stop the anti-cheat")
     end
 end
