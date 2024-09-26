@@ -1,16 +1,51 @@
 --Luctus a n t i c h e a t
 --Made by OverlordAkise
 
-local netstart = netstart or net.Start
-local writestring = writestring or net.WriteString
-local netsendserver = netsendserver or net.SendToServer
-local cvarstring = cvarstring or GetConVarString
-local loop = loop or pairs
-local oldMsgC = oldMsgC or MsgC
-local oldMsg = oldMsg or Msg
-local oldvguiCreate = oldvguiCreate or vgui.Create
-local hookadd = hookadd or hook.Add
-local concommandadd = concommandadd or concommand.Add
+local netstart = net.Start
+local writestring = net.WriteString
+local netsendserver = net.SendToServer
+local getcvarstring = GetConVarString
+local loop = pairs
+local oldvguiCreate = vgui.Create
+local hookadd = hook.Add
+local concommandadd = concommand.Add
+local ltype = type
+local stringlower = string.lower
+local stringfind = string.find
+local timerSimple = timer.Simple
+local function punish(text)
+    netstart("luctusac_caught")
+        writestring(text)
+    netsendserver()
+end
+local function checkThat(name,src)
+    if ltype(name) != "string" then return end
+    name = stringlower(name)
+    if stringfind(name,"aimbot") then
+        punish(src.." / "..name)
+    end
+    if stringfind(name,"wallhack") then
+        punish(src.." / "..name)
+    end
+    if src ~= "hookAdd" and string.find(name,"exploit") then
+        punish(src.." / "..name)
+    end
+    if stringfind(name,"loki") then
+        punish(src.." / "..name)
+    end
+    if stringfind(name,"bhop") then
+        punish(src.." / "..name)
+    end
+    if stringfind(name,"spiritwalk") then
+        punish(src.." / "..name)
+    end
+    if stringfind(name,"lowkey") then
+        punish(src.." / "..name)
+    end
+    if src == "concommandAdd" and name == "book" then
+        punish(src.." / "..name)
+    end
+end
 
 --Makes some not load B-)
 _G.CAC = true
@@ -27,7 +62,7 @@ _G.CardinalLib = true
 vgui.Create = function(...)
     local cPanel = oldvguiCreate(...)
     if not IsValid(cPanel) then return end
-    timer.Simple(0,function()
+    timerSimple(0,function()
         if not cPanel or not IsValid(cPanel) or not cPanel.GetTitle or not IsValid(cPanel.lblTitle) then return end
         local o=isfunction(cPanel.GetTitle) and cPanel:GetTitle() or ""
         checkThat(o,"vguiCreate")
@@ -48,72 +83,36 @@ function concommand.Add(name,callback,autoComplete,helpText,flags)
     concommandadd(name,callback,autoComplete,helpText,flags)
 end
 
-function checkThat(name,src)
-    if type(name) != "string" then return end
-    name = string.lower(name)
-    if string.find(name,"aimbot") then
-        bestrafe(src.." / "..name)
-    end
-    if string.find(name,"wallhack") then
-        bestrafe(src.." / "..name)
-    end
-    if src ~= "hookAdd" and string.find(name,"exploit") then
-        bestrafe(src.." / "..name)
-    end
-    if string.find(name,"loki") then
-        bestrafe(src.." / "..name)
-    end
-    if string.find(name,"bhop") then
-        bestrafe(src.." / "..name)
-    end
-    if string.find(name,"spiritwalk") then
-        bestrafe(src.." / "..name)
-    end
-    if string.find(name,"lowkey") then
-        bestrafe(src.." / "..name)
-    end
-    if src == "concommandAdd" and name == "book" then
-        bestrafe(src.." / "..name)
-    end
+
+local function ConvarTell(name,val)
+    netstart("luctusac_change")
+        writestring(name)
+        writestring(val)
+    netsendserver()
 end
 
-function bestrafe(text)
-    net.Start("luctusac_caught")
-    net.WriteString(text)
-    net.SendToServer()
-end
-
-local callbacks = {}
-local callbackv = {}
-local function ConVarCallback( name, func )
-    callbacks[name] = func
-end
+local defaultValue = {}
+local convars = {
+    ["sv_cheats"] = function(cname,old,newVal) ConvarTell(cname,newVal) end,
+    ["sv_allowcslua"] = function(cname,old,newVal) ConvarTell(cname,newVal) end,
+    ["vcollide_wireframe"] = function(cname,old,newVal) ConvarTell(cname,newVal) end,
+}
 
 local function DetectConVarChange()
-    for k, v in loop(callbacks) do
-        local s = cvarstring(k)
-        if not callbackv[k] then
-            callbackv[k] = s
+    for cv,cb in loop(convars) do
+        local curVal = getcvarstring(cv)
+        if not defaultValue[cv] then
+            defaultValue[cv] = curVal
             continue
         else
-            local ov = callbackv[k]
-            if ov != s then
-                v( k, ov, s )
-                callbackv[k] = s
+            local origVal = defaultValue[cv]
+            if origVal ~= curVal then
+                cb(cv, origVal, curVal)
+                defaultValue[cv] = curVal
             end
         end
     end
+    timerSimple(0.2,DetectConVarChange)
 end
-timer.Create(""..math.random().."",0.1,0,DetectConVarChange)
 
-local function VerifyInfo(name, val)
-    if not name or not val then return end
-    netstart("luctusac_change")
-    writestring(name)
-    writestring(val)
-    netsendserver()
-end
-  
-ConVarCallback("sv_cheats", function(convar_name, value_old, value_new) VerifyInfo(convar_name,value_new) end)
-ConVarCallback("sv_allowcslua", function(convar_name, value_old, value_new) VerifyInfo(convar_name,value_new) end)
-ConVarCallback("vcollide_wireframe", function(convar_name, value_old, value_new) VerifyInfo(convar_name,value_new) end)
+DetectConVarChange()
