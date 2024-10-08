@@ -14,10 +14,21 @@ local color_black = Color(0,0,0,255)
 local BgFrame = nil
 local NameInputMenu = nil
 local DeleteMenu = nil
+local skipNextOpen = false
 
 net.Receive("luctus_char_open", function()
     local CharTable = net.ReadTable()
     LuctusCharOpenMenu(CharTable)
+end)
+
+hook.Add("PlayerButtonDown", "luctus_char_menu", function(ply,button)
+    if button != LUCTUS_CHAR_MENU_KEY then return end
+    if skipNextOpen then
+        skipNextOpen = false
+        return
+    end
+    net.Start("luctus_char_open")
+    net.SendToServer()
 end)
 
 --Add it here to always be there no matter the config
@@ -219,7 +230,8 @@ function LuctusCharOpenMenu(CharTable)
         end
     end
     function BgFrame:OnKeyCodePressed(key) 
-        if key == 93 then --F2
+        if key == LUCTUS_CHAR_MENU_KEY then
+            skipNextOpen = true
             self:Close()
         end
     end

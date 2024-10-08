@@ -80,7 +80,7 @@ function LuctusGetCommandFromJob(team)
 end
 
 --F2 = menu open
-hook.Add("ShowTeam", "luctus_char_open", function(ply)
+net.Receive("luctus_char_open",function(len,ply)
     net.Start("luctus_char_open")
         net.WriteTable(LuctusCharGetTable(ply))
     net.Send(ply)

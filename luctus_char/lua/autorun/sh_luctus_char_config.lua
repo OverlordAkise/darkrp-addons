@@ -3,10 +3,12 @@
 
 --Message shown in the middle of the job menu
 LUCTUS_CHAR_WELCOMEMSG = "Welcome to MyServer!" --GetHostName()
-
 --How many character slots can a player have?
 LUCTUS_CHAR_SLOTS = 3
-
+--Should job changing with F4 be disabled
+LUCTUS_CHAR_DISABLE_JOBCHANGE = true
+--Which key should open the character menu
+LUCTUS_CHAR_MENU_KEY = KEY_F2
 --Buttons that should be displayed at the top, left = name, right = url link or lua function
 --The disconnect button is added automatically on the right
 LUCTUS_CHAR_UI_BUTTONS = {
@@ -44,7 +46,7 @@ hook.Add("postLoadCustomDarkRPItems","luctus_charsys_jobconfig",function()
     -- On the left the group that can invite, on the right the job the guy will get after accepting the invite
     -- Example: Gangster Boss invites someone, they will get job gangster after accepting
     LUCTUS_CHAR_INVITE_JOBS = {
-        [TEAM_MOB] = TEAM_GANG,
+        -- [TEAM_MOB] = TEAM_GANG,
     }
     
     
@@ -53,7 +55,9 @@ hook.Add("postLoadCustomDarkRPItems","luctus_charsys_jobconfig",function()
     DarkRP.removeChatCommand("name")
     DarkRP.removeChatCommand("rpname")
     --Remove everyone can join any team
-    GM.Config.restrictallteams = true
+    if LUCTUS_CHAR_DISABLE_JOBCHANGE then
+        GM.Config.restrictallteams = true
+    end
     
     print("[luctus_char] config loaded")
 end)
