@@ -14,6 +14,11 @@ LUCTUS_XP_KILL = 5
 --Should you get XP if you are AFK
 LUCTUS_XP_DISABLE_WHILE_AFK = false
 
+--Enable if you can restrict jobs based on level
+--Simply add the following to a job in the jobs.lua :
+--  level = 5,
+LUCTUS_LEVEL_JOBRESTRICT = true
+
 --Function for calculating how many XP you need per level
 --Currently: Linear scaling
 function LuctusLevelRequiredXP(lvl)
