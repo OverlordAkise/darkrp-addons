@@ -43,15 +43,16 @@ local function paintButton(self,w,h)
     end
 end
 
+local frame
 net.Receive("luctus_technician_repair",function()
+    if IsValid(frame) then return end
     local ent = net.ReadEntity()
-    
     local frameW = 600
     local frameH = 600
     local curPanel = nil
     local connected_panels = {}
     local successfullyRepaired = false
-    local frame = vgui.Create("DFrame")
+    frame = vgui.Create("DFrame")
     frame:SetSize(frameW,frameH)
     frame:SetTitle("Repair | Technician")
     frame:Center()

@@ -11,7 +11,7 @@ function ENT:Draw()
     if self:GetPos():DistToSqr(lp:GetPos()) > 300*300 then return end
     if RPExtraTeams[lp:Team()].name ~= LUCTUS_TECHNICIAN_JOBNAME then return end
     local a = Angle(0,0,0)
-    a:RotateAroundAxis(vector_cache1,90)
+    a:RotateAroundAxis(vector_cache,90)
     a.y = lp:GetAngles().y - 90
     local va,vb = self:GetModelBounds()
     local height = vb.z

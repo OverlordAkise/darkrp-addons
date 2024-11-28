@@ -34,8 +34,8 @@ end)
 
 net.Receive("luctus_technician_repair",function(len,ply)
     local ent = net.ReadEntity()
-    if not ent:GetBroken() then return end
     if not IsValid(ent) or not ent.Base == "luctus_technician_base" then return end
+    if not ent:GetBroken() then return end
     if ply:GetPos():Distance(ent:GetPos()) > 512 then return end
     --reward
     ent.Hitpoints = LUCTUS_TECHNICIAN_ENT_HEALTH
