@@ -12,7 +12,7 @@ GetRecursiveWorkshopFiles("addons/","GAME")
 
 --]]
 
-function GetRecursiveWorkshopFiles(curfolder,base)
+local function GetAllFiles(curfolder,base)
     local files,folders = file.Find(curfolder.."*",base)
     if not file.Exists("_dump/"..curfolder,"DATA") then
         file.CreateDir("_dump/"..curfolder)
@@ -30,9 +30,15 @@ function GetRecursiveWorkshopFiles(curfolder,base)
     end
     if folders then
         for k,v in pairs(folders) do
-            GetRecursiveWorkshopFiles(curfolder..v.."/",base)
+            GetAllFiles(curfolder..v.."/",base)
         end
     end
 end
 
-print("[luctus_luadumper] cl loaded")
+function GetRecursiveWorkshopFiles(curfolder,base)
+    print("[luctus_luadumper] start")
+    GetAllFiles(curfolder,base)
+    print("[luctus_luadumper] done")
+end
+
+print("[luctus_luadumper] loaded")
