@@ -58,20 +58,26 @@ end
 
 if ( SERVER ) then return end
 
+local angle_cache = Angle(0,0,0)
+local rotatearound_cache = Vector(1,0,0)
+local cam_vector_cache = Vector(0,0,80) 
+
+local roundedbox_color, setdraw_color = Color(45,45,45,255)
+local text_color = Color(255,255,255,255) 
+
 function ENT:Draw()
   self:DrawModel()
   if LocalPlayer():GetPos():Distance(self:GetPos()) < 550 then
-    local a = Angle(0,0,0)
-    a:RotateAroundAxis(Vector(1,0,0),90)
+    local a = angle_cache
+    a:RotateAroundAxis(rotatearound_cache,90)
     a.y = LocalPlayer():GetAngles().y - 90
-    cam.Start3D2D(self:GetPos() + Vector(0,0,80), a , 0.074)
-      draw.RoundedBox(8,-225,-75,450,75 , Color(45,45,45,255))
+    cam.Start3D2D(self:GetPos() + cam_vector_cache, a , 0.074)
+      draw.RoundedBox(8,-225,-75,450,75 , roundedbox_color)
       local tri = {{x = -25 , y = 0},{x = 25 , y = 0},{x = 0 , y = 25}}
-      surface.SetDrawColor(Color(45,45,45,255))
+      surface.SetDrawColor(setdraw_color)
       draw.NoTexture()
       surface.DrawPoly( tri )
-
-      draw.SimpleText("Chocolate Buyer","chocolate_font",0,-40,Color(255,255,255,255) , 1 , 1)
+      draw.SimpleText("Chocolate Buyer","chocolate_font",0,-40,text_color, 1 , 1)
     cam.End3D2D()
   end
 end
