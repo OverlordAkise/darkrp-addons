@@ -164,22 +164,15 @@ local function openWeapons()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	for _, weapon in ipairs(CustomShipments) do
 		if weapon.separate then
 			essentialDarkRPF4Menu.displayItem = true
 
 			-- Hide job and group restricted weapons
 			-- if essentialDarkRPF4Menu.hideRestrictedWeapons then
-				if istable(weapon.allowed) and not table.HasValue(weapon.allowed, LocalPlayer():Team()) then
-					essentialDarkRPF4Menu.displayItem = false
-				end
-
-				if weapon.customCheck and not weapon.customCheck(LocalPlayer()) then
-					essentialDarkRPF4Menu.displayItem = false
-				end
-
-				if weapon.canSee and not weapon.canSee(LocalPlayer()) then
+				if (istable(weapon.allowed) and not table.HasValue(weapon.allowed, localplayer_team)) or (weapon.customCheck and not weapon.customCheck(localplayer)) or (weapon.canSee and not weapon.canSee(localplayer)) then
 					essentialDarkRPF4Menu.displayItem = false
 				end
 			-- end

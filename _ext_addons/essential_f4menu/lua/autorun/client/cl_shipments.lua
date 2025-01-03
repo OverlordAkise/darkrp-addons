@@ -184,22 +184,15 @@ local function openShipments()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	for _, shipment in ipairs(CustomShipments) do
 		if not shipment.noship then
 			essentialDarkRPF4Menu.displayItem = true
 
 			-- Hide job and group restricted shipments
 			-- if essentialDarkRPF4Menu.hideRestrictedShipments then
-				if istable(shipment.allowed) and not table.HasValue(shipment.allowed, LocalPlayer():Team()) then
-					essentialDarkRPF4Menu.displayItem = false
-				end
-
-				if shipment.customCheck and not shipment.customCheck(LocalPlayer()) then
-					essentialDarkRPF4Menu.displayItem = false
-				end
-
-				if shipment.canSee and not shipment.canSee(LocalPlayer()) then
+				if (istable(shipment.allowed) and not table.HasValue(shipment.allowed, localplayer_team)) or (shipment.customCheck and not shipment.customCheck(localplayer)) or (shipment.canSee and not shipment.canSee(localplayer)) then
 					essentialDarkRPF4Menu.displayItem = false
 				end
 			-- end

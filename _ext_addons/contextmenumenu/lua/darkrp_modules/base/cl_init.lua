@@ -88,8 +88,9 @@ SubMenu("Cash transactions", "icon16/money.png", function(self)
 	end)):SetImage("icon16/money.png")
 
 	local mo, pm = self:AddSubMenu("Write a cheque")
-	for k, v in pairs(player.GetAll()) do
-		if v == LocalPlayer() then continue end
+	local localplayer = LocalPlayer()
+	for k, v in ipairs(player.GetAll()) do
+		if v == localplayer then continue end
 		mo:AddOption(v:Name(), Request("Write a cheque", "How much?", function(s)
 			 RunConsoleCommand("darkrp", "check", v:UserID(), s)
 		end)):SetColor(v:getJobTable().color)
@@ -137,8 +138,9 @@ Option("Drop weapon", "icon16/gun.png", function()
 	RunConsoleCommand("darkrp", "dropweapon")
 end)
 SubMenu("Demote a player", "icon16/user_delete.png", function(self)
-	for k, v in pairs(player.GetAll()) do
-		if v == LocalPlayer() then continue end
+	local localplayer = LocalPlayer()
+	for k, v in ipairs(player.GetAll()) do
+		if v == localplayer then continue end
 
 		self:AddOption(v:Name(), Request("Demote a player", "What is the reason?", function(s)
 			RunConsoleCommand("darkrp", "demote", v:UserID(), s)
@@ -158,8 +160,9 @@ end))
 Spacer(isCP)
 
 SubMenu("Make a player wanted", "icon16/flag_red.png", function(self)
-	for k, v in pairs(player.GetAll()) do
-		if v == LocalPlayer() then continue end
+	local localplayer = LocalPlayer()
+	for k, v in ipairs(player.GetAll()) do
+		if v == localplayer then continue end
 
 		if not v:isWanted() then
 			self:AddOption(v:Name(), Request("Make a player wanted", "What is the reason?", function(s)
@@ -170,7 +173,7 @@ SubMenu("Make a player wanted", "icon16/flag_red.png", function(self)
 end, isCP)
 
 SubMenu("Make a player unwanted", "icon16/flag_green.png", function(self)
-	for k, v in pairs(player.GetAll()) do
+	for k, v in ipairs(player.GetAll()) do
 		if v:isWanted() then
 			self:AddOption(v:Name(), function()
 				RunConsoleCommand("darkrp", "unwanted", v:UserID(), s)
@@ -180,8 +183,9 @@ SubMenu("Make a player unwanted", "icon16/flag_green.png", function(self)
 end, isCP)
 
 SubMenu("Request a warrant", "icon16/door_in.png", function(self)
-	for k, v in pairs(player.GetAll()) do
-		if v == LocalPlayer() then continue end
+	local localplayer = LocalPlayer()
+	for k, v in ipairs(player.GetAll()) do
+		if v == localplayer then continue end
 		if not v:isWanted() then
 			self:AddOption(v:Name(), Request("Request a warrant", "What is the reason?", function(s)
 				RunConsoleCommand("darkrp", "warrant", v:UserID(), s)

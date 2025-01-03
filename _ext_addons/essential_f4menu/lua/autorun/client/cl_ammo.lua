@@ -148,23 +148,17 @@ local function openAmmo()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	for _, ammo in ipairs(GAMEMODE.AmmoTypes) do
 		essentialDarkRPF4Menu.displayItem = true
 
 		-- Hide job and group restricted ammo
 		-- if essentialDarkRPF4Menu.hideRestrictedAmmo then
-			if istable(ammo.allowed) and not table.HasValue(ammo.allowed, LocalPlayer():Team()) then
+			if (istable(ammo.allowed) and not table.HasValue(ammo.allowed, localplayer_team)) or (ammo.customCheck and not ammo.customCheck(localplayer)) or (ammo.canSee and not ammo.canSee(localplayer)) then
 				essentialDarkRPF4Menu.displayItem = false
 			end
 
-			if ammo.customCheck and not ammo.customCheck(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
-
-			if ammo.canSee and not ammo.canSee(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
 		-- end
 
 		if essentialDarkRPF4Menu.displayItem then

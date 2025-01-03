@@ -148,21 +148,14 @@ local function openVehicles()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	for _, vehicle in ipairs(CustomVehicles) do
 		essentialDarkRPF4Menu.displayItem = true
 
 		-- Hide job and group restricted vehicles
 		-- if essentialDarkRPF4Menu.hideRestrictedVehicles then
-			if istable(vehicle.allowed) and not table.HasValue(vehicle.allowed, LocalPlayer():Team()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
-
-			if vehicle.customCheck and not vehicle.customCheck(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
-
-			if vehicle.canSee and not vehicle.canSee(LocalPlayer()) then
+			if (istable(vehicle.allowed) and not table.HasValue(vehicle.allowed, localplayer_team)) or (vehicle.customCheck and not vehicle.customCheck(localplayer)) or (vehicle.canSee and not vehicle.canSee(localplayer)) then
 				essentialDarkRPF4Menu.displayItem = false
 			end
 		-- end

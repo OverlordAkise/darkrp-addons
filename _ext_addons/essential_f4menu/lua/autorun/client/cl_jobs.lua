@@ -295,22 +295,15 @@ local function openJobs()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	-- Add all the jobs
 	for _, job in ipairs(RPExtraTeams) do
 		essentialDarkRPF4Menu.displayItem = true
 
 		-- Hide job and group restricted jobs
 		-- if essentialDarkRPF4Menu.hideRestrictedJobs then
-			if istable(job.allowed) and not table.HasValue(job.allowed, LocalPlayer():Team()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
-
-			if job.customCheck and not job.customCheck(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
-
-			if job.canSee and not job.canSee(LocalPlayer()) then
+			if (istable(job.allowed) and not table.HasValue(job.allowed, localplayer_team)) or (job.customCheck and not job.customCheck(localplayer)) or (job.canSee and not job.canSee(localplayer)) then
 				essentialDarkRPF4Menu.displayItem = false
 			end
 		-- end
