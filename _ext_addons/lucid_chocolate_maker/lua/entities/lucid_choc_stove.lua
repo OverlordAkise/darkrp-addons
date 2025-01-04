@@ -33,7 +33,8 @@ if CLIENT then
   end
 
   local color_white, color_black, color_green, color_red = Color(255,255,255), Color(0,0,0), Color(0,255,0), Color(255,0,0)
-
+  local backgroundloading_box_color = Color(0,0,0,240)
+  local loadingbox_color = Color(0,250,0,255)
   function ENT:Draw()
     self:DrawModel() 
     local Pos = self:GetPos()
@@ -70,8 +71,8 @@ if CLIENT then
             self:EmitSound("ambient/machines/engine1.wav", 75, 100, 0.2, CHAN_AUTO)
           end
         end
-        draw.RoundedBox(0,-150,-195,300,30,Color( 0, 0, 0, 240 ))
-        draw.RoundedBox(0,-148,-193,self.tt,26,Color(0,250,0,255))
+        draw.RoundedBox(0,-150,-195,300,30,backgroundloading_box_color)
+        draw.RoundedBox(0,-148,-193,self.tt,26,loadingbox_color)
         draw.SimpleTextOutlined("Cooking...","DWallSmall",0,-189,color_white,TEXT_ALIGN_CENTER,0,2,color_black)
         
       else
