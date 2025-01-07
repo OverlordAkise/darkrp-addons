@@ -70,7 +70,7 @@ net.Receive("lucid_whitelist_set", function(len,ply)
             end
         end
     else
-        for k,v in pairs(player.GetAll()) do
+        for k,v in ipairs(player.GetAll()) do
             if v:SteamID() == steamid then
                 targetPly = v
                 for job_index,job in pairs(RPExtraTeams) do
