@@ -168,23 +168,18 @@ local function openFood()
 	end
 
 	local validItems = {}
-
+	local localplayer = LocalPlayer()
+	local localplayer_team = localplayer:Team()
 	for _, food in ipairs(FoodItems) do
 		essentialDarkRPF4Menu.displayItem = true
 
 		-- Hide job and group restricted food
 		-- if essentialDarkRPF4Menu.hideRestrictedFood then
-			if istable(food.allowed) and not table.HasValue(food.allowed, LocalPlayer():Team()) then
+			if (istable(food.allowed) and not table.HasValue(food.allowed, localplayer_team)) or (food.customCheck and not food.customCheck(localplayer)) or (food.canSee and not food.canSee(localplayer)) then
 				essentialDarkRPF4Menu.displayItem = false
 			end
 
-			if food.customCheck and not food.customCheck(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
 
-			if food.canSee and not food.canSee(LocalPlayer()) then
-				essentialDarkRPF4Menu.displayItem = false
-			end
 		-- end
 
 		if essentialDarkRPF4Menu.displayItem then

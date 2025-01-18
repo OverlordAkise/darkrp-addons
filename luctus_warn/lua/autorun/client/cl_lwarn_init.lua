@@ -109,7 +109,7 @@ function LuctusWarnOpenMenu()
             end
         end
     end
-    for k,v in pairs(player.GetAll()) do
+    for k,v in ipairs(player.GetAll()) do
         PlayerList:AddLine(v:Name(), v:SteamID())
     end
     function PlayerList:DoDoubleClick( lineID, line )

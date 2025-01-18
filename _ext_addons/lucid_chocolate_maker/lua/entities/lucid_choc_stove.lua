@@ -32,14 +32,18 @@ if CLIENT then
     self:StopSound("ambient/machines/engine1.wav")
   end
 
+  local color_white, color_black, color_green, color_red = Color(255,255,255), Color(0,0,0), Color(0,255,0), Color(255,0,0)
+  local backgroundloading_box_color = Color(0,0,0,240)
+  local loadingbox_color = Color(0,250,0,255)
   function ENT:Draw()
     self:DrawModel() 
     local Pos = self:GetPos()
-    local Ang = self:GetAngles()
 
     local dist = Pos:DistToSqr(LocalPlayer():GetPos())
     
     if (dist > 400*400) then return end
+
+    local Ang = self:GetAngles()
     local owner = self:GetNWEntity("owner",nil)
     local Cocoa = self:GetCocoa()
     local Sugar = self:GetSugar()
@@ -50,13 +54,13 @@ if CLIENT then
     Ang:RotateAroundAxis(Ang:Up(),90)
     cam.Start3D2D(Pos + (Ang:Up() * 15),Ang,0.10)
       local w = 170
-      draw.RoundedBox(0,-160,-130,320,w,Color( 0, 0, 0, 240 ))
+      draw.RoundedBox(0,-160,-130,320,w,color_black)
       if IsValid(owner) then
-        draw.SimpleTextOutlined(owner:Nick(),"DWall",0,-130,Color(255,255,255),TEXT_ALIGN_CENTER,0,2,Color(0,0,0,255))
+        draw.SimpleTextOutlined(owner:Nick(),"DWall",0,-130,color_white,TEXT_ALIGN_CENTER,0,2,color_black)
       end
-      draw.SimpleTextOutlined("Cocoa " .. Cocoa .. " /2","DWall",0,-100,(Cocoa == 2 and Color(0,255,0) ) or Color(255,0,0),TEXT_ALIGN_CENTER,0,2,Color(0,0,0,255))
-      draw.SimpleTextOutlined("Sugar " .. Sugar .. " /1","DWall",0,-70,(Sugar == 1 and Color(0,255,0) ) or Color(255,0,0),TEXT_ALIGN_CENTER,0,2,Color(0,0,0,255))
-      draw.SimpleTextOutlined("Milk " .. Milk .. " /1","DWall",0,-35,(Milk == 1 and Color(0,255,0) ) or Color(255,0,0),TEXT_ALIGN_CENTER,0,2,Color(0,0,0,255))
+      draw.SimpleTextOutlined("Cocoa " .. Cocoa .. " /2","DWall",0,-100,(Cocoa == 2 and color_green ) or color_red,TEXT_ALIGN_CENTER,0,2,color_black)
+      draw.SimpleTextOutlined("Sugar " .. Sugar .. " /1","DWall",0,-70,(Sugar == 1 and color_green ) or color_red,TEXT_ALIGN_CENTER,0,2,color_black)
+      draw.SimpleTextOutlined("Milk " .. Milk .. " /1","DWall",0,-35,(Milk == 1 and color_green ) or color_red,TEXT_ALIGN_CENTER,0,2,color_black)
 
       if cookStartTime > 0 then
         local current = ((os.time()-self:GetCookStartTime())*100)/self.MaxTime
@@ -67,9 +71,9 @@ if CLIENT then
             self:EmitSound("ambient/machines/engine1.wav", 75, 100, 0.2, CHAN_AUTO)
           end
         end
-        draw.RoundedBox(0,-150,-195,300,30,Color( 0, 0, 0, 240 ))
-        draw.RoundedBox(0,-148,-193,self.tt,26,Color(0,250,0,255))
-        draw.SimpleTextOutlined("Cooking...","DWallSmall",0,-189,Color(255,255,255),TEXT_ALIGN_CENTER,0,2,Color(0,0,0,255))
+        draw.RoundedBox(0,-150,-195,300,30,backgroundloading_box_color)
+        draw.RoundedBox(0,-148,-193,self.tt,26,loadingbox_color)
+        draw.SimpleTextOutlined("Cooking...","DWallSmall",0,-189,color_white,TEXT_ALIGN_CENTER,0,2,color_black)
         
       else
         if self.Sound then 
