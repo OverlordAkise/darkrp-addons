@@ -2,13 +2,15 @@
 Free DarkRP Addons I made (first made for Eternity RP, RIP)  
 
 ** DO NOT REUPLOAD MY ADDON! **  
-** Copyright 2024 OverlordAkise. It is not allowed to upload this content on steam except by the Steam Account OverlordAkise **
+** Copyright 2024 OverlordAkise. It is not allowed to upload this content on steam except by the Steam Account with the SteamID64 76561198071737444 **
 
 For a screenshot of the addons visit [https://luctus.at](https://luctus.at)
 
 ## Warning
-If you find a bug please submit an Issue on github!  
-I will provide free and fast support if you find a bug!
+
+I use no custom models in my addons, if you see an error please make sure that CSS is installed on both server and client.  
+If you find a bug please submit an Issue on github.  
+I will provide free and fast support if you find a bug
 
 ## addons
 The addons do what they are named after.  
